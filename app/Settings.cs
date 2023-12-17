@@ -447,7 +447,10 @@ namespace GHelper
             Invoke(method: delegate
             {
                 labelVersion.Text = label;
-                if (update) labelVersion.ForeColor = colorTurbo;
+                if (update)
+                {
+	                this.labelVersion.ForeColor = colorTurbo;
+                }
             });
         }
 
@@ -578,7 +581,10 @@ namespace GHelper
             Invoke(method: delegate
             {
                 comboMatrixRunning.SelectedIndex = mode;
-                if (comboMatrix.SelectedIndex == 0) comboMatrix.SelectedIndex = 3;
+                if (comboMatrix.SelectedIndex == 0)
+                {
+	                this.comboMatrix.SelectedIndex = 3;
+                }
             });
         }
 
@@ -773,9 +779,13 @@ namespace GHelper
         public void CycleAuraMode()
         {
             if (comboKeyboard.SelectedIndex < comboKeyboard.Items.Count - 1)
-                comboKeyboard.SelectedIndex += 1;
+            {
+	            this.comboKeyboard.SelectedIndex += 1;
+            }
             else
-                comboKeyboard.SelectedIndex = 0;
+            {
+	            this.comboKeyboard.SelectedIndex = 0;
+            }
 
             Program.toast.RunToast(text: comboKeyboard.GetItemText(item: comboKeyboard.SelectedItem), icon: ToastIcon.BacklightUp);
         }
@@ -952,15 +962,23 @@ namespace GHelper
             Task.Run(action: (Action)PeripheralsProvider.RefreshBatteryForAllDevices);
 
             if (HardwareControl.cpuTemp > 0)
-                cpuTemp = ": " + Math.Round(d: (decimal)HardwareControl.cpuTemp).ToString() + "°C";
+            {
+	            cpuTemp = ": " + Math.Round(d: (decimal)HardwareControl.cpuTemp).ToString() + "°C";
+            }
 
             if (HardwareControl.batteryCapacity > 0)
-                charge = Properties.Strings.BatteryCharge + ": " + Math.Round(d: HardwareControl.batteryCapacity, decimals: 1) + "% ";
+            {
+	            charge = Properties.Strings.BatteryCharge + ": " + Math.Round(d: HardwareControl.batteryCapacity, decimals: 1) + "% ";
+            }
 
             if (HardwareControl.batteryRate < 0)
-                battery = Properties.Strings.Discharging + ": " + Math.Round(d: -(decimal)HardwareControl.batteryRate, decimals: 1).ToString() + "W";
+            {
+	            battery = Properties.Strings.Discharging + ": " + Math.Round(d: -(decimal)HardwareControl.batteryRate, decimals: 1).ToString() + "W";
+            }
             else if (HardwareControl.batteryRate > 0)
-                battery = Properties.Strings.Charging + ": " + Math.Round(d: (decimal)HardwareControl.batteryRate, decimals: 1).ToString() + "W";
+            {
+	            battery = Properties.Strings.Charging + ": " + Math.Round(d: (decimal)HardwareControl.batteryRate, decimals: 1).ToString() + "W";
+            }
 
 
             if (HardwareControl.gpuTemp > 0)
@@ -969,18 +987,30 @@ namespace GHelper
             }
 
             string trayTip = "CPU" + cpuTemp + " " + HardwareControl.cpuFan;
-            if (gpuTemp.Length > 0) trayTip += "\nGPU" + gpuTemp + " " + HardwareControl.gpuFan;
-            if (battery.Length > 0) trayTip += "\n" + battery;
+            if (gpuTemp.Length > 0)
+            {
+	            trayTip += "\nGPU" + gpuTemp + " " + HardwareControl.gpuFan;
+            }
+
+            if (battery.Length > 0)
+            {
+	            trayTip += "\n" + battery;
+            }
 
             Program.settingsForm.BeginInvoke(method: delegate
             {
                 labelCPUFan.Text = "CPU" + cpuTemp + " " + HardwareControl.cpuFan;
                 labelGPUFan.Text = "GPU" + gpuTemp + " " + HardwareControl.gpuFan;
                 if (HardwareControl.midFan is not null)
-                    labelMidFan.Text = "Mid " + HardwareControl.midFan;
+                {
+	                this.labelMidFan.Text = "Mid " + HardwareControl.midFan;
+                }
 
                 labelBattery.Text = battery;
-                if (!batteryMouseOver && !batteryFullMouseOver) labelCharge.Text = charge;
+                if (!batteryMouseOver && !batteryFullMouseOver)
+                {
+	                this.labelCharge.Text = charge;
+                }
 
                 //panelPerformance.AccessibleName = labelPerf.Text + " " + trayTip;
             });
@@ -1146,7 +1176,10 @@ namespace GHelper
         {
             Invoke(method: delegate
             {
-                if (text is null) text = Properties.Strings.GPUMode + ": " + Properties.Strings.GPUChanging + " ...";
+                if (text is null)
+                {
+	                text = Properties.Strings.GPUMode + ": " + Properties.Strings.GPUChanging + " ...";
+                }
 
                 ButtonEnabled(but: buttonOptimized, enabled: false);
                 ButtonEnabled(but: buttonEco, enabled: false);
@@ -1166,7 +1199,9 @@ namespace GHelper
             ButtonEnabled(but: buttonUltimate, enabled: true);
 
             if (GPUMode == -1)
-                GPUMode = AppConfig.Get(name: "gpu_mode");
+            {
+	            GPUMode = AppConfig.Get(name: "gpu_mode");
+            }
 
             bool GPUAuto = AppConfig.Is(name: "gpu_auto");
 
@@ -1322,8 +1357,16 @@ namespace GHelper
         private void ButtonPeripheral_MouseEnter(object? sender, EventArgs e)
         {
             int index = 0;
-            if (sender == buttonPeripheral2) index = 1;
-            if (sender == buttonPeripheral3) index = 2;
+            if (sender == buttonPeripheral2)
+            {
+	            index = 1;
+            }
+
+            if (sender == buttonPeripheral3)
+            {
+	            index = 2;
+            }
+
             IPeripheral iph = PeripheralsProvider.AllPeripherals().ElementAt(index: index);
 
 
@@ -1348,8 +1391,15 @@ namespace GHelper
             }
 
             int index = 0;
-            if (sender == buttonPeripheral2) index = 1;
-            if (sender == buttonPeripheral3) index = 2;
+            if (sender == buttonPeripheral2)
+            {
+	            index = 1;
+            }
+
+            if (sender == buttonPeripheral3)
+            {
+	            index = 2;
+            }
 
             IPeripheral iph = PeripheralsProvider.AllPeripherals().ElementAt(index: index);
 

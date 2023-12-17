@@ -42,7 +42,11 @@ namespace GHelper.Display
 
             if (overdrive >= 0)
             {
-                if (AppConfig.Get(name: "no_overdrive") == 1) overdrive = 0;
+                if (AppConfig.Get(name: "no_overdrive") == 1)
+                {
+	                overdrive = 0;
+                }
+
                 Program.acpi.DeviceSet(DeviceID: AsusACPI.ScreenOverdrive, Status: overdrive, logName: "ScreenOverdrive");
 
             }

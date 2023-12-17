@@ -59,11 +59,15 @@ namespace GHelper.AutoUpdate
                     for (int i = 0; i < assets.GetArrayLength(); i++)
                     {
                         if (assets[index: i].GetProperty(propertyName: "browser_download_url").ToString().Contains(value: ".zip"))
-                            url = assets[index: i].GetProperty(propertyName: "browser_download_url").ToString();
+                        {
+	                        url = assets[index: i].GetProperty(propertyName: "browser_download_url").ToString();
+                        }
                     }
 
                     if (url is null)
-                        url = assets[index: 0].GetProperty(propertyName: "browser_download_url").ToString();
+                    {
+	                    url = assets[index: 0].GetProperty(propertyName: "browser_download_url").ToString();
+                    }
 
                     var gitVersion = new Version(version: tag);
                     var appVersion = new Version(version: Assembly.GetExecutingAssembly().GetName().Version.ToString());

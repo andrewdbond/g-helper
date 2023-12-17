@@ -672,7 +672,9 @@ namespace GHelper
         private void VisualizeMouseSettings()
         {
             if (mouse.Profile < comboProfile.Items.Count)
-                comboProfile.SelectedIndex = mouse.Profile;
+            {
+	            this.comboProfile.SelectedIndex = this.mouse.Profile;
+            }
 
             if (mouse.HasRGB())
             {
@@ -829,9 +831,13 @@ namespace GHelper
             }
 
             if (ls.RandomColor && mouse.SupportsRandomColor(lightingMode: ls.LightingMode))
-                pictureBoxLightingColor.BackColor = Color.Transparent;
+            {
+	            this.pictureBoxLightingColor.BackColor = Color.Transparent;
+            }
             else
-                pictureBoxLightingColor.BackColor = ls.RGBColor;
+            {
+	            this.pictureBoxLightingColor.BackColor = ls.RGBColor;
+            }
 
             //0x09 => 0
             //0x07 => 1

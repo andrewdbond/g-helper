@@ -51,9 +51,13 @@ namespace GHelper.Input
             int kb_timeout;
 
             if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online)
-                kb_timeout = AppConfig.Get(name: "keyboard_ac_timeout", empty: 0);
+            {
+	            kb_timeout = AppConfig.Get(name: "keyboard_ac_timeout", empty: 0);
+            }
             else
-                kb_timeout = AppConfig.Get(name: "keyboard_timeout", empty: 60);
+            {
+	            kb_timeout = AppConfig.Get(name: "keyboard_timeout", empty: 60);
+            }
 
             if (kb_timeout == 0) return;
 
@@ -79,7 +83,9 @@ namespace GHelper.Input
             Program.acpi.DeviceInit();
 
             if (!OptimizationService.IsRunning())
-                listener = new KeyboardListener(KeyHandler: HandleEvent);
+            {
+	            this.listener = new KeyboardListener(KeyHandler: HandleEvent);
+            }
             else
                 Logger.WriteLine(logMessage: "Optimization service is running");
 
@@ -102,8 +108,15 @@ namespace GHelper.Input
             hook.UnregisterAll();
 
             // CTRL + SHIFT + F5 to cycle profiles
-            if (AppConfig.Get(name: "keybind_profile") != -1) keyProfile = (Keys)AppConfig.Get(name: "keybind_profile");
-            if (AppConfig.Get(name: "keybind_app") != -1) keyApp = (Keys)AppConfig.Get(name: "keybind_app");
+            if (AppConfig.Get(name: "keybind_profile") != -1)
+            {
+	            keyProfile = (Keys)AppConfig.Get(name: "keybind_profile");
+            }
+
+            if (AppConfig.Get(name: "keybind_app") != -1)
+            {
+	            keyApp = (Keys)AppConfig.Get(name: "keybind_app");
+            }
 
             string actionM1 = AppConfig.GetString(name: "m1");
             string actionM2 = AppConfig.GetString(name: "m2");
@@ -211,8 +224,15 @@ namespace GHelper.Input
         {
             int brightness = -1;
 
-            if (isTUF) brightness = ScreenBrightness.Get();
-            if (AppConfig.SwappedBrightness()) delta = -delta;
+            if (isTUF)
+            {
+	            brightness = ScreenBrightness.Get();
+            }
+
+            if (AppConfig.SwappedBrightness())
+            {
+	            delta = -delta;
+            }
 
             Program.acpi.DeviceSet(DeviceID: AsusACPI.UniversalControl, Status: delta > 0 ? AsusACPI.Brightness_Up : AsusACPI.Brightness_Down, logName: "Brightness");
 
@@ -400,17 +420,34 @@ namespace GHelper.Input
             if (action is null || action.Length <= 1)
             {
                 if (name == "m4")
-                    action = "ghelper";
+                {
+	                action = "ghelper";
+                }
+
                 if (name == "fnf4")
-                    action = "aura";
+                {
+	                action = "aura";
+                }
+
                 if (name == "fnf5")
-                    action = "performance";
+                {
+	                action = "performance";
+                }
+
                 if (name == "m3" && !OptimizationService.IsRunning())
-                    action = "micmute";
+                {
+	                action = "micmute";
+                }
+
                 if (name == "fnc")
-                    action = "fnlock";
+                {
+	                action = "fnlock";
+                }
+
                 if (name == "fne")
-                    action = "calculator";
+                {
+	                action = "calculator";
+                }
             }
 
             switch (action)
@@ -697,9 +734,13 @@ namespace GHelper.Input
             int backlight = onBattery ? backlight_battery : backlight_power;
 
             if (delta >= 4)
-                backlight = ++backlight % 4;
+            {
+	            backlight = ++backlight % 4;
+            }
             else
-                backlight = Math.Max(val1: Math.Min(val1: 3, val2: backlight + delta), val2: 0);
+            {
+	            backlight = Math.Max(val1: Math.Min(val1: 3, val2: backlight + delta), val2: 0);
+            }
 
             if (onBattery)
                 AppConfig.Set(name: "keyboard_brightness_ac", value: backlight);
@@ -735,10 +776,18 @@ namespace GHelper.Input
 
             if (delta == 100)
             {
-                if (brightness < 0) brightness = 100;
-                else if (brightness >= 100) brightness = 0;
-                else brightness = -10;
-
+                if (brightness < 0)
+                {
+	                brightness = 100;
+                }
+                else if (brightness >= 100)
+                {
+	                brightness = 0;
+                }
+                else
+                {
+	                brightness = -10;
+                }
             }
             else
             {
@@ -755,9 +804,18 @@ namespace GHelper.Input
 
             string toast;
 
-            if (brightness < 0) toast = "Off";
-            else if (brightness == 0) toast = "Hidden";
-            else toast = brightness.ToString() + "%";
+            if (brightness < 0)
+            {
+	            toast = "Off";
+            }
+            else if (brightness == 0)
+            {
+	            toast = "Hidden";
+            }
+            else
+            {
+	            toast = brightness.ToString() + "%";
+            }
 
             Program.toast.RunToast(text: $"Screen Pad {toast}", icon: delta > 0 ? ToastIcon.BrightnessUp : ToastIcon.BrightnessDown);
 

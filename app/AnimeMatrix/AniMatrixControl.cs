@@ -54,8 +54,15 @@ namespace GHelper.AnimeMatrix
 
             bool auto = AppConfig.Is(name: "matrix_auto");
 
-            if (brightness < 0) brightness = 0;
-            if (running < 0) running = 0;
+            if (brightness < 0)
+            {
+	            brightness = 0;
+            }
+
+            if (running < 0)
+            {
+	            running = 0;
+            }
 
             BuiltInAnimation animation = new BuiltInAnimation(
                 running: (BuiltInAnimation.Running)running,
@@ -212,17 +219,23 @@ namespace GHelper.AnimeMatrix
             if (bytesPerSamplePerChannel == 2 && AudioDevice.WaveFormat.Encoding == WaveFormatEncoding.Pcm)
             {
                 for (int i = 0; i < bufferSampleCount; i++)
-                    AudioValues[i] = BitConverter.ToInt16(value: e.Buffer, startIndex: i * bytesPerSample);
+                {
+	                this.AudioValues[i] = BitConverter.ToInt16(value: e.Buffer, startIndex: i * bytesPerSample);
+                }
             }
             else if (bytesPerSamplePerChannel == 4 && AudioDevice.WaveFormat.Encoding == WaveFormatEncoding.Pcm)
             {
                 for (int i = 0; i < bufferSampleCount; i++)
-                    AudioValues[i] = BitConverter.ToInt32(value: e.Buffer, startIndex: i * bytesPerSample);
+                {
+	                this.AudioValues[i] = BitConverter.ToInt32(value: e.Buffer, startIndex: i * bytesPerSample);
+                }
             }
             else if (bytesPerSamplePerChannel == 4 && AudioDevice.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
             {
                 for (int i = 0; i < bufferSampleCount; i++)
-                    AudioValues[i] = BitConverter.ToSingle(value: e.Buffer, startIndex: i * bytesPerSample);
+                {
+	                this.AudioValues[i] = BitConverter.ToSingle(value: e.Buffer, startIndex: i * bytesPerSample);
+                }
             }
 
             double[] paddedAudio = FftSharp.Pad.ZeroPad(input: AudioValues);
@@ -262,7 +275,10 @@ namespace GHelper.AnimeMatrix
             for (int i = 0; i < size; i++)
             {
                 bars[i] = Math.Sqrt(d: audio[i] * 10000);
-                if (bars[i] > max) max = bars[i];
+                if (bars[i] > max)
+                {
+	                max = bars[i];
+                }
             }
 
             maxes.Add(item: max);

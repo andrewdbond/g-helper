@@ -148,7 +148,10 @@ public class NvidiaGpuControl : IGpuControl
     public int SetMaxGPUClock(int clock)
     {
 
-        if (clock < MinClockLimit || clock >= MaxClockLimit) clock = 0;
+        if (clock < MinClockLimit || clock >= MaxClockLimit)
+        {
+	        clock = 0;
+        }
 
         int _clockLimit = GetMaxGPUCLock();
 

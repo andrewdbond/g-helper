@@ -108,18 +108,28 @@ namespace GHelper.Helpers
                 var value = max;
 
                 if (max != 0)
-                    saturation = delta / max;
+                {
+	                saturation = delta / max;
+                }
 
                 if (delta == 0)
-                    hue = 0;
+                {
+	                hue = 0;
+                }
                 else
                 {
                     if (red == max)
-                        hue = (green - blue) / delta + (green < blue ? 6 : 0);
+                    {
+	                    hue = (green - blue) / delta + (green < blue ? 6 : 0);
+                    }
                     else if (green == max)
-                        hue = 2 + (blue - red) / delta;
+                    {
+	                    hue = 2 + (blue - red) / delta;
+                    }
                     else
-                        hue = 4 + (red - green) / delta;
+                    {
+	                    hue = 4 + (red - green) / delta;
+                    }
 
                     hue /= 6;
                 }

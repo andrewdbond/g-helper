@@ -782,7 +782,9 @@ namespace GHelper.Peripherals.Mouse
             {
                 AngleSnapping = ParseAngleSnapping(packet: response);
                 if (HasAngleTuning())
-                    AngleAdjustmentDegrees = ParseAngleAdjustment(packet: response);
+                {
+	                this.AngleAdjustmentDegrees = this.ParseAngleAdjustment(packet: response);
+                }
 
                 Logger.WriteLine(logMessage: GetDisplayName() + ": Angle Snapping enabled: " + AngleSnapping + ", Angle Adjustment: " + AngleAdjustmentDegrees + "°");
             }

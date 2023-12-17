@@ -49,16 +49,25 @@ namespace GHelper
         {
 
             string action = "";
-            if (args.Length > 0) action = args[0];
+            if (args.Length > 0)
+            {
+	            action = args[0];
+            }
 
             string language = AppConfig.GetString(name: "language");
 
             if (language != null && language.Length > 0)
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(name: language);
+            {
+	            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(name: language);
+            }
             else
             {
                 var culture = CultureInfo.CurrentUICulture;
-                if (culture.ToString() == "kr") culture = CultureInfo.GetCultureInfo(name: "ko");
+                if (culture.ToString() == "kr")
+                {
+	                culture = CultureInfo.GetCultureInfo(name: "ko");
+                }
+
                 Thread.CurrentThread.CurrentUICulture = culture;
             }
 

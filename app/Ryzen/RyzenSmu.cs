@@ -156,18 +156,23 @@ namespace Ryzen
             uint status = 0;
 
             if (argsLength > cmdArgs.Length)
-                argsLength = cmdArgs.Length;
+            {
+	            argsLength = cmdArgs.Length;
+            }
 
             for (int i = 0; i < argsLength; ++i)
-                cmdArgs[i] = args[i];
+            {
+	            cmdArgs[i] = args[i];
+            }
 
             if (amdSmuMutex.WaitOne(millisecondsTimeout: 5000))
             {
                 // Clear response register
                 bool temp;
                 do
-                    temp = SmuWriteReg(addr: SMU_ADDR_RSP, data: 0);
-                while (!temp && --timeout > 0);
+                {
+	                temp = this.SmuWriteReg(addr: SMU_ADDR_RSP, data: 0);
+                } while (!temp && --timeout > 0);
 
                 if (timeout == 0)
                 {
@@ -210,10 +215,14 @@ namespace Ryzen
             uint data = 0;
 
             do
-                res = SmuReadReg(addr: SMU_ADDR_RSP, data: ref data);
-            while ((!res || data != 1) && --timeout > 0);
+            {
+	            res = this.SmuReadReg(addr: SMU_ADDR_RSP, data: ref data);
+            } while ((!res || data != 1) && --timeout > 0);
 
-            if (timeout == 0 || data != 1) res = false;
+            if (timeout == 0 || data != 1)
+            {
+	            res = false;
+            }
 
             return res;
         }

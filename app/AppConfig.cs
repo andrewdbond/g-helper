@@ -104,7 +104,11 @@ public static class AppConfig
     {
         string model = GetModel();
         int trim = model.LastIndexOf(value: "_");
-        if (trim > 0) model = model.Substring(startIndex: 0, length: trim);
+        if (trim > 0)
+        {
+	        model = model.Substring(startIndex: 0, length: trim);
+        }
+
         return model;
     }
 
@@ -220,7 +224,9 @@ public static class AppConfig
         byte[] curve = { };
 
         if (curveString is not null)
-            curve = StringToBytes(str: curveString);
+        {
+	        curve = StringToBytes(str: curveString);
+        }
 
         return curve;
     }
@@ -236,7 +242,11 @@ public static class AppConfig
     {
         String[] arr = str.Split(separator: '-');
         byte[] array = new byte[arr.Length];
-        for (int i = 0; i < arr.Length; i++) array[i] = Convert.ToByte(value: arr[i], fromBase: 16);
+        for (int i = 0; i < arr.Length; i++)
+        {
+	        array[i] = Convert.ToByte(value: arr[i], fromBase: 16);
+        }
+
         return array;
     }
 
@@ -249,21 +259,36 @@ public static class AppConfig
         {
             case 1:
                 if (device == AsusFan.GPU)
-                    curve = StringToBytes(str: "14-3F-44-48-4C-50-54-62-16-1F-26-2D-39-47-55-5F");
+                {
+	                curve = StringToBytes(str: "14-3F-44-48-4C-50-54-62-16-1F-26-2D-39-47-55-5F");
+                }
                 else
-                    curve = StringToBytes(str: "14-3F-44-48-4C-50-54-62-11-1A-22-29-34-43-51-5A");
+                {
+	                curve = StringToBytes(str: "14-3F-44-48-4C-50-54-62-11-1A-22-29-34-43-51-5A");
+                }
+
                 break;
             case 2:
                 if (device == AsusFan.GPU)
-                    curve = StringToBytes(str: "3C-41-42-46-47-4B-4C-62-08-11-11-1D-1D-26-26-2D");
+                {
+	                curve = StringToBytes(str: "3C-41-42-46-47-4B-4C-62-08-11-11-1D-1D-26-26-2D");
+                }
                 else
-                    curve = StringToBytes(str: "3C-41-42-46-47-4B-4C-62-03-0C-0C-16-16-22-22-29");
+                {
+	                curve = StringToBytes(str: "3C-41-42-46-47-4B-4C-62-03-0C-0C-16-16-22-22-29");
+                }
+
                 break;
             default:
                 if (device == AsusFan.GPU)
-                    curve = StringToBytes(str: "3A-3D-40-44-48-4D-51-62-0C-16-1D-1F-26-2D-34-4A");
+                {
+	                curve = StringToBytes(str: "3A-3D-40-44-48-4D-51-62-0C-16-1D-1F-26-2D-34-4A");
+                }
                 else
-                    curve = StringToBytes(str: "3A-3D-40-44-48-4D-51-62-08-11-16-1A-22-29-30-45");
+                {
+	                curve = StringToBytes(str: "3A-3D-40-44-48-4D-51-62-08-11-16-1A-22-29-30-45");
+                }
+
                 break;
         }
 

@@ -142,11 +142,21 @@ namespace GHelper.Fan
                 }
             }
 
-            if (same) sameCount++;
-            else sameCount = 0;
+            if (same)
+            {
+	            sameCount++;
+            }
+            else
+            {
+	            sameCount = 0;
+            }
 
             string label = "Measuring Max Speed - CPU: " + measuredMax[(int)AsusFan.CPU] * 100 + ", GPU: " + measuredMax[(int)AsusFan.GPU] * 100;
-            if (measuredMax[(int)AsusFan.Mid] > 10) label = label + ", Mid: " + measuredMax[(int)AsusFan.Mid] * 100;
+            if (measuredMax[(int)AsusFan.Mid] > 10)
+            {
+	            label = label + ", Mid: " + measuredMax[(int)AsusFan.Mid] * 100;
+            }
+
             label = label + " (" + sameCount + "s)";
 
             fansForm.LabelFansResult(text: label);
@@ -173,10 +183,14 @@ namespace GHelper.Fan
             string label = "Measured - CPU: " + AppConfig.Get(name: "fan_max_" + (int)AsusFan.CPU) * 100;
 
             if (AppConfig.Get(name: "fan_max_" + (int)AsusFan.GPU) > 0)
-                label = label + ", GPU: " + AppConfig.Get(name: "fan_max_" + (int)AsusFan.GPU) * 100;
+            {
+	            label = label + ", GPU: " + AppConfig.Get(name: "fan_max_" + (int)AsusFan.GPU) * 100;
+            }
 
             if (AppConfig.Get(name: "fan_max_" + (int)AsusFan.Mid) > 0)
-                label = label + ", Mid: " + AppConfig.Get(name: "fan_max_" + (int)AsusFan.Mid) * 100;
+            {
+	            label = label + ", Mid: " + AppConfig.Get(name: "fan_max_" + (int)AsusFan.Mid) * 100;
+            }
 
             fansForm.LabelFansResult(text: label);
             fansForm.InitAxis();

@@ -136,7 +136,10 @@ namespace GHelper.USB
                 if (device is null) return;
                 Logger.WriteLine(logMessage: $"USB Version: {device.ReleaseNumberBcd} {device.ReleaseNumber}");
 
-                if (device.ReleaseNumberBcd >= 22 && device.ReleaseNumberBcd <= 25) isSingleColor = true;
+                if (device.ReleaseNumberBcd >= 22 && device.ReleaseNumberBcd <= 25)
+                {
+	                isSingleColor = true;
+                }
             }
         }
 
@@ -280,39 +283,145 @@ namespace GHelper.USB
         {
             byte keyb = 0, bar = 0, lid = 0, rear = 0;
 
-            if (flags.BootLogo) keyb |= 1 << 0;
-            if (flags.BootKeyb) keyb |= 1 << 1;
-            if (flags.AwakeLogo) keyb |= 1 << 2;
-            if (flags.AwakeKeyb) keyb |= 1 << 3;
-            if (flags.SleepLogo) keyb |= 1 << 4;
-            if (flags.SleepKeyb) keyb |= 1 << 5;
-            if (flags.ShutdownLogo) keyb |= 1 << 6;
-            if (flags.ShutdownKeyb) keyb |= 1 << 7;
+            if (flags.BootLogo)
+            {
+	            keyb |= 1 << 0;
+            }
 
-            if (flags.BootBar) bar |= 1 << 1;
-            if (flags.AwakeBar) bar |= 1 << 2;
-            if (flags.SleepBar) bar |= 1 << 3;
-            if (flags.ShutdownBar) bar |= 1 << 4;
+            if (flags.BootKeyb)
+            {
+	            keyb |= 1 << 1;
+            }
 
-            if (flags.BootLid) lid |= 1 << 0;
-            if (flags.AwakeLid) lid |= 1 << 1;
-            if (flags.SleepLid) lid |= 1 << 2;
-            if (flags.ShutdownLid) lid |= 1 << 3;
+            if (flags.AwakeLogo)
+            {
+	            keyb |= 1 << 2;
+            }
 
-            if (flags.BootLid) lid |= 1 << 4;
-            if (flags.AwakeLid) lid |= 1 << 5;
-            if (flags.SleepLid) lid |= 1 << 6;
-            if (flags.ShutdownLid) lid |= 1 << 7;
+            if (flags.AwakeKeyb)
+            {
+	            keyb |= 1 << 3;
+            }
 
-            if (flags.BootRear) rear |= 1 << 0;
-            if (flags.AwakeRear) rear |= 1 << 1;
-            if (flags.SleepRear) rear |= 1 << 2;
-            if (flags.ShutdownRear) rear |= 1 << 3;
+            if (flags.SleepLogo)
+            {
+	            keyb |= 1 << 4;
+            }
 
-            if (flags.BootRear) rear |= 1 << 4;
-            if (flags.AwakeRear) rear |= 1 << 5;
-            if (flags.SleepRear) rear |= 1 << 6;
-            if (flags.ShutdownRear) rear |= 1 << 7;
+            if (flags.SleepKeyb)
+            {
+	            keyb |= 1 << 5;
+            }
+
+            if (flags.ShutdownLogo)
+            {
+	            keyb |= 1 << 6;
+            }
+
+            if (flags.ShutdownKeyb)
+            {
+	            keyb |= 1 << 7;
+            }
+
+            if (flags.BootBar)
+            {
+	            bar |= 1 << 1;
+            }
+
+            if (flags.AwakeBar)
+            {
+	            bar |= 1 << 2;
+            }
+
+            if (flags.SleepBar)
+            {
+	            bar |= 1 << 3;
+            }
+
+            if (flags.ShutdownBar)
+            {
+	            bar |= 1 << 4;
+            }
+
+            if (flags.BootLid)
+            {
+	            lid |= 1 << 0;
+            }
+
+            if (flags.AwakeLid)
+            {
+	            lid |= 1 << 1;
+            }
+
+            if (flags.SleepLid)
+            {
+	            lid |= 1 << 2;
+            }
+
+            if (flags.ShutdownLid)
+            {
+	            lid |= 1 << 3;
+            }
+
+            if (flags.BootLid)
+            {
+	            lid |= 1 << 4;
+            }
+
+            if (flags.AwakeLid)
+            {
+	            lid |= 1 << 5;
+            }
+
+            if (flags.SleepLid)
+            {
+	            lid |= 1 << 6;
+            }
+
+            if (flags.ShutdownLid)
+            {
+	            lid |= 1 << 7;
+            }
+
+            if (flags.BootRear)
+            {
+	            rear |= 1 << 0;
+            }
+
+            if (flags.AwakeRear)
+            {
+	            rear |= 1 << 1;
+            }
+
+            if (flags.SleepRear)
+            {
+	            rear |= 1 << 2;
+            }
+
+            if (flags.ShutdownRear)
+            {
+	            rear |= 1 << 3;
+            }
+
+            if (flags.BootRear)
+            {
+	            rear |= 1 << 4;
+            }
+
+            if (flags.AwakeRear)
+            {
+	            rear |= 1 << 5;
+            }
+
+            if (flags.SleepRear)
+            {
+	            rear |= 1 << 6;
+            }
+
+            if (flags.ShutdownRear)
+            {
+	            rear |= 1 << 7;
+            }
 
             return new byte[] { 0x5d, 0xbd, 0x01, keyb, bar, lid, rear, 0xFF };
         }
@@ -617,10 +726,22 @@ namespace GHelper.USB
 
                 //Debug.WriteLine(cpuTemp);
 
-                if (cpuTemp < cold) color = ColorUtils.GetWeightedAverage(color1: Color.Blue, color2: Color.Green, weight: ((float)cpuTemp - freeze) / (cold - freeze));
-                else if (cpuTemp < warm) color = ColorUtils.GetWeightedAverage(color1: Color.Green, color2: Color.Yellow, weight: ((float)cpuTemp - cold) / (warm - cold));
-                else if (cpuTemp < hot) color = ColorUtils.GetWeightedAverage(color1: Color.Yellow, color2: Color.Red, weight: ((float)cpuTemp - warm) / (hot - warm));
-                else color = Color.Red;
+                if (cpuTemp < cold)
+                {
+	                color = ColorUtils.GetWeightedAverage(color1: Color.Blue, color2: Color.Green, weight: ((float)cpuTemp - freeze) / (cold - freeze));
+                }
+                else if (cpuTemp < warm)
+                {
+	                color = ColorUtils.GetWeightedAverage(color1: Color.Green, color2: Color.Yellow, weight: ((float)cpuTemp - cold) / (warm - cold));
+                }
+                else if (cpuTemp < hot)
+                {
+	                color = ColorUtils.GetWeightedAverage(color1: Color.Yellow, color2: Color.Red, weight: ((float)cpuTemp - warm) / (hot - warm));
+                }
+                else
+                {
+	                color = Color.Red;
+                }
 
                 ApplyColor(color: color, init: init);
             }
@@ -649,7 +770,9 @@ namespace GHelper.USB
                     AmbientData.Colors[7].RGB = ColorUtils.HSV.UpSaturation(rgb: screeb_pxl.GetPixel(x: 3, y: 1)); // right bck
 
                     for (int i = 0; i < 4; i++) // keyboard
-                        AmbientData.Colors[i].RGB = ColorUtils.HSV.UpSaturation(rgb: screeb_pxl.GetPixel(x: i, y: 0));
+                    {
+	                    AmbientData.Colors[i].RGB = ColorUtils.HSV.UpSaturation(rgb: screeb_pxl.GetPixel(x: i, y: 0));
+                    }
                 }
                 else
                 {
@@ -667,7 +790,11 @@ namespace GHelper.USB
 
                 for (int i = 0; i < zones; i++)
                 {
-                    if (AmbientData.result[i].ToArgb() != AmbientData.Colors[i].RGB.ToArgb()) is_fresh = true;
+                    if (AmbientData.result[i].ToArgb() != AmbientData.Colors[i].RGB.ToArgb())
+                    {
+	                    is_fresh = true;
+                    }
+
                     AmbientData.result[i] = AmbientData.Colors[i].RGB;
                 }
 
@@ -781,7 +908,9 @@ namespace GHelper.USB
                         {
                             var pixelColor = bitMap.GetPixel(x: x, y: y).ToArgb();
                             if (colorIncidence.Keys.Contains(item: pixelColor))
-                                colorIncidence[key: pixelColor]++;
+                            {
+	                            colorIncidence[key: pixelColor]++;
+                            }
                             else
                                 colorIncidence.Add(key: pixelColor, value: 1);
                         }

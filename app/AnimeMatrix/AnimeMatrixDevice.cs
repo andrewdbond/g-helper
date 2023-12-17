@@ -173,7 +173,11 @@ namespace Starlight.AnimeMatrix
 
         public void PresentNextFrame()
         {
-            if (frameIndex >= frames.Count) frameIndex = 0;
+            if (frameIndex >= frames.Count)
+            {
+	            this.frameIndex = 0;
+            }
+
             _displayBuffer = frames[index: frameIndex];
             Present();
             frameIndex++;
@@ -282,7 +286,9 @@ namespace Starlight.AnimeMatrix
         {
             int ret = LedStart;
             for (var i = 0; i < y; i++)
-                ret += Pitch(y: i);
+            {
+	            ret += this.Pitch(y: i);
+            }
 
             return ret;
         }
@@ -336,7 +342,9 @@ namespace Starlight.AnimeMatrix
         public void Clear(bool present = false)
         {
             for (var i = 0; i < _displayBuffer.Length; i++)
-                _displayBuffer[i] = 0;
+            {
+	            this._displayBuffer[i] = 0;
+            }
 
             if (present)
                 Present();

@@ -58,9 +58,15 @@ namespace GHelper.Mode
         {
 
             int oldMode = Modes.GetCurrent();
-            if (mode < 0) mode = oldMode;
+            if (mode < 0)
+            {
+	            mode = oldMode;
+            }
 
-            if (!Modes.Exists(mode: mode)) mode = 0;
+            if (!Modes.Exists(mode: mode))
+            {
+	            mode = 0;
+            }
 
             customFans = false;
             customPower = 0;
@@ -76,8 +82,15 @@ namespace GHelper.Mode
             if (status != 1)
             {
                 int vivoMode = Modes.GetBase(mode: mode);
-                if (vivoMode == 1) vivoMode = 2;
-                else if (vivoMode == 2) vivoMode = 1;
+                if (vivoMode == 1)
+                {
+	                vivoMode = 2;
+                }
+                else if (vivoMode == 2)
+                {
+	                vivoMode = 1;
+                }
+
                 Program.acpi.DeviceSet(DeviceID: AsusACPI.VivoBookMode, Status: vivoMode, logName: "VivoMode");
             }
 
@@ -246,7 +259,10 @@ namespace GHelper.Mode
             int limit_slow = AppConfig.GetMode(name: "limit_slow");
             int limit_fast = AppConfig.GetMode(name: "limit_fast");
 
-            if (limit_slow < 0 || allAMD) limit_slow = limit_total;
+            if (limit_slow < 0 || allAMD)
+            {
+	            limit_slow = limit_total;
+            }
 
             if (limit_total > AsusACPI.MaxTotal) return;
             if (limit_total < AsusACPI.MinTotal) return;
@@ -387,7 +403,10 @@ namespace GHelper.Mode
             {
                 var uvResult = SendCommand.set_coall(value: cpuUV);
                 Logger.WriteLine(logMessage: $"UV: {cpuUV} {uvResult}");
-                if (uvResult == Smu.Status.OK) _cpuUV = cpuUV;
+                if (uvResult == Smu.Status.OK)
+                {
+	                this._cpuUV = cpuUV;
+                }
             }
         }
 
@@ -399,7 +418,10 @@ namespace GHelper.Mode
             {
                 var iGPUResult = SendCommand.set_cogfx(value: igpuUV);
                 Logger.WriteLine(logMessage: $"iGPU UV: {igpuUV} {iGPUResult}");
-                if (iGPUResult == Smu.Status.OK) _igpuUV = igpuUV;
+                if (iGPUResult == Smu.Status.OK)
+                {
+	                this._igpuUV = igpuUV;
+                }
             }
         }
 

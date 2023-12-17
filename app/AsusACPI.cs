@@ -241,7 +241,11 @@ public class AsusACPI
             Logger.WriteLine(logMessage: $"Can't connect to ACPI: {ex.Message}");
         }
 
-        if (AppConfig.IsAdvantageEdition()) MaxTotal = 250;
+        if (AppConfig.IsAdvantageEdition())
+        {
+	        MaxTotal = 250;
+        }
+
         if (AppConfig.IsX13())
         {
             MaxTotal = 75;
@@ -387,7 +391,10 @@ public class AsusACPI
         if (fan < 0)
         {
             fan += 65536;
-            if (fan <= 0 || fan > 100) fan = -1;
+            if (fan <= 0 || fan > 100)
+            {
+	            fan = -1;
+            }
         }
 
         return fan;
@@ -433,7 +440,10 @@ public class AsusACPI
 
         // it seems to be a bug, when some old model's bios can go nuts if fan is set to 100% 
 
-        for (int i = 8; i < curve.Length; i++) curve[i] = (byte)(Math.Max(val1: (byte)0, val2: Math.Min(val1: (byte)100, val2: curve[i])) * fanScale / 100);
+        for (int i = 8; i < curve.Length; i++)
+        {
+	        curve[i] = (byte)(Math.Max(val1: (byte)0, val2: Math.Min(val1: (byte)100, val2: curve[i])) * fanScale / 100);
+        }
 
         switch (device)
         {
@@ -494,7 +504,11 @@ public class AsusACPI
 
         for (int i = 0; i < 8; i++)
         {
-            if (curve[i] == old) curve[i]++; // preventing 2 points in same spot from default asus profiles
+            if (curve[i] == old)
+            {
+	            curve[i]++; // preventing 2 points in same spot from default asus profiles
+            }
+
             points[key: curve[i]] = curve[i + 8];
             old = curve[i];
         }
@@ -659,10 +673,25 @@ public class AsusACPI
     {
         int state = 0xbd;
 
-        if (boot) state = state | ASUS_WMI_KEYBOARD_POWER_BOOT;
-        if (awake) state = state | ASUS_WMI_KEYBOARD_POWER_AWAKE;
-        if (sleep) state = state | ASUS_WMI_KEYBOARD_POWER_SLEEP;
-        if (shutdown) state = state | ASUS_WMI_KEYBOARD_POWER_SHUTDOWN;
+        if (boot)
+        {
+	        state = state | ASUS_WMI_KEYBOARD_POWER_BOOT;
+        }
+
+        if (awake)
+        {
+	        state = state | ASUS_WMI_KEYBOARD_POWER_AWAKE;
+        }
+
+        if (sleep)
+        {
+	        state = state | ASUS_WMI_KEYBOARD_POWER_SLEEP;
+        }
+
+        if (shutdown)
+        {
+	        state = state | ASUS_WMI_KEYBOARD_POWER_SHUTDOWN;
+        }
 
         state = state | 0x01 << 8;
 

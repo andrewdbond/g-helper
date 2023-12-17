@@ -31,7 +31,11 @@
         public static void SetBatteryChargeLimit(int limit = -1)
         {
 
-            if (limit < 0) limit = AppConfig.Get(name: "charge_limit");
+            if (limit < 0)
+            {
+	            limit = AppConfig.Get(name: "charge_limit");
+            }
+
             if (limit < 40 || limit > 100) return;
 
             Program.acpi.DeviceSet(DeviceID: AsusACPI.BatteryLimit, Status: limit, logName: "BatteryLimit");

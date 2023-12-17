@@ -25,7 +25,10 @@ namespace GHelper.Gpu
             int eco = Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUEco);
             int mux = Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUMux);
 
-            if (mux < 0) mux = Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUMuxVivo);
+            if (mux < 0)
+            {
+	            mux = Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUMuxVivo);
+            }
 
             Logger.WriteLine(logMessage: "Eco flag : " + eco);
             Logger.WriteLine(logMessage: "Mux flag : " + mux);
@@ -39,14 +42,22 @@ namespace GHelper.Gpu
             else
             {
                 if (eco == 1)
-                    gpuMode = AsusACPI.GPUModeEco;
+                {
+	                gpuMode = AsusACPI.GPUModeEco;
+                }
                 else
-                    gpuMode = AsusACPI.GPUModeStandard;
+                {
+	                gpuMode = AsusACPI.GPUModeStandard;
+                }
 
                 // GPU mode not supported
                 if (eco < 0 && mux < 0)
                 {
-                    if (gpuExists is null) gpuExists = Program.acpi.GetFan(device: AsusFan.GPU) >= 0;
+                    if (gpuExists is null)
+                    {
+	                    gpuExists = Program.acpi.GetFan(device: AsusFan.GPU) >= 0;
+                    }
+
                     settings.HideGPUModes(gpuExists: (bool)gpuExists);
                 }
             }

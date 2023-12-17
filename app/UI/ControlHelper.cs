@@ -33,7 +33,9 @@ public static class ControlHelper
         {
             var button = control as RButton;
             if (button != null && button.Image is not null)
-                button.Image = ResizeImage(image: button.Image);
+            {
+	            button.Image = ResizeImage(image: button.Image);
+            }
 
             /*
             var pictureBox = control as PictureBox;
@@ -60,12 +62,16 @@ public static class ControlHelper
                 button.FlatAppearance.BorderColor = RForm.borderMain;
 
                 if (button.Image is not null)
-                    button.Image = AdjustImage(image: button.Image);
+                {
+	                button.Image = AdjustImage(image: button.Image);
+                }
             }
 
             var pictureBox = control as PictureBox;
             if (pictureBox != null && pictureBox.BackgroundImage is not null)
-                pictureBox.BackgroundImage = AdjustImage(image: pictureBox.BackgroundImage);
+            {
+	            pictureBox.BackgroundImage = AdjustImage(image: pictureBox.BackgroundImage);
+            }
 
 
             var combo = control as RComboBox;

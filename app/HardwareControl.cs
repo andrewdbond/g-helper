@@ -72,10 +72,13 @@ public static class HardwareControl
                 decimal dischargeRate = Convert.ToDecimal(value: obj[propertyName: "DischargeRate"]);
                 
                 if (chargeRate > 0)
-                    batteryRate = chargeRate / 1000;
+                {
+	                batteryRate = chargeRate / 1000;
+                }
                 else
-                    batteryRate = -dischargeRate / 1000;
-
+                {
+	                batteryRate = -dischargeRate / 1000;
+                }
             }
 
         }
@@ -204,7 +207,9 @@ public static class HardwareControl
         }
 
         if (gpuTemp is null || gpuTemp < 0)
-            gpuTemp = Program.acpi.DeviceGet(DeviceID: AsusACPI.Temp_GPU);
+        {
+	        gpuTemp = Program.acpi.DeviceGet(DeviceID: AsusACPI.Temp_GPU);
+        }
 
         ReadFullChargeCapacity();
         GetBatteryStatus();

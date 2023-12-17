@@ -107,7 +107,11 @@ public static class AsusHid
     public static void WriteAura(byte[] data)
     {
 
-        if (auraStream == null) auraStream = FindHidStream(reportId: AURA_ID);
+        if (auraStream == null)
+        {
+	        auraStream = FindHidStream(reportId: AURA_ID);
+        }
+
         if (auraStream == null) return;
 
         try

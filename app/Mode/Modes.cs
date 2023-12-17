@@ -141,13 +141,21 @@
             if (back)
             {
                 index--;
-                if (index < 0) index = modes.Count - 1;
+                if (index < 0)
+                {
+	                index = modes.Count - 1;
+                }
+
                 return modes[index: index];
             }
             else
             {
                 index++;
-                if (index > modes.Count - 1) index = 0;
+                if (index > modes.Count - 1)
+                {
+	                index = 0;
+                }
+
                 return modes[index: index];
             }
         }

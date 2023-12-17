@@ -108,7 +108,9 @@ namespace GHelper
                     foreach (ManagementObject obj in objCollection)
                     {
                         if (obj[propertyName: "DeviceID"] is not null && obj[propertyName: "DriverVersion"] is not null)
-                            list[key: obj[propertyName: "DeviceID"].ToString()] = obj[propertyName: "DriverVersion"].ToString();
+                        {
+	                        list[key: obj[propertyName: "DeviceID"].ToString()] = obj[propertyName: "DriverVersion"].ToString();
+                        }
                     }
 
                     return list;
@@ -164,8 +166,10 @@ namespace GHelper
                         label.ForeColor = colorTurbo;
                     }
 
-                    if (newer == DRIVER_NOT_FOUND) label.ForeColor = Color.Gray;
-
+                    if (newer == DRIVER_NOT_FOUND)
+                    {
+	                    label.ForeColor = Color.Gray;
+                    }
                 });
             }
         }
@@ -237,7 +241,10 @@ namespace GHelper
 
 
                     Dictionary<string, string> devices = new();
-                    if (type == 0) devices = GetDeviceVersions();
+                    if (type == 0)
+                    {
+	                    devices = this.GetDeviceVersions();
+                    }
 
                     //Debug.WriteLine(biosVersion);
 
@@ -259,7 +266,9 @@ namespace GHelper
                             }
 
                         if (type == 1)
-                            newer = Int32.Parse(s: driver.version) > Int32.Parse(s: bios) ? 1 : -1;
+                        {
+	                        newer = Int32.Parse(s: driver.version) > Int32.Parse(s: bios) ? 1 : -1;
+                        }
 
                         VisualiseNewDriver(position: count, newer: newer, table: table);
 

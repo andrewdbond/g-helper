@@ -213,7 +213,10 @@ namespace GHelper
 
             ToggleNavigation(index: 0);
 
-            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.DevsCPUFanCurve) < 0) buttonCalibrate.Visible = false;
+            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.DevsCPUFanCurve) < 0)
+            {
+	            this.buttonCalibrate.Visible = false;
+            }
 
             FormClosed += Fans_FormClosed;
 
@@ -330,7 +333,10 @@ namespace GHelper
             int igpuUV = Math.Max(val1: trackUViGPU.Minimum, val2: Math.Min(val1: trackUViGPU.Maximum, val2: AppConfig.GetMode(name: "igpu_uv", empty: 0)));
 
             int temp = AppConfig.GetMode(name: "cpu_temp");
-            if (temp < RyzenControl.MinTemp || temp > RyzenControl.MaxTemp) temp = RyzenControl.MaxTemp;
+            if (temp < RyzenControl.MinTemp || temp > RyzenControl.MaxTemp)
+            {
+	            temp = RyzenControl.MaxTemp;
+            }
 
             checkApplyUV.Enabled = checkApplyUV.Checked = AppConfig.IsMode(name: "auto_uv");
 
@@ -397,7 +403,9 @@ namespace GHelper
         private void RenameToggle()
         {
             if (comboModes.DropDownStyle == ComboBoxStyle.DropDownList)
-                comboModes.DropDownStyle = ComboBoxStyle.Simple;
+            {
+	            this.comboModes.DropDownStyle = ComboBoxStyle.Simple;
+            }
             else
             {
                 var mode = Modes.GetCurrent();
@@ -495,12 +503,30 @@ namespace GHelper
                 int memory = AppConfig.GetMode(name: "gpu_memory");
                 int clock_limit = AppConfig.GetMode(name: "gpu_clock_limit");
 
-                if (gpu_boost < 0) gpu_boost = AsusACPI.MaxGPUBoost;
-                if (gpu_temp < 0) gpu_temp = AsusACPI.MaxGPUTemp;
+                if (gpu_boost < 0)
+                {
+	                gpu_boost = AsusACPI.MaxGPUBoost;
+                }
 
-                if (core == -1) core = 0;
-                if (memory == -1) memory = 0;
-                if (clock_limit == -1) clock_limit = NvidiaGpuControl.MaxClockLimit;
+                if (gpu_temp < 0)
+                {
+	                gpu_temp = AsusACPI.MaxGPUTemp;
+                }
+
+                if (core == -1)
+                {
+	                core = 0;
+                }
+
+                if (memory == -1)
+                {
+	                memory = 0;
+                }
+
+                if (clock_limit == -1)
+                {
+	                clock_limit = NvidiaGpuControl.MaxClockLimit;
+                }
 
                 if (nvControl.GetClocks(core: out int current_core, memory: out int current_memory))
                 {
@@ -510,8 +536,14 @@ namespace GHelper
 
                 int _clockLimit = nvControl.GetMaxGPUCLock();
 
-                if (_clockLimit == 0) clock_limit = NvidiaGpuControl.MaxClockLimit;
-                else if (_clockLimit > 0) clock_limit = _clockLimit;
+                if (_clockLimit == 0)
+                {
+	                clock_limit = NvidiaGpuControl.MaxClockLimit;
+                }
+                else if (_clockLimit > 0)
+                {
+	                clock_limit = _clockLimit;
+                }
 
                 try
                 {
@@ -554,9 +586,13 @@ namespace GHelper
             labelGPUTemp.Text = $"{trackGPUTemp.Value}°C";
 
             if (trackGPUClockLimit.Value >= NvidiaGpuControl.MaxClockLimit)
-                labelGPUClockLimit.Text = "Default";
+            {
+	            this.labelGPUClockLimit.Text = "Default";
+            }
             else
-                labelGPUClockLimit.Text = $"{trackGPUClockLimit.Value} MHz";
+            {
+	            this.labelGPUClockLimit.Text = $"{this.trackGPUClockLimit.Value} MHz";
+            }
         }
 
         private void trackGPUClockLimit_Scroll(object? sender, EventArgs e)
@@ -659,8 +695,9 @@ namespace GHelper
             SetAxis(chart: chart, device: device);
 
             if (chart.Legends.Count > 0)
-                chart.Legends[index: 0].Enabled = false;
-
+            {
+	            chart.Legends[index: 0].Enabled = false;
+            }
         }
 
         public void FormPosition()
@@ -695,18 +732,23 @@ namespace GHelper
         {
             int boost = PowerNative.GetCPUBoost();
             if (boost >= 0)
-                comboBoost.SelectedIndex = Math.Min(val1: boost, val2: comboBoost.Items.Count - 1);
+            {
+	            this.comboBoost.SelectedIndex = Math.Min(val1: boost, val2: this.comboBoost.Items.Count - 1);
+            }
 
             string powerMode = PowerNative.GetPowerMode();
             bool batterySaver = PowerNative.GetBatterySaverStatus();
 
             comboPowerMode.Enabled = !batterySaver;
 
-            if (batterySaver) 
-                comboPowerMode.SelectedIndex = 0;
+            if (batterySaver)
+            {
+	            this.comboPowerMode.SelectedIndex = 0;
+            }
             else
-                comboPowerMode.SelectedValue = powerMode;
-
+            {
+	            this.comboPowerMode.SelectedValue = powerMode;
+            }
         }
 
         private void ComboPowerMode_Changed(object? sender, EventArgs e)
@@ -849,22 +891,70 @@ namespace GHelper
                 limit_fast = AppConfig.GetMode(name: "limit_fast");
             }
 
-            if (limit_total < 0) limit_total = AsusACPI.DefaultTotal;
-            if (limit_total > AsusACPI.MaxTotal) limit_total = AsusACPI.MaxTotal;
-            if (limit_total < AsusACPI.MinTotal) limit_total = AsusACPI.MinTotal;
+            if (limit_total < 0)
+            {
+	            limit_total = AsusACPI.DefaultTotal;
+            }
 
-            if (limit_cpu < 0) limit_cpu = AsusACPI.DefaultCPU;
-            if (limit_cpu > AsusACPI.MaxCPU) limit_cpu = AsusACPI.MaxCPU;
-            if (limit_cpu < AsusACPI.MinCPU) limit_cpu = AsusACPI.MinCPU;
-            if (limit_cpu > limit_total) limit_cpu = limit_total;
+            if (limit_total > AsusACPI.MaxTotal)
+            {
+	            limit_total = AsusACPI.MaxTotal;
+            }
 
-            if (limit_slow < 0) limit_slow = limit_total;
-            if (limit_slow > AsusACPI.MaxTotal) limit_slow = AsusACPI.MaxTotal;
-            if (limit_slow < AsusACPI.MinTotal) limit_slow = AsusACPI.MinTotal;
+            if (limit_total < AsusACPI.MinTotal)
+            {
+	            limit_total = AsusACPI.MinTotal;
+            }
 
-            if (limit_fast < 0) limit_fast = AsusACPI.DefaultTotal;
-            if (limit_fast > AsusACPI.MaxTotal) limit_fast = AsusACPI.MaxTotal;
-            if (limit_fast < AsusACPI.MinTotal) limit_fast = AsusACPI.MinTotal;
+            if (limit_cpu < 0)
+            {
+	            limit_cpu = AsusACPI.DefaultCPU;
+            }
+
+            if (limit_cpu > AsusACPI.MaxCPU)
+            {
+	            limit_cpu = AsusACPI.MaxCPU;
+            }
+
+            if (limit_cpu < AsusACPI.MinCPU)
+            {
+	            limit_cpu = AsusACPI.MinCPU;
+            }
+
+            if (limit_cpu > limit_total)
+            {
+	            limit_cpu = limit_total;
+            }
+
+            if (limit_slow < 0)
+            {
+	            limit_slow = limit_total;
+            }
+
+            if (limit_slow > AsusACPI.MaxTotal)
+            {
+	            limit_slow = AsusACPI.MaxTotal;
+            }
+
+            if (limit_slow < AsusACPI.MinTotal)
+            {
+	            limit_slow = AsusACPI.MinTotal;
+            }
+
+            if (limit_fast < 0)
+            {
+	            limit_fast = AsusACPI.DefaultTotal;
+            }
+
+            if (limit_fast > AsusACPI.MaxTotal)
+            {
+	            limit_fast = AsusACPI.MaxTotal;
+            }
+
+            if (limit_fast < AsusACPI.MinTotal)
+            {
+	            limit_fast = AsusACPI.MinTotal;
+            }
 
             trackA0.Value = limit_total;
             trackA3.Value = limit_slow;
@@ -929,7 +1019,9 @@ namespace GHelper
             try
             {
                 if (chartCount > 2)
-                    Size = MinimumSize = new Size(width: Size.Width, height: (int)(ControlHelper.GetDpiScale(control: this).Value * (chartCount * 200 + 100)));
+                {
+	                this.Size = this.MinimumSize = new Size(width: this.Size.Width, height: (int)(ControlHelper.GetDpiScale(control: this).Value * (chartCount * 200 + 100)));
+                }
             }
             catch (Exception ex)
             {
@@ -964,7 +1056,9 @@ namespace GHelper
                 curve = Program.acpi.GetFanCurve(device: device, mode: Modes.GetCurrentBase());
 
                 if (AsusACPI.IsInvalidCurve(curve: curve))
-                    curve = AppConfig.GetDefaultCurve(device: device);
+                {
+	                curve = AppConfig.GetDefaultCurve(device: device);
+                }
 
                 curve = AsusACPI.FixFanCurve(curve: curve);
 
@@ -975,7 +1069,11 @@ namespace GHelper
             byte old = 0;
             for (int i = 0; i < 8; i++)
             {
-                if (curve[i] == old) curve[i]++; // preventing 2 points in same spot from default asus profiles
+                if (curve[i] == old)
+                {
+	                curve[i]++; // preventing 2 points in same spot from default asus profiles
+                }
+
                 series.Points.AddXY(xValue: curve[i], yValue: curve[i + 8]);
                 old = curve[i];
             }
@@ -1120,15 +1218,32 @@ namespace GHelper
                     dx = ax.PixelPositionToValue(position: e.X);
                     dy = ay.PixelPositionToValue(position: e.Y);
 
-                    if (dx < 20) dx = 20;
-                    if (dx > 100) dx = 100;
+                    if (dx < 20)
+                    {
+	                    dx = 20;
+                    }
 
-                    if (dy < 0) dy = 0;
-                    if (dy > fansMax) dy = fansMax;
+                    if (dx > 100)
+                    {
+	                    dx = 100;
+                    }
+
+                    if (dy < 0)
+                    {
+	                    dy = 0;
+                    }
+
+                    if (dy > fansMax)
+                    {
+	                    dy = fansMax;
+                    }
 
                     dymin = (dx - 70) * 1.2;
 
-                    if (dy < dymin) dy = dymin;
+                    if (dy < dymin)
+                    {
+	                    dy = dymin;
+                    }
 
                     if (e.Button.HasFlag(flag: MouseButtons.Left))
                     {

@@ -66,7 +66,10 @@ namespace GHelper.Helpers
             int count = 0;
             foreach (string service in services)
             {
-                if (Process.GetProcessesByName(processName: service).Count() > 0) count++;
+                if (Process.GetProcessesByName(processName: service).Count() > 0)
+                {
+	                count++;
+                }
             }
             return count;
         }

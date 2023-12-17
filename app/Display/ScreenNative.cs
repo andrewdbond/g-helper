@@ -240,12 +240,19 @@ namespace GHelper.Display
             int i = 0;
             while (0 != EnumDisplaySettingsEx(lpszDeviceName: laptopScreen, iModeNum: i, lpDevMode: ref dm))
             {
-                if (dm.dmDisplayFrequency > frequency) frequency = dm.dmDisplayFrequency;
+                if (dm.dmDisplayFrequency > frequency)
+                {
+	                frequency = dm.dmDisplayFrequency;
+                }
+
                 i++;
             }
 
             if (frequency > 0) AppConfig.Set(name: "screen_max", value: frequency);
-            else frequency = AppConfig.Get(name: "screen_max");
+            else
+            {
+	            frequency = AppConfig.Get(name: "screen_max");
+            }
 
             return frequency;
 

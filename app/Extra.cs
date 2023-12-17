@@ -87,7 +87,10 @@ namespace GHelper
             string action = AppConfig.GetString(name: name);
 
             combo.SelectedValue = (action is not null) ? action : "";
-            if (combo.SelectedValue is null) combo.SelectedValue = "";
+            if (combo.SelectedValue is null)
+            {
+	            combo.SelectedValue = "";
+            }
 
             combo.SelectedValueChanged += delegate
             {
@@ -390,7 +393,11 @@ namespace GHelper
             try
             {
                 int hibernate = PowerNative.GetHibernateAfter();
-                if (hibernate < 0 || hibernate > numericHibernateAfter.Maximum) hibernate = 0;
+                if (hibernate < 0 || hibernate > numericHibernateAfter.Maximum)
+                {
+	                hibernate = 0;
+                }
+
                 numericHibernateAfter.Value = hibernate;
                 numericHibernateAfter.ValueChanged += NumericHibernateAfter_ValueChanged;
 

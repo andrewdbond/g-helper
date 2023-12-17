@@ -60,7 +60,9 @@ public class Startup
             td.Actions.Add(path: strExeFilePath);
 
             if (ProcessHelper.IsUserAdministrator())
-                td.Principal.RunLevel = TaskRunLevel.Highest;
+            {
+	            td.Principal.RunLevel = TaskRunLevel.Highest;
+            }
 
             td.Settings.StopIfGoingOnBatteries = false;
             td.Settings.DisallowStartIfOnBatteries = false;
