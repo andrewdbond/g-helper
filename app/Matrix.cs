@@ -39,8 +39,8 @@ namespace GHelper
             trackZoom.ValueChanged += TrackZoom_Changed;
             trackZoom.Value = Math.Min(val1: trackZoom.Maximum, val2: AppConfig.Get(name: "matrix_zoom", empty: 100));
 
-            trackContrast.MouseUp += TrackContrast_MouseUp; ;
-            trackContrast.ValueChanged += TrackContrast_ValueChanged; ;
+            trackContrast.MouseUp += TrackContrast_MouseUp;
+			trackContrast.ValueChanged += TrackContrast_ValueChanged;
             trackContrast.Value = Math.Min(val1: trackContrast.Maximum, val2: AppConfig.Get(name: "matrix_contrast", empty: 100));
 
             VisualiseMatrix();
@@ -51,7 +51,7 @@ namespace GHelper
 
             comboRotation.DropDownStyle = ComboBoxStyle.DropDownList;
             comboRotation.SelectedIndex = AppConfig.Get(name: "matrix_rotation", empty: 0);
-            comboRotation.SelectedValueChanged += ComboRotation_SelectedValueChanged; ;
+            comboRotation.SelectedValueChanged += ComboRotation_SelectedValueChanged;
 
 
             uiScale = panelPicture.Width / matrixControl.device.MaxColumns / 3;

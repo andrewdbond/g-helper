@@ -322,7 +322,7 @@ namespace GHelper
             checkAutoToggleClamshellMode.CheckedChanged += checkAutoToggleClamshellMode_CheckedChanged;
 
             checkTopmost.Checked = AppConfig.Is(name: "topmost");
-            checkTopmost.CheckedChanged += CheckTopmost_CheckedChanged; ;
+            checkTopmost.CheckedChanged += CheckTopmost_CheckedChanged;
 
             checkNoOverdrive.Checked = AppConfig.Is(name: "no_overdrive");
             checkNoOverdrive.CheckedChanged += CheckNoOverdrive_CheckedChanged;
