@@ -21,7 +21,7 @@ namespace Ryzen
         //PHEONIX - 9
         //RAPHAEL/DRAGON RANGE - 10
 
-        public static Smu RyzenAccess = new Smu(false);
+        public static Smu RyzenAccess = new Smu(EnableDebug: false);
         public static int FAMID = RyzenControl.FAMID;
 
 
@@ -38,7 +38,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    result = RyzenAccess.SendMp1(0x1a, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x1a, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -46,8 +46,8 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x14, ref Args);
-                    result = RyzenAccess.SendPsmu(0x31, ref Args);
+                    RyzenAccess.SendMp1(message: 0x14, arguments: ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x31, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -74,7 +74,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    result = RyzenAccess.SendPsmu(0x31, ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x31, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -96,7 +96,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    result = RyzenAccess.SendMp1(0x1b, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x1b, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -104,7 +104,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    result = RyzenAccess.SendMp1(0x15, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x15, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -126,7 +126,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    result = RyzenAccess.SendMp1(0x1c, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x1c, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -134,7 +134,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    result = RyzenAccess.SendMp1(0x16, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x16, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -155,7 +155,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x1d, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1d, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -163,7 +163,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x17, ref Args);
+                    RyzenAccess.SendMp1(message: 0x17, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -183,7 +183,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x1e, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1e, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -191,7 +191,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x18, ref Args);
+                    RyzenAccess.SendMp1(message: 0x18, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -211,12 +211,12 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    result = RyzenAccess.SendPsmu(0x68, ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x68, arguments: ref Args);
                     break;
                 case 0:
                 case 1:
                 case 2:
-                    result = RyzenAccess.SendMp1(0x1f, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x1f, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -224,15 +224,15 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    result = RyzenAccess.SendMp1(0x19, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x19, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x23, ref Args);
-                    result = RyzenAccess.SendPsmu(0x56, ref Args);
+                    RyzenAccess.SendMp1(message: 0x23, arguments: ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x56, arguments: ref Args);
                     break;
                 case 10:
-                    result = RyzenAccess.SendPsmu(0x59, ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x59, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -254,7 +254,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendPsmu(0x56, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x56, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -262,7 +262,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendPsmu(0x37, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x37, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -285,11 +285,11 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    result = RyzenAccess.SendMp1(0x33, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x33, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
-                    result = RyzenAccess.SendMp1(0x38, ref Args);
+                    result = RyzenAccess.SendMp1(message: 0x38, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -312,7 +312,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x20, ref Args);
+                    RyzenAccess.SendMp1(message: 0x20, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -320,7 +320,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x1a, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1a, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -340,7 +340,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x21, ref Args);
+                    RyzenAccess.SendMp1(message: 0x21, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -348,7 +348,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x1b, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1b, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -366,7 +366,7 @@ namespace Ryzen
             switch (FAMID)
             {
                 case 5:
-                    RyzenAccess.SendMp1(0x1c, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1c, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -384,7 +384,7 @@ namespace Ryzen
             switch (FAMID)
             {
                 case 5:
-                    RyzenAccess.SendMp1(0x1d, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1d, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -404,17 +404,17 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x22, ref Args);
+                    RyzenAccess.SendMp1(message: 0x22, arguments: ref Args);
                     break;
                 case 5:
-                    RyzenAccess.SendMp1(0x1e, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1e, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x1c, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1c, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -432,7 +432,7 @@ namespace Ryzen
             switch (FAMID)
             {
                 case 5:
-                    RyzenAccess.SendMp1(0x1f, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1f, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -452,7 +452,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x23, ref Args);
+                    RyzenAccess.SendMp1(message: 0x23, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -460,7 +460,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x1d, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1d, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -480,7 +480,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x46, ref Args);
+                    RyzenAccess.SendMp1(message: 0x46, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -500,7 +500,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x47, ref Args);
+                    RyzenAccess.SendMp1(message: 0x47, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -520,7 +520,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x48, ref Args);
+                    RyzenAccess.SendMp1(message: 0x48, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -540,7 +540,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x49, ref Args);
+                    RyzenAccess.SendMp1(message: 0x49, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -560,7 +560,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x4a, ref Args);
+                    RyzenAccess.SendMp1(message: 0x4a, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -580,7 +580,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x4b, ref Args);
+                    RyzenAccess.SendMp1(message: 0x4b, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -600,7 +600,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x4c, ref Args);
+                    RyzenAccess.SendMp1(message: 0x4c, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -620,7 +620,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x4d, ref Args);
+                    RyzenAccess.SendMp1(message: 0x4d, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -640,7 +640,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x4e, ref Args);
+                    RyzenAccess.SendMp1(message: 0x4e, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -660,7 +660,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x4f, ref Args);
+                    RyzenAccess.SendMp1(message: 0x4f, arguments: ref Args);
                     break;
             }
             RyzenAccess.Deinitialize();
@@ -678,19 +678,19 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x26, ref Args);
+                    RyzenAccess.SendMp1(message: 0x26, arguments: ref Args);
                     break;
                 case 5:
-                    RyzenAccess.SendMp1(0x22, ref Args);
+                    RyzenAccess.SendMp1(message: 0x22, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x20, ref Args);
+                    RyzenAccess.SendMp1(message: 0x20, arguments: ref Args);
                     break;
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x1f, ref Args);
+                    RyzenAccess.SendMp1(message: 0x1f, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -711,7 +711,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendPsmu(0x89, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x89, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -730,12 +730,12 @@ namespace Ryzen
             {
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x37, ref Args);
+                    RyzenAccess.SendMp1(message: 0x37, arguments: ref Args);
                     break;
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x32, ref Args);
+                    RyzenAccess.SendMp1(message: 0x32, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -755,7 +755,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x19, ref Args);
+                    RyzenAccess.SendMp1(message: 0x19, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -763,7 +763,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x12, ref Args);
+                    RyzenAccess.SendMp1(message: 0x12, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -783,7 +783,7 @@ namespace Ryzen
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendMp1(0x18, ref Args);
+                    RyzenAccess.SendMp1(message: 0x18, arguments: ref Args);
                     break;
                 case 3:
                 case 5:
@@ -791,7 +791,7 @@ namespace Ryzen
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x11, ref Args);
+                    RyzenAccess.SendMp1(message: 0x11, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -809,30 +809,30 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendPsmu(0x6c, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x6c, arguments: ref Args);
                     break;
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendPsmu(0x7d, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x7d, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x31, ref Args);
-                    RyzenAccess.SendPsmu(0x19, ref Args);
+                    RyzenAccess.SendMp1(message: 0x31, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x19, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x26, ref Args);
-                    RyzenAccess.SendPsmu(0x5c, ref Args);
+                    RyzenAccess.SendMp1(message: 0x26, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5c, arguments: ref Args);
                     break;
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendPsmu(0x19, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x19, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x5F, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5F, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -850,30 +850,30 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendPsmu(0x6d, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x6d, arguments: ref Args);
                     break;
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendPsmu(0x7E, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x7E, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x32, ref Args);
-                    RyzenAccess.SendPsmu(0x1a, ref Args);
+                    RyzenAccess.SendMp1(message: 0x32, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x1a, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x27, ref Args);
-                    RyzenAccess.SendPsmu(0x5d, ref Args);
+                    RyzenAccess.SendMp1(message: 0x27, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5d, arguments: ref Args);
                     break;
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendPsmu(0x1a, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x1a, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x60, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x60, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -891,25 +891,25 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendPsmu(0x6e, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x6e, arguments: ref Args);
                     break;
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendPsmu(0x7f, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x7f, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x33, ref Args);
-                    RyzenAccess.SendPsmu(0x1b, ref Args);
+                    RyzenAccess.SendMp1(message: 0x33, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x1b, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x28, ref Args);
-                    RyzenAccess.SendPsmu(0x61, ref Args);
+                    RyzenAccess.SendMp1(message: 0x28, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x61, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x61, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x61, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -921,7 +921,7 @@ namespace Ryzen
         public static Smu.Status? set_coall(int value)
         {
 
-            uint uvalue = Convert.ToUInt32(0x100000 - (uint)(-1 * value));
+            uint uvalue = Convert.ToUInt32(value: 0x100000 - (uint)(-1 * value));
 
             RyzenAccess.Initialize();
             uint[] Args = new uint[6];
@@ -933,22 +933,22 @@ namespace Ryzen
             {
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x55, ref Args);
-                    result = RyzenAccess.SendPsmu(0xB1, ref Args);
+                    RyzenAccess.SendMp1(message: 0x55, arguments: ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0xB1, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x36, ref Args);
-                    result = RyzenAccess.SendPsmu(0xB, ref Args);
+                    RyzenAccess.SendMp1(message: 0x36, arguments: ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0xB, arguments: ref Args);
                     break;
                 case 5:
                 case 8:
                 case 9:
                 case 11:
-                    result = RyzenAccess.SendPsmu(0x5D, ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x5D, arguments: ref Args);
                     break;
                 case 10:
-                    result = RyzenAccess.SendPsmu(0x7, ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x7, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -970,20 +970,20 @@ namespace Ryzen
             {
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x54, ref Args);
+                    RyzenAccess.SendMp1(message: 0x54, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x35, ref Args);
+                    RyzenAccess.SendMp1(message: 0x35, arguments: ref Args);
                     break;
                 case 5:
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendMp1(0x4b, ref Args);
+                    RyzenAccess.SendMp1(message: 0x4b, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x6, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x6, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -995,7 +995,7 @@ namespace Ryzen
         public static Smu.Status? set_cogfx(int value)
         {
 
-            uint uvalue = Convert.ToUInt32(0x100000 - (uint)(-1 * value));
+            uint uvalue = Convert.ToUInt32(value: 0x100000 - (uint)(-1 * value));
 
             RyzenAccess.Initialize();
             uint[] Args = new uint[6];
@@ -1007,14 +1007,14 @@ namespace Ryzen
             {
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x64, ref Args);
-                    result = RyzenAccess.SendPsmu(0x57, ref Args);
+                    RyzenAccess.SendMp1(message: 0x64, arguments: ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0x57, arguments: ref Args);
                     break;
                 case 5:
                 case 8:
                 case 9:
                 case 11:
-                    result = RyzenAccess.SendPsmu(0xb7, ref Args);
+                    result = RyzenAccess.SendPsmu(message: 0xb7, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -1035,30 +1035,30 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendMp1(0x24, ref Args);
+                    RyzenAccess.SendMp1(message: 0x24, arguments: ref Args);
                     break;
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendPsmu(0x6A, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x6A, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x30, ref Args);
-                    RyzenAccess.SendPsmu(0x1d, ref Args);
+                    RyzenAccess.SendMp1(message: 0x30, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x1d, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x25, ref Args);
-                    RyzenAccess.SendPsmu(0x5b, ref Args);
+                    RyzenAccess.SendMp1(message: 0x25, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5b, arguments: ref Args);
                     break;
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendPsmu(0x18, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x18, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x5E, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5E, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -1077,30 +1077,30 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendMp1(0x23, ref Args);
+                    RyzenAccess.SendMp1(message: 0x23, arguments: ref Args);
                     break;
                 case 0:
                 case 1:
                 case 2:
-                    RyzenAccess.SendPsmu(0x69, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x69, arguments: ref Args);
                     break;
                 case 3:
                 case 7:
-                    RyzenAccess.SendMp1(0x2f, ref Args);
-                    RyzenAccess.SendPsmu(0x1d, ref Args);
+                    RyzenAccess.SendMp1(message: 0x2f, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x1d, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendMp1(0x24, ref Args);
-                    RyzenAccess.SendPsmu(0x5a, ref Args);
+                    RyzenAccess.SendMp1(message: 0x24, arguments: ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5a, arguments: ref Args);
                     break;
                 case 8:
                 case 9:
                 case 11:
-                    RyzenAccess.SendPsmu(0x17, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x17, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x5D, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5D, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -1118,15 +1118,15 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendPsmu(0x6a, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x6a, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendPsmu(0x58, ref Args);
-                    RyzenAccess.SendMp1(0x2F, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x58, arguments: ref Args);
+                    RyzenAccess.SendMp1(message: 0x2F, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x5b, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x5b, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -1145,15 +1145,15 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendPsmu(0x64, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x64, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendPsmu(0x53, ref Args);
-                    RyzenAccess.SendMp1(0x3D, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x53, arguments: ref Args);
+                    RyzenAccess.SendMp1(message: 0x3D, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x56, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x56, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -1172,15 +1172,15 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendPsmu(0x65, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x65, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendPsmu(0x54, ref Args);
-                    RyzenAccess.SendMp1(0x3B, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x54, arguments: ref Args);
+                    RyzenAccess.SendMp1(message: 0x3B, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x57, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x57, arguments: ref Args);
                     break;
                 default:
                     break;
@@ -1198,15 +1198,15 @@ namespace Ryzen
             switch (FAMID)
             {
                 case -1:
-                    RyzenAccess.SendPsmu(0x66, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x66, arguments: ref Args);
                     break;
                 case 4:
                 case 6:
-                    RyzenAccess.SendPsmu(0x55, ref Args);
-                    RyzenAccess.SendMp1(0x3c, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x55, arguments: ref Args);
+                    RyzenAccess.SendMp1(message: 0x3c, arguments: ref Args);
                     break;
                 case 10:
-                    RyzenAccess.SendPsmu(0x58, ref Args);
+                    RyzenAccess.SendPsmu(message: 0x58, arguments: ref Args);
                     break;
                 default:
                     break;

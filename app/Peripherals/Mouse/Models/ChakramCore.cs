@@ -4,7 +4,7 @@ namespace GHelper.Peripherals.Mouse.Models
     //P511
     public class ChakramCore : AsusMouse
     {
-        public ChakramCore() : base(0x0B05, 0x1958, "mi_00", false) { 
+        public ChakramCore() : base(vendorId: 0x0B05, productId: 0x1958, path: "mi_00", wireless: false) { 
         
         }
 
@@ -91,7 +91,7 @@ namespace GHelper.Peripherals.Mouse.Models
             {
                 return LightingMode.React;
             }
-            return base.LightingModeForIndex(lightingMode);
+            return base.LightingModeForIndex(lightingMode: lightingMode);
 
         }
 
@@ -126,12 +126,12 @@ namespace GHelper.Peripherals.Mouse.Models
 
             LightingSetting setting = new LightingSetting();
 
-            setting.LightingMode = LightingModeForIndex(packet[offset + 0]);
+            setting.LightingMode = LightingModeForIndex(lightingMode: packet[offset + 0]);
             setting.Brightness = packet[offset + 1];
 
-            setting.RGBColor = Color.FromArgb(packet[offset + 2], packet[offset + 3], packet[offset + 4]);
+            setting.RGBColor = Color.FromArgb(red: packet[offset + 2], green: packet[offset + 3], blue: packet[offset + 4]);
 
-            setting.AnimationDirection = SupportsAnimationDirection(setting.LightingMode)
+            setting.AnimationDirection = SupportsAnimationDirection(lightingMode: setting.LightingMode)
                  ? (AnimationDirection)packet[21]
                  : AnimationDirection.Clockwise;
 
@@ -141,8 +141,8 @@ namespace GHelper.Peripherals.Mouse.Models
                 setting.AnimationDirection = AnimationDirection.Clockwise;
             }
 
-            setting.RandomColor = SupportsRandomColor(setting.LightingMode) && packet[22] == 0x01;
-            setting.AnimationSpeed = SupportsAnimationSpeed(setting.LightingMode)
+            setting.RandomColor = SupportsRandomColor(lightingMode: setting.LightingMode) && packet[22] == 0x01;
+            setting.AnimationSpeed = SupportsAnimationSpeed(lightingMode: setting.LightingMode)
                 ? (AnimationSpeed)packet[23]
                 : AnimationSpeed.Medium;
 
@@ -170,20 +170,20 @@ namespace GHelper.Peripherals.Mouse.Models
             //00 12 03 00 00 [03 04 00 00 ff] [03 04 00 00 ff] [03 04 00 00 ff] 00 04 00 00
             //00 12 03 00 00 [05 02 ff 00 ff] [05 02 ff 00 ff] [05 02 ff 00 ff] 00 01 01 00
             //00 12 03 00 00 [03 01 00 00 ff] [03 01 00 00 ff] [03 01 00 00 ff] 00 01 00 01
-            byte[]? response = WriteForResponse(GetReadLightingModePacket(LightingZone.All));
+            byte[]? response = WriteForResponse(packet: GetReadLightingModePacket(zone: LightingZone.All));
             if (response is null) return;
 
             LightingZone[] lz = SupportedLightingZones();
             for (int i = 0; i < lz.Length; ++i)
             {
-                LightingSetting? ls = ParseLightingSetting(response, lz[i]);
+                LightingSetting? ls = ParseLightingSetting(packet: response, zone: lz[i]);
                 if (ls is null)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
                     continue;
                 }
 
-                Logger.WriteLine(GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
                 LightingSetting[i] = ls;
             }
         }

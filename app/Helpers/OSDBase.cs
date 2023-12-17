@@ -9,8 +9,8 @@ namespace GHelper.Helpers
 
         private bool _disposed = false;
         private byte _alpha = 250;
-        private Size _size = new Size(350, 50);
-        private Point _location = new Point(50, 50);
+        private Size _size = new Size(width: 350, height: 50);
+        private Point _location = new Point(x: 50, y: 50);
 
 
         protected virtual void PerformPaint(PaintEventArgs e)
@@ -23,20 +23,20 @@ namespace GHelper.Helpers
         }
         private void UpdateLayeredWindow()
         {
-            Bitmap bitmap1 = new Bitmap(Size.Width, Size.Height, PixelFormat.Format32bppArgb);
-            using (Graphics graphics1 = Graphics.FromImage(bitmap1))
+            Bitmap bitmap1 = new Bitmap(width: Size.Width, height: Size.Height, format: PixelFormat.Format32bppArgb);
+            using (Graphics graphics1 = Graphics.FromImage(image: bitmap1))
             {
                 Rectangle rectangle1;
                 SIZE size1;
                 POINT point1;
                 POINT point2;
                 BLENDFUNCTION blendfunction1;
-                rectangle1 = new Rectangle(0, 0, Size.Width, Size.Height);
-                PerformPaint(new PaintEventArgs(graphics1, rectangle1));
-                nint ptr1 = User32.GetDC(nint.Zero);
-                nint ptr2 = Gdi32.CreateCompatibleDC(ptr1);
-                nint ptr3 = bitmap1.GetHbitmap(Color.FromArgb(0));
-                nint ptr4 = Gdi32.SelectObject(ptr2, ptr3);
+                rectangle1 = new Rectangle(x: 0, y: 0, width: Size.Width, height: Size.Height);
+                PerformPaint(e: new PaintEventArgs(graphics: graphics1, clipRect: rectangle1));
+                nint ptr1 = User32.GetDC(hWnd: nint.Zero);
+                nint ptr2 = Gdi32.CreateCompatibleDC(hDC: ptr1);
+                nint ptr3 = bitmap1.GetHbitmap(background: Color.FromArgb(argb: 0));
+                nint ptr4 = Gdi32.SelectObject(hDC: ptr2, hObject: ptr3);
                 size1.cx = Size.Width;
                 size1.cy = Size.Height;
                 point1.x = Location.X;
@@ -49,11 +49,11 @@ namespace GHelper.Helpers
                 blendfunction1.BlendFlags = 0;
                 blendfunction1.SourceConstantAlpha = _alpha;
                 blendfunction1.AlphaFormat = 1;
-                User32.UpdateLayeredWindow(Handle, ptr1, ref point1, ref size1, ptr2, ref point2, 0, ref blendfunction1, 2); //2=ULW_ALPHA
-                Gdi32.SelectObject(ptr2, ptr4);
-                User32.ReleaseDC(nint.Zero, ptr1);
-                Gdi32.DeleteObject(ptr3);
-                Gdi32.DeleteDC(ptr2);
+                User32.UpdateLayeredWindow(hwnd: Handle, hdcDst: ptr1, pptDst: ref point1, psize: ref size1, hdcSrc: ptr2, pprSrc: ref point2, crKey: 0, pblend: ref blendfunction1, dwFlags: 2); //2=ULW_ALPHA
+                Gdi32.SelectObject(hDC: ptr2, hObject: ptr4);
+                User32.ReleaseDC(hWnd: nint.Zero, hDC: ptr1);
+                Gdi32.DeleteObject(hObject: ptr3);
+                Gdi32.DeleteDC(hDC: ptr2);
             }
         }
 
@@ -61,7 +61,7 @@ namespace GHelper.Helpers
         {
             if (Handle == nint.Zero) //if handle don't equal to zero - window was created and just hided
                 CreateWindowOnly();
-            User32.ShowWindow(Handle, User32.SW_SHOWNOACTIVATE);
+            User32.ShowWindow(hWnd: Handle, cmdShow: User32.SW_SHOWNOACTIVATE);
         }
 
 
@@ -69,7 +69,7 @@ namespace GHelper.Helpers
         {
             if (Handle == nint.Zero)
                 return;
-            User32.ShowWindow(Handle, User32.SW_HIDE);
+            User32.ShowWindow(hWnd: Handle, cmdShow: User32.SW_HIDE);
             DestroyHandle();
         }
 
@@ -87,7 +87,7 @@ namespace GHelper.Helpers
             params1.Caption = "FloatingNativeWindow";
             int nX = _location.X;
             int nY = _location.Y;
-            Screen screen1 = Screen.FromHandle(Handle);
+            Screen screen1 = Screen.FromHandle(hwnd: Handle);
             if (nX + _size.Width > screen1.Bounds.Width)
             {
                 nX = screen1.Bounds.Width - _size.Width;
@@ -96,7 +96,7 @@ namespace GHelper.Helpers
             {
                 nY = screen1.Bounds.Height - _size.Height;
             }
-            _location = new Point(nX, nY);
+            _location = new Point(x: nX, y: nY);
             Size size1 = _size;
             Point point1 = _location;
             params1.X = nX;
@@ -107,7 +107,7 @@ namespace GHelper.Helpers
             uint ui = User32.WS_POPUP;
             params1.Style = (int)ui;
             params1.ExStyle = User32.WS_EX_TOPMOST | User32.WS_EX_TOOLWINDOW | User32.WS_EX_LAYERED | User32.WS_EX_NOACTIVATE | User32.WS_EX_TRANSPARENT;
-            CreateHandle(params1);
+            CreateHandle(cp: params1);
             UpdateLayeredWindow();
         }
 
@@ -128,12 +128,12 @@ namespace GHelper.Helpers
                     {
                         num1 |= 1;
                     }
-                    User32.SetWindowPos(Handle, nint.Zero, x, y, width, height, (uint)num1);
+                    User32.SetWindowPos(hWnd: Handle, hWndAfter: nint.Zero, X: x, Y: y, Width: width, Height: height, flags: (uint)num1);
                 }
                 else
                 {
-                    Location = new Point(x, y);
-                    Size = new Size(width, height);
+                    Location = new Point(x: x, y: y);
+                    Size = new Size(width: width, height: height);
                 }
             }
         }
@@ -152,10 +152,10 @@ namespace GHelper.Helpers
             {
                 if (Handle != nint.Zero)
                 {
-                    SetBoundsCore(value.X, value.Y, _size.Width, _size.Height);
+                    SetBoundsCore(x: value.X, y: value.Y, width: _size.Width, height: _size.Height);
                     RECT rect = new RECT();
-                    User32.GetWindowRect(Handle, ref rect);
-                    _location = new Point(rect.left, rect.top);
+                    User32.GetWindowRect(hWnd: Handle, rect: ref rect);
+                    _location = new Point(x: rect.left, y: rect.top);
                     UpdateLayeredWindow();
                 }
                 else
@@ -174,10 +174,10 @@ namespace GHelper.Helpers
             {
                 if (Handle != nint.Zero)
                 {
-                    SetBoundsCore(_location.X, _location.Y, value.Width, value.Height);
+                    SetBoundsCore(x: _location.X, y: _location.Y, width: value.Width, height: value.Height);
                     RECT rect = new RECT();
-                    User32.GetWindowRect(Handle, ref rect);
-                    _size = new Size(rect.right - rect.left, rect.bottom - rect.top);
+                    User32.GetWindowRect(hWnd: Handle, rect: ref rect);
+                    _size = new Size(width: rect.right - rect.left, height: rect.bottom - rect.top);
                     UpdateLayeredWindow();
                 }
                 else
@@ -194,7 +194,7 @@ namespace GHelper.Helpers
             get { return _size.Height; }
             set
             {
-                _size = new Size(_size.Width, value);
+                _size = new Size(width: _size.Width, height: value);
             }
         }
         /// <summary>
@@ -205,7 +205,7 @@ namespace GHelper.Helpers
             get { return _size.Width; }
             set
             {
-                _size = new Size(value, _size.Height);
+                _size = new Size(width: value, height: _size.Height);
             }
         }
         /// <summary>
@@ -216,7 +216,7 @@ namespace GHelper.Helpers
             get { return _location.X; }
             set
             {
-                Location = new Point(value, Location.Y);
+                Location = new Point(x: value, y: Location.Y);
             }
         }
         /// <summary>
@@ -227,7 +227,7 @@ namespace GHelper.Helpers
             get { return _location.Y; }
             set
             {
-                Location = new Point(Location.X, value);
+                Location = new Point(x: Location.X, y: value);
             }
         }
         /// <summary>
@@ -237,7 +237,7 @@ namespace GHelper.Helpers
         {
             get
             {
-                return new Rectangle(new Point(0, 0), _size);
+                return new Rectangle(location: new Point(x: 0, y: 0), size: _size);
             }
         }
         /// <summary>
@@ -258,8 +258,8 @@ namespace GHelper.Helpers
         #region IDisposable Members
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            Dispose(disposing: true);
+            GC.SuppressFinalize(obj: this);
         }
         private void Dispose(bool disposing)
         {
@@ -274,13 +274,13 @@ namespace GHelper.Helpers
 
     #region #  Win32  #
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(layoutKind: LayoutKind.Sequential)]
     internal struct POINT
     {
         public int x;
         public int y;
     }
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(layoutKind: LayoutKind.Sequential)]
     internal struct RECT
     {
         public int left;
@@ -288,13 +288,13 @@ namespace GHelper.Helpers
         public int right;
         public int bottom;
     }
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(layoutKind: LayoutKind.Sequential)]
     internal struct SIZE
     {
         public int cx;
         public int cy;
     }
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(layoutKind: LayoutKind.Sequential)]
     internal struct TRACKMOUSEEVENTS
     {
         public uint cbSize;
@@ -302,7 +302,7 @@ namespace GHelper.Helpers
         public nint hWnd;
         public uint dwHoverTime;
     }
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(layoutKind: LayoutKind.Sequential)]
     internal struct MSG
     {
         public nint hwnd;
@@ -313,7 +313,7 @@ namespace GHelper.Helpers
         public int pt_x;
         public int pt_y;
     }
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(layoutKind: LayoutKind.Sequential, Pack = 1)]
     internal struct BLENDFUNCTION
     {
         public byte BlendOp;
@@ -344,83 +344,83 @@ namespace GHelper.Helpers
         private User32()
         {
         }
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool AnimateWindow(nint hWnd, uint dwTime, uint dwFlags);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool ClientToScreen(nint hWnd, ref POINT pt);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool DispatchMessage(ref MSG msg);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool DrawFocusRect(nint hWnd, ref RECT rect);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern nint GetDC(nint hWnd);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern nint GetFocus();
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern ushort GetKeyState(int virtKey);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool GetMessage(ref MSG msg, int hWnd, uint wFilterMin, uint wFilterMax);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern nint GetParent(nint hWnd);
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        [DllImport(dllName: "user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern bool GetClientRect(nint hWnd, [In, Out] ref RECT rect);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern int GetWindowLong(nint hWnd, int nIndex);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern nint GetWindow(nint hWnd, int cmd);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool GetWindowRect(nint hWnd, ref RECT rect);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool HideCaret(nint hWnd);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool InvalidateRect(nint hWnd, ref RECT rect, bool erase);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern nint LoadCursor(nint hInstance, uint cursor);
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        [DllImport(dllName: "user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern int MapWindowPoints(nint hWndFrom, nint hWndTo, [In, Out] ref RECT rect, int cPoints);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool MoveWindow(nint hWnd, int x, int y, int width, int height, bool repaint);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool PeekMessage(ref MSG msg, int hWnd, uint wFilterMin, uint wFilterMax, uint wFlag);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool PostMessage(nint hWnd, int Msg, uint wParam, uint lParam);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool ReleaseCapture();
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern int ReleaseDC(nint hWnd, nint hDC);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool ScreenToClient(nint hWnd, ref POINT pt);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern uint SendMessage(nint hWnd, int Msg, uint wParam, uint lParam);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern nint SetCursor(nint hCursor);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern nint SetFocus(nint hWnd);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern int SetWindowLong(nint hWnd, int nIndex, int newLong);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern int SetWindowPos(nint hWnd, nint hWndAfter, int X, int Y, int Width, int Height, uint flags);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool SetWindowRgn(nint hWnd, nint hRgn, bool redraw);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool ShowCaret(nint hWnd);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool SetCapture(nint hWnd);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern int ShowWindow(nint hWnd, short cmdShow);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref int bRetValue, uint fWinINI);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool TrackMouseEvent(ref TRACKMOUSEEVENTS tme);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool TranslateMessage(ref MSG msg);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool UpdateLayeredWindow(nint hwnd, nint hdcDst, ref POINT pptDst, ref SIZE psize, nint hdcSrc, ref POINT pprSrc, int crKey, ref BLENDFUNCTION pblend, int dwFlags);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool UpdateWindow(nint hwnd);
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "User32.dll", CharSet = CharSet.Auto)]
         internal static extern bool WaitMessage();
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        [DllImport(dllName: "user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern bool AdjustWindowRectEx(ref RECT lpRect, int dwStyle, bool bMenu, int dwExStyle);
     }
 
@@ -430,28 +430,28 @@ namespace GHelper.Helpers
         private Gdi32()
         {
         }
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern int CombineRgn(nint dest, nint src1, nint src2, int flags);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern nint CreateBrushIndirect(ref LOGBRUSH brush);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern nint CreateCompatibleDC(nint hDC);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern nint CreateRectRgnIndirect(ref RECT rect);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern bool DeleteDC(nint hDC);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern nint DeleteObject(nint hObject);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern int GetClipBox(nint hDC, ref RECT rectBox);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern bool PatBlt(nint hDC, int x, int y, int width, int height, uint flags);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern int SelectClipRgn(nint hDC, nint hRgn);
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        [DllImport(dllName: "gdi32.dll", CharSet = CharSet.Auto)]
         internal static extern nint SelectObject(nint hDC, nint hObject);
     }
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(layoutKind: LayoutKind.Sequential)]
     public struct LOGBRUSH
     {
         public uint lbStyle;

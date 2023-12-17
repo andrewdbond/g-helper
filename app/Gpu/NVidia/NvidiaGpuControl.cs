@@ -12,11 +12,11 @@ namespace GHelper.Gpu.NVidia;
 public class NvidiaGpuControl : IGpuControl
 {
 
-    public static int MaxCoreOffset => AppConfig.Get("max_gpu_core", 250);
-    public static int MaxMemoryOffset => AppConfig.Get("max_gpu_memory", 250);
+    public static int MaxCoreOffset => AppConfig.Get(name: "max_gpu_core", empty: 250);
+    public static int MaxMemoryOffset => AppConfig.Get(name: "max_gpu_memory", empty: 250);
 
-    public static int MinCoreOffset = AppConfig.Get("min_gpu_core", -250);
-    public static int MinMemoryOffset = AppConfig.Get("min_gpu_memory", -250);
+    public static int MinCoreOffset = AppConfig.Get(name: "min_gpu_core", empty: -250);
+    public static int MinMemoryOffset = AppConfig.Get(name: "min_gpu_memory", empty: -250);
 
     public const int MinClockLimit = 400;
     public const int MaxClockLimit = 3000;
@@ -40,8 +40,8 @@ public class NvidiaGpuControl : IGpuControl
 
         PhysicalGPU internalGpu = _internalGpu!;
         IThermalSensor? gpuSensor =
-            GPUApi.GetThermalSettings(internalGpu.Handle).Sensors
-            .FirstOrDefault(s => s.Target == ThermalSettingsTarget.GPU);
+            GPUApi.GetThermalSettings(physicalGPUHandle: internalGpu.Handle).Sensors
+            .FirstOrDefault(predicate: s => s.Target == ThermalSettingsTarget.GPU);
 
         return gpuSensor?.CurrentTemperature;
     }
@@ -62,17 +62,17 @@ public class NvidiaGpuControl : IGpuControl
             foreach (Process process in processes)
                 try
                 {
-                    Logger.WriteLine("Kill:" + process.ProcessName);
-                    ProcessHelper.KillByProcess(process);
+                    Logger.WriteLine(logMessage: "Kill:" + process.ProcessName);
+                    ProcessHelper.KillByProcess(process: process);
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLine(ex.Message);
+                    Logger.WriteLine(logMessage: ex.Message);
                 }
         }
         catch (Exception ex)
         {
-            Logger.WriteLine(ex.Message);
+            Logger.WriteLine(logMessage: ex.Message);
         }
 
         //GeneralApi.RestartDisplayDriver();
@@ -88,14 +88,14 @@ public class NvidiaGpuControl : IGpuControl
 
         try
         {
-            IPerformanceStates20Info states = GPUApi.GetPerformanceStates20(internalGpu.Handle);
-            core = states.Clocks[PerformanceStateId.P0_3DPerformance][0].FrequencyDeltaInkHz.DeltaValue / 1000;
-            memory = states.Clocks[PerformanceStateId.P0_3DPerformance][1].FrequencyDeltaInkHz.DeltaValue / 1000;
-            Logger.WriteLine($"GET GPU CLOCKS: {core}, {memory}");
+            IPerformanceStates20Info states = GPUApi.GetPerformanceStates20(physicalGPUHandle: internalGpu.Handle);
+            core = states.Clocks[key: PerformanceStateId.P0_3DPerformance][0].FrequencyDeltaInkHz.DeltaValue / 1000;
+            memory = states.Clocks[key: PerformanceStateId.P0_3DPerformance][1].FrequencyDeltaInkHz.DeltaValue / 1000;
+            Logger.WriteLine(logMessage: $"GET GPU CLOCKS: {core}, {memory}");
 
-            foreach (var delta in states.Voltages[PerformanceStateId.P0_3DPerformance])
+            foreach (var delta in states.Voltages[key: PerformanceStateId.P0_3DPerformance])
             {
-                Logger.WriteLine("GPU VOLT:" + delta.IsEditable + " - " + delta.ValueDeltaInMicroVolt.DeltaValue);
+                Logger.WriteLine(logMessage: "GPU VOLT:" + delta.IsEditable + " - " + delta.ValueDeltaInMicroVolt.DeltaValue);
             }
 
             return true;
@@ -103,7 +103,7 @@ public class NvidiaGpuControl : IGpuControl
         }
         catch (Exception ex)
         {
-            Logger.WriteLine("GET GPU CLOCKS:" + ex.Message);
+            Logger.WriteLine(logMessage: "GET GPU CLOCKS:" + ex.Message);
             core = memory = 0;
             return false;
         }
@@ -115,12 +115,12 @@ public class NvidiaGpuControl : IGpuControl
     {
         try
         {
-            ProcessHelper.RunCMD("powershell", script);
+            ProcessHelper.RunCMD(name: "powershell", args: script);
             return true;
         }
         catch (Exception ex)
         {
-            Logger.WriteLine(ex.ToString());
+            Logger.WriteLine(logMessage: ex.ToString());
             return false;
         }
 
@@ -131,14 +131,14 @@ public class NvidiaGpuControl : IGpuControl
         PhysicalGPU internalGpu = _internalGpu!;
         try
         {
-            PrivateClockBoostLockV2 data = GPUApi.GetClockBoostLock(internalGpu.Handle);
+            PrivateClockBoostLockV2 data = GPUApi.GetClockBoostLock(gpuHandle: internalGpu.Handle);
             int limit = (int)data.ClockBoostLocks[0].VoltageInMicroV / 1000;
-            Logger.WriteLine("GET CLOCK LIMIT: " + limit);
+            Logger.WriteLine(logMessage: "GET CLOCK LIMIT: " + limit);
             return limit;
         }
         catch (Exception ex)
         {
-            Logger.WriteLine("GET CLOCK LIMIT: " + ex.Message);
+            Logger.WriteLine(logMessage: "GET CLOCK LIMIT: " + ex.Message);
             return -1;
 
         }
@@ -154,8 +154,8 @@ public class NvidiaGpuControl : IGpuControl
 
         if (_clockLimit != clock)
         {
-            if (clock > 0) RunPowershellCommand($"nvidia-smi -lgc 0,{clock}");
-            else RunPowershellCommand($"nvidia-smi -rgc");
+            if (clock > 0) RunPowershellCommand(script: $"nvidia-smi -lgc 0,{clock}");
+            else RunPowershellCommand(script: $"nvidia-smi -rgc");
             return 1;
         }
         else
@@ -168,7 +168,7 @@ public class NvidiaGpuControl : IGpuControl
 
     public bool RestartGPU()
     {
-        return RunPowershellCommand(@"$device = Get-PnpDevice | Where-Object { $_.FriendlyName -imatch 'NVIDIA' -and $_.Class -eq 'Display' }; Disable-PnpDevice $device.InstanceId -Confirm:$false; Start-Sleep -Seconds 5; Enable-PnpDevice $device.InstanceId -Confirm:$false");
+        return RunPowershellCommand(script: @"$device = Get-PnpDevice | Where-Object { $_.FriendlyName -imatch 'NVIDIA' -and $_.Class -eq 'Display' }; Disable-PnpDevice $device.InstanceId -Confirm:$false; Start-Sleep -Seconds 5; Enable-PnpDevice $device.InstanceId -Confirm:$false");
     }
 
 
@@ -178,32 +178,32 @@ public class NvidiaGpuControl : IGpuControl
         if (core < MinCoreOffset || core > MaxCoreOffset) return 0;
         if (memory < MinMemoryOffset || memory > MaxMemoryOffset) return 0;
 
-        if (GetClocks(out int currentCore, out int currentMemory))
+        if (GetClocks(core: out int currentCore, memory: out int currentMemory))
         {
-            if (Math.Abs(core - currentCore) < 5 && Math.Abs(memory - currentMemory) < 5) return 0;
+            if (Math.Abs(value: core - currentCore) < 5 && Math.Abs(value: memory - currentMemory) < 5) return 0;
         }
 
         PhysicalGPU internalGpu = _internalGpu!;
 
-        var coreClock = new PerformanceStates20ClockEntryV1(PublicClockDomain.Graphics, new PerformanceStates20ParameterDelta(core * 1000));
-        var memoryClock = new PerformanceStates20ClockEntryV1(PublicClockDomain.Memory, new PerformanceStates20ParameterDelta(memory * 1000));
+        var coreClock = new PerformanceStates20ClockEntryV1(domain: PublicClockDomain.Graphics, valueDelta: new PerformanceStates20ParameterDelta(deltaValue: core * 1000));
+        var memoryClock = new PerformanceStates20ClockEntryV1(domain: PublicClockDomain.Memory, valueDelta: new PerformanceStates20ParameterDelta(deltaValue: memory * 1000));
         //var voltageEntry = new PerformanceStates20BaseVoltageEntryV1(PerformanceVoltageDomain.Core, new PerformanceStates20ParameterDelta(voltage));
 
         PerformanceStates20ClockEntryV1[] clocks = { coreClock, memoryClock };
         PerformanceStates20BaseVoltageEntryV1[] voltages = { };
 
-        PerformanceState20[] performanceStates = { new PerformanceState20(PerformanceStateId.P0_3DPerformance, clocks, voltages) };
+        PerformanceState20[] performanceStates = { new PerformanceState20(stateId: PerformanceStateId.P0_3DPerformance, clocks: clocks, baseVoltages: voltages) };
 
-        var overclock = new PerformanceStates20InfoV1(performanceStates, 2, 0);
+        var overclock = new PerformanceStates20InfoV1(performanceStates: performanceStates, clocksCount: 2, baseVoltagesCount: 0);
 
         try
         {
-            Logger.WriteLine($"SET GPU CLOCKS: {core}, {memory}");
-            GPUApi.SetPerformanceStates20(internalGpu.Handle, overclock);
+            Logger.WriteLine(logMessage: $"SET GPU CLOCKS: {core}, {memory}");
+            GPUApi.SetPerformanceStates20(physicalGPUHandle: internalGpu.Handle, performanceStates20Info: overclock);
         }
         catch (Exception ex)
         {
-            Logger.WriteLine("SET GPU CLOCKS: " + ex.Message);
+            Logger.WriteLine(logMessage: "SET GPU CLOCKS: " + ex.Message);
             return -1;
         }
 
@@ -216,11 +216,11 @@ public class NvidiaGpuControl : IGpuControl
         {
             return PhysicalGPU
                 .GetPhysicalGPUs()
-                .FirstOrDefault(gpu => gpu.SystemType == SystemType.Laptop);
+                .FirstOrDefault(predicate: gpu => gpu.SystemType == SystemType.Laptop);
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine(message: ex.Message);
             return null;
         }
     }
@@ -232,7 +232,7 @@ public class NvidiaGpuControl : IGpuControl
             return null;
 
         PhysicalGPU internalGpu = _internalGpu!;
-        IUtilizationDomainInfo? gpuUsage = GPUApi.GetUsages(internalGpu.Handle).GPU;
+        IUtilizationDomainInfo? gpuUsage = GPUApi.GetUsages(gpuHandle: internalGpu.Handle).GPU;
 
         return (int?)gpuUsage?.Percentage;
 

@@ -2,25 +2,25 @@
 
 public static class Logger
 {
-    public static string appPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\GHelper";
+    public static string appPath = Environment.GetFolderPath(folder: Environment.SpecialFolder.ApplicationData) + "\\GHelper";
     public static string logFile = appPath + "\\log.txt";
 
     public static void WriteLine(string logMessage)
     {
-        Debug.WriteLine(logMessage);
-        if (!Directory.Exists(appPath)) Directory.CreateDirectory(appPath);
+        Debug.WriteLine(message: logMessage);
+        if (!Directory.Exists(path: appPath)) Directory.CreateDirectory(path: appPath);
 
         try
         {
-            using (StreamWriter w = File.AppendText(logFile))
+            using (StreamWriter w = File.AppendText(path: logFile))
             {
-                w.WriteLine($"{DateTime.Now}: {logMessage}");
+                w.WriteLine(value: $"{DateTime.Now}: {logMessage}");
                 w.Close();
             }
         }
         catch { }
 
-        if (new Random().Next(100) == 1) Cleanup();
+        if (new Random().Next(maxValue: 100) == 1) Cleanup();
 
 
     }
@@ -29,9 +29,9 @@ public static class Logger
     {
         try
         {
-            var file = File.ReadAllLines(logFile);
-            int skip = Math.Max(0, file.Count() - 1000);
-            File.WriteAllLines(logFile, file.Skip(skip).ToArray());
+            var file = File.ReadAllLines(path: logFile);
+            int skip = Math.Max(val1: 0, val2: file.Count() - 1000);
+            File.WriteAllLines(path: logFile, contents: file.Skip(count: skip).ToArray());
         }
         catch { }
     }

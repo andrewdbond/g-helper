@@ -4,38 +4,38 @@ namespace GHelper.Mode
 {
     internal class PowerNative
     {
-        [DllImport("PowrProf.dll", CharSet = CharSet.Unicode)]
+        [DllImport(dllName: "PowrProf.dll", CharSet = CharSet.Unicode)]
         static extern UInt32 PowerWriteDCValueIndex(IntPtr RootPowerKey,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SchemeGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid PowerSettingGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SchemeGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid PowerSettingGuid,
             int AcValueIndex);
 
-        [DllImport("PowrProf.dll", CharSet = CharSet.Unicode)]
+        [DllImport(dllName: "PowrProf.dll", CharSet = CharSet.Unicode)]
         static extern UInt32 PowerWriteACValueIndex(IntPtr RootPowerKey,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SchemeGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid PowerSettingGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SchemeGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid PowerSettingGuid,
             int AcValueIndex);
 
-        [DllImport("PowrProf.dll", CharSet = CharSet.Unicode)]
+        [DllImport(dllName: "PowrProf.dll", CharSet = CharSet.Unicode)]
         static extern UInt32 PowerReadACValueIndex(IntPtr RootPowerKey,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SchemeGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid PowerSettingGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SchemeGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid PowerSettingGuid,
             out IntPtr AcValueIndex
             );
 
-        [DllImport("PowrProf.dll", CharSet = CharSet.Unicode)]
+        [DllImport(dllName: "PowrProf.dll", CharSet = CharSet.Unicode)]
         static extern UInt32 PowerReadDCValueIndex(IntPtr RootPowerKey,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SchemeGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid PowerSettingGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SchemeGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SubGroupOfPowerSettingsGuid,
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid PowerSettingGuid,
             out IntPtr AcValueIndex
             );
 
 
-        [DllImport("powrprof.dll")]
+        [DllImport(dllName: "powrprof.dll")]
         static extern uint PowerReadACValue(
             IntPtr RootPowerKey,
             Guid SchemeGuid,
@@ -47,29 +47,29 @@ namespace GHelper.Mode
             );
 
 
-        [DllImport("PowrProf.dll", CharSet = CharSet.Unicode)]
+        [DllImport(dllName: "PowrProf.dll", CharSet = CharSet.Unicode)]
         static extern UInt32 PowerSetActiveScheme(IntPtr RootPowerKey,
-            [MarshalAs(UnmanagedType.LPStruct)] Guid SchemeGuid);
+            [MarshalAs(unmanagedType: UnmanagedType.LPStruct)] Guid SchemeGuid);
 
-        [DllImport("PowrProf.dll", CharSet = CharSet.Unicode)]
+        [DllImport(dllName: "PowrProf.dll", CharSet = CharSet.Unicode)]
         static extern UInt32 PowerGetActiveScheme(IntPtr UserPowerKey, out IntPtr ActivePolicyGuid);
 
-        static readonly Guid GUID_CPU = new Guid("54533251-82be-4824-96c1-47b60b740d00");
-        static readonly Guid GUID_BOOST = new Guid("be337238-0d82-4146-a960-4f3749d470c7");
+        static readonly Guid GUID_CPU = new Guid(g: "54533251-82be-4824-96c1-47b60b740d00");
+        static readonly Guid GUID_BOOST = new Guid(g: "be337238-0d82-4146-a960-4f3749d470c7");
 
-        private static Guid GUID_SLEEP_SUBGROUP = new Guid("238c9fa8-0aad-41ed-83f4-97be242c8f20");
-        private static Guid GUID_HIBERNATEIDLE = new Guid("9d7815a6-7ee4-497e-8888-515a05f02364");
+        private static Guid GUID_SLEEP_SUBGROUP = new Guid(g: "238c9fa8-0aad-41ed-83f4-97be242c8f20");
+        private static Guid GUID_HIBERNATEIDLE = new Guid(g: "9d7815a6-7ee4-497e-8888-515a05f02364");
 
-        private static Guid GUID_SYSTEM_BUTTON_SUBGROUP = new Guid("4f971e89-eebd-4455-a8de-9e59040e7347");
-        private static Guid GUID_LIDACTION = new Guid("5CA83367-6E45-459F-A27B-476B1D01C936");
+        private static Guid GUID_SYSTEM_BUTTON_SUBGROUP = new Guid(g: "4f971e89-eebd-4455-a8de-9e59040e7347");
+        private static Guid GUID_LIDACTION = new Guid(g: "5CA83367-6E45-459F-A27B-476B1D01C936");
 
-        [DllImportAttribute("powrprof.dll", EntryPoint = "PowerGetActualOverlayScheme")]
+        [DllImportAttribute(dllName: "powrprof.dll", EntryPoint = "PowerGetActualOverlayScheme")]
         public static extern uint PowerGetActualOverlayScheme(out Guid ActualOverlayGuid);
 
-        [DllImportAttribute("powrprof.dll", EntryPoint = "PowerGetEffectiveOverlayScheme")]
+        [DllImportAttribute(dllName: "powrprof.dll", EntryPoint = "PowerGetEffectiveOverlayScheme")]
         public static extern uint PowerGetEffectiveOverlayScheme(out Guid EffectiveOverlayGuid);
 
-        [DllImportAttribute("powrprof.dll", EntryPoint = "PowerSetActiveOverlayScheme")]
+        [DllImportAttribute(dllName: "powrprof.dll", EntryPoint = "PowerSetActiveOverlayScheme")]
         public static extern uint PowerSetActiveOverlayScheme(Guid OverlaySchemeGuid);
 
         const string POWER_SILENT = "961cc777-2547-4f9d-8174-7d86181b8a7a";
@@ -93,8 +93,8 @@ namespace GHelper.Mode
         static Guid GetActiveScheme()
         {
             IntPtr pActiveSchemeGuid;
-            var hr = PowerGetActiveScheme(IntPtr.Zero, out pActiveSchemeGuid);
-            Guid activeSchemeGuid = (Guid)Marshal.PtrToStructure(pActiveSchemeGuid, typeof(Guid));
+            var hr = PowerGetActiveScheme(UserPowerKey: IntPtr.Zero, ActivePolicyGuid: out pActiveSchemeGuid);
+            Guid activeSchemeGuid = (Guid)Marshal.PtrToStructure(ptr: pActiveSchemeGuid, structureType: typeof(Guid));
             return activeSchemeGuid;
         }
 
@@ -103,10 +103,10 @@ namespace GHelper.Mode
             IntPtr AcValueIndex;
             Guid activeSchemeGuid = GetActiveScheme();
 
-            UInt32 value = PowerReadACValueIndex(IntPtr.Zero,
-                 activeSchemeGuid,
-                 GUID_CPU,
-                 GUID_BOOST, out AcValueIndex);
+            UInt32 value = PowerReadACValueIndex(RootPowerKey: IntPtr.Zero,
+                 SchemeGuid: activeSchemeGuid,
+                 SubGroupOfPowerSettingsGuid: GUID_CPU,
+                 PowerSettingGuid: GUID_BOOST, AcValueIndex: out AcValueIndex);
 
             return AcValueIndex.ToInt32();
 
@@ -119,51 +119,51 @@ namespace GHelper.Mode
             if (boost == GetCPUBoost()) return;
 
             var hrAC = PowerWriteACValueIndex(
-                 IntPtr.Zero,
-                 activeSchemeGuid,
-                 GUID_CPU,
-                 GUID_BOOST,
-                 boost);
+                 RootPowerKey: IntPtr.Zero,
+                 SchemeGuid: activeSchemeGuid,
+                 SubGroupOfPowerSettingsGuid: GUID_CPU,
+                 PowerSettingGuid: GUID_BOOST,
+                 AcValueIndex: boost);
 
-            PowerSetActiveScheme(IntPtr.Zero, activeSchemeGuid);
+            PowerSetActiveScheme(RootPowerKey: IntPtr.Zero, SchemeGuid: activeSchemeGuid);
 
             var hrDC = PowerWriteDCValueIndex(
-                 IntPtr.Zero,
-                 activeSchemeGuid,
-                 GUID_CPU,
-                 GUID_BOOST,
-                 boost);
+                 RootPowerKey: IntPtr.Zero,
+                 SchemeGuid: activeSchemeGuid,
+                 SubGroupOfPowerSettingsGuid: GUID_CPU,
+                 PowerSettingGuid: GUID_BOOST,
+                 AcValueIndex: boost);
 
-            PowerSetActiveScheme(IntPtr.Zero, activeSchemeGuid);
+            PowerSetActiveScheme(RootPowerKey: IntPtr.Zero, SchemeGuid: activeSchemeGuid);
 
-            Logger.WriteLine("Boost " + boost);
+            Logger.WriteLine(logMessage: "Boost " + boost);
         }
 
         public static string GetPowerMode()
         {
-            PowerGetEffectiveOverlayScheme(out Guid activeScheme);
+            PowerGetEffectiveOverlayScheme(EffectiveOverlayGuid: out Guid activeScheme);
             return activeScheme.ToString();
         }
 
         public static void SetPowerMode(string scheme)
         {
 
-            if (!overlays.Contains(scheme)) return;
+            if (!overlays.Contains(item: scheme)) return;
 
-            Guid guidScheme = new Guid(scheme);
+            Guid guidScheme = new Guid(g: scheme);
 
-            uint status = PowerGetEffectiveOverlayScheme(out Guid activeScheme);
-            
+            uint status = PowerGetEffectiveOverlayScheme(EffectiveOverlayGuid: out Guid activeScheme);
+
             if (GetBatterySaverStatus())
             {
-                Logger.WriteLine("Battery Saver detected");
+                Logger.WriteLine(logMessage: "Battery Saver detected");
                 return;
             }
 
             if (status != 0 || activeScheme != guidScheme)
             {
-                status = PowerSetActiveOverlayScheme(guidScheme);
-                Logger.WriteLine("Power Mode " + scheme + ":" + (status == 0 ? "OK" : status));
+                status = PowerSetActiveOverlayScheme(OverlaySchemeGuid: guidScheme);
+                Logger.WriteLine(logMessage: "Power Mode " + scheme + ":" + (status == 0 ? "OK" : status));
             }
 
         }
@@ -173,20 +173,20 @@ namespace GHelper.Mode
             Guid activeSchemeGuid = GetActiveScheme();
             string balanced = "381b4222-f694-41f0-9685-ff5bb260df2e";
 
-            if (activeSchemeGuid.ToString() != balanced && !AppConfig.Is("skip_power_plan"))
+            if (activeSchemeGuid.ToString() != balanced && !AppConfig.Is(name: "skip_power_plan"))
             {
-                SetPowerPlan(balanced);
+                SetPowerPlan(scheme: balanced);
             }
         }
 
         public static void SetPowerPlan(string scheme)
         {
             // Skipping power modes
-            if (overlays.Contains(scheme)) return;
+            if (overlays.Contains(item: scheme)) return;
 
-            Guid guidScheme = new Guid(scheme);
-            uint status = PowerSetActiveScheme(IntPtr.Zero, guidScheme);
-            Logger.WriteLine("Power Plan " + scheme + ":" + (status == 0 ? "OK" : status));
+            Guid guidScheme = new Guid(g: scheme);
+            uint status = PowerSetActiveScheme(RootPowerKey: IntPtr.Zero, SchemeGuid: guidScheme);
+            Logger.WriteLine(logMessage: "Power Plan " + scheme + ":" + (status == 0 ? "OK" : status));
         }
 
         public static string GetDefaultPowerMode(int mode)
@@ -204,7 +204,7 @@ namespace GHelper.Mode
 
         public static void SetPowerMode(int mode)
         {
-            SetPowerMode(GetDefaultPowerMode(mode));
+            SetPowerMode(scheme: GetDefaultPowerMode(mode: mode));
         }
 
         public static int GetLidAction(bool ac)
@@ -213,16 +213,16 @@ namespace GHelper.Mode
 
             IntPtr activeIndex;
             if (ac)
-                PowerReadACValueIndex(IntPtr.Zero,
-                     activeSchemeGuid,
-                     GUID_SYSTEM_BUTTON_SUBGROUP,
-                     GUID_LIDACTION, out activeIndex);
+                PowerReadACValueIndex(RootPowerKey: IntPtr.Zero,
+                     SchemeGuid: activeSchemeGuid,
+                     SubGroupOfPowerSettingsGuid: GUID_SYSTEM_BUTTON_SUBGROUP,
+                     PowerSettingGuid: GUID_LIDACTION, AcValueIndex: out activeIndex);
 
             else
-                PowerReadDCValueIndex(IntPtr.Zero,
-                    activeSchemeGuid,
-                    GUID_SYSTEM_BUTTON_SUBGROUP,
-                    GUID_LIDACTION, out activeIndex);
+                PowerReadDCValueIndex(RootPowerKey: IntPtr.Zero,
+                    SchemeGuid: activeSchemeGuid,
+                    SubGroupOfPowerSettingsGuid: GUID_SYSTEM_BUTTON_SUBGROUP,
+                    PowerSettingGuid: GUID_LIDACTION, AcValueIndex: out activeIndex);
 
 
             return activeIndex.ToInt32();
@@ -241,39 +241,39 @@ namespace GHelper.Mode
             Guid activeSchemeGuid = GetActiveScheme();
 
             var hrAC = PowerWriteACValueIndex(
-                IntPtr.Zero,
-                activeSchemeGuid,
-                GUID_SYSTEM_BUTTON_SUBGROUP,
-                GUID_LIDACTION,
-                action);
+                RootPowerKey: IntPtr.Zero,
+                SchemeGuid: activeSchemeGuid,
+                SubGroupOfPowerSettingsGuid: GUID_SYSTEM_BUTTON_SUBGROUP,
+                PowerSettingGuid: GUID_LIDACTION,
+                AcValueIndex: action);
 
-            PowerSetActiveScheme(IntPtr.Zero, activeSchemeGuid);
+            PowerSetActiveScheme(RootPowerKey: IntPtr.Zero, SchemeGuid: activeSchemeGuid);
 
             if (!acOnly)
             {
                 var hrDC = PowerWriteDCValueIndex(
-                  IntPtr.Zero,
-                  activeSchemeGuid,
-                  GUID_SYSTEM_BUTTON_SUBGROUP,
-                  GUID_LIDACTION,
-                  action);
+                  RootPowerKey: IntPtr.Zero,
+                  SchemeGuid: activeSchemeGuid,
+                  SubGroupOfPowerSettingsGuid: GUID_SYSTEM_BUTTON_SUBGROUP,
+                  PowerSettingGuid: GUID_LIDACTION,
+                  AcValueIndex: action);
 
-                PowerSetActiveScheme(IntPtr.Zero, activeSchemeGuid);
+                PowerSetActiveScheme(RootPowerKey: IntPtr.Zero, SchemeGuid: activeSchemeGuid);
             }
 
-            Logger.WriteLine("Changed Lid Action to " + action);
+            Logger.WriteLine(logMessage: "Changed Lid Action to " + action);
         }
 
         public static int GetHibernateAfter()
         {
             Guid activeSchemeGuid = GetActiveScheme();
             IntPtr seconds;
-            PowerReadDCValueIndex(IntPtr.Zero,
-                    activeSchemeGuid,
-                    GUID_SLEEP_SUBGROUP,
-                    GUID_HIBERNATEIDLE, out seconds);
+            PowerReadDCValueIndex(RootPowerKey: IntPtr.Zero,
+                    SchemeGuid: activeSchemeGuid,
+                    SubGroupOfPowerSettingsGuid: GUID_SLEEP_SUBGROUP,
+                    PowerSettingGuid: GUID_HIBERNATEIDLE, AcValueIndex: out seconds);
 
-            Logger.WriteLine("Hibernate after " + seconds);
+            Logger.WriteLine(logMessage: "Hibernate after " + seconds);
             return (seconds.ToInt32() / 60);
         }
 
@@ -284,18 +284,18 @@ namespace GHelper.Mode
 
             Guid activeSchemeGuid = GetActiveScheme();
             var hrAC = PowerWriteDCValueIndex(
-                IntPtr.Zero,
-                activeSchemeGuid,
-                GUID_SLEEP_SUBGROUP,
-                GUID_HIBERNATEIDLE,
-                seconds);
+                RootPowerKey: IntPtr.Zero,
+                SchemeGuid: activeSchemeGuid,
+                SubGroupOfPowerSettingsGuid: GUID_SLEEP_SUBGROUP,
+                PowerSettingGuid: GUID_HIBERNATEIDLE,
+                AcValueIndex: seconds);
 
-            PowerSetActiveScheme(IntPtr.Zero, activeSchemeGuid);
+            PowerSetActiveScheme(RootPowerKey: IntPtr.Zero, SchemeGuid: activeSchemeGuid);
 
-            Logger.WriteLine("Setting Hibernate after " + seconds + ": " + (hrAC == 0 ? "OK" : hrAC));
+            Logger.WriteLine(logMessage: "Setting Hibernate after " + seconds + ": " + (hrAC == 0 ? "OK" : hrAC));
         }
 
-        [DllImport("Kernel32")]
+        [DllImport(dllName: "Kernel32")]
         private static extern bool GetSystemPowerStatus(SystemPowerStatus sps);
         public enum ACLineStatus : byte
         {
@@ -313,7 +313,7 @@ namespace GHelper.Mode
         }
 
         // Fields must mirror their unmanaged counterparts, in order
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public class SystemPowerStatus
         {
             public ACLineStatus ACLineStatus;
@@ -329,7 +329,7 @@ namespace GHelper.Mode
             SystemPowerStatus sps = new SystemPowerStatus();
             try
             {
-                GetSystemPowerStatus(sps);
+                GetSystemPowerStatus(sps: sps);
                 return (sps.SystemStatusFlag > 0);
             } catch (Exception ex)
             {

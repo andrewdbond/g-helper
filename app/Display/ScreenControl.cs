@@ -9,48 +9,48 @@ namespace GHelper.Display
 
         public void AutoScreen(bool force = false)
         {
-            if (force || AppConfig.Is("screen_auto"))
+            if (force || AppConfig.Is(name: "screen_auto"))
             {
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online)
-                    SetScreen(MAX_REFRESH, 1);
+                    SetScreen(frequency: MAX_REFRESH, overdrive: 1);
                 else
-                    SetScreen(60, 0);
+                    SetScreen(frequency: 60, overdrive: 0);
             }
             else
             {
-                SetScreen(overdrive: AppConfig.Get("overdrive"));
+                SetScreen(overdrive: AppConfig.Get(name: "overdrive"));
             }
         }
 
         public void SetScreen(int frequency = -1, int overdrive = -1, int miniled = -1)
         {
-            var laptopScreen = ScreenNative.FindLaptopScreen(true);
+            var laptopScreen = ScreenNative.FindLaptopScreen(log: true);
 
             if (laptopScreen is null) return;
 
-            if (ScreenNative.GetRefreshRate(laptopScreen) < 0) return;
+            if (ScreenNative.GetRefreshRate(laptopScreen: laptopScreen) < 0) return;
 
             if (frequency >= MAX_REFRESH)
             {
-                frequency = ScreenNative.GetMaxRefreshRate(laptopScreen);
+                frequency = ScreenNative.GetMaxRefreshRate(laptopScreen: laptopScreen);
             }
 
             if (frequency > 0)
             {
-                ScreenNative.SetRefreshRate(laptopScreen, frequency);
+                ScreenNative.SetRefreshRate(laptopScreen: laptopScreen, frequency: frequency);
             }
 
             if (overdrive >= 0)
             {
-                if (AppConfig.Get("no_overdrive") == 1) overdrive = 0;
-                Program.acpi.DeviceSet(AsusACPI.ScreenOverdrive, overdrive, "ScreenOverdrive");
+                if (AppConfig.Get(name: "no_overdrive") == 1) overdrive = 0;
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.ScreenOverdrive, Status: overdrive, logName: "ScreenOverdrive");
 
             }
 
             if (miniled >= 0)
             {
-                Program.acpi.DeviceSet(AsusACPI.ScreenMiniled, miniled, "Miniled");
-                Debug.WriteLine("Miniled " + miniled);
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.ScreenMiniled, Status: miniled, logName: "Miniled");
+                Debug.WriteLine(message: "Miniled " + miniled);
             }
 
             InitScreen();
@@ -59,38 +59,38 @@ namespace GHelper.Display
 
         public void ToogleMiniled()
         {
-            int miniled = (Program.acpi.DeviceGet(AsusACPI.ScreenMiniled) == 1) ? 0 : 1;
-            AppConfig.Set("miniled", miniled);
-            SetScreen(-1, -1, miniled);
+            int miniled = (Program.acpi.DeviceGet(DeviceID: AsusACPI.ScreenMiniled) == 1) ? 0 : 1;
+            AppConfig.Set(name: "miniled", value: miniled);
+            SetScreen(frequency: -1, overdrive: -1, miniled: miniled);
         }
 
         public void InitScreen()
         {
             var laptopScreen = ScreenNative.FindLaptopScreen();
 
-            int frequency = ScreenNative.GetRefreshRate(laptopScreen);
-            int maxFrequency = ScreenNative.GetMaxRefreshRate(laptopScreen);
+            int frequency = ScreenNative.GetRefreshRate(laptopScreen: laptopScreen);
+            int maxFrequency = ScreenNative.GetMaxRefreshRate(laptopScreen: laptopScreen);
 
-            bool screenAuto = AppConfig.Is("screen_auto");
-            bool overdriveSetting = !AppConfig.Is("no_overdrive");
+            bool screenAuto = AppConfig.Is(name: "screen_auto");
+            bool overdriveSetting = !AppConfig.Is(name: "no_overdrive");
 
-            int overdrive = Program.acpi.DeviceGet(AsusACPI.ScreenOverdrive);
-            int miniled = Program.acpi.DeviceGet(AsusACPI.ScreenMiniled);
+            int overdrive = Program.acpi.DeviceGet(DeviceID: AsusACPI.ScreenOverdrive);
+            int miniled = Program.acpi.DeviceGet(DeviceID: AsusACPI.ScreenMiniled);
 
             bool hdr = false;
 
             if (miniled >= 0)
             {
-                AppConfig.Set("miniled", miniled);
+                AppConfig.Set(name: "miniled", value: miniled);
                 hdr = ScreenCCD.GetHDRStatus();
             }
 
             bool screenEnabled = (frequency >= 0);
 
-            AppConfig.Set("frequency", frequency);
-            AppConfig.Set("overdrive", overdrive);
+            AppConfig.Set(name: "frequency", value: frequency);
+            AppConfig.Set(name: "overdrive", value: overdrive);
 
-            Program.settingsForm.Invoke(delegate
+            Program.settingsForm.Invoke(method: delegate
             {
                 Program.settingsForm.VisualiseScreen(
                     screenEnabled: screenEnabled,

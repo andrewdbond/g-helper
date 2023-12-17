@@ -29,35 +29,35 @@ namespace GHelper.Helpers
 
             // Make a backup copy of the INI file
             string backupPath = path + ".bak";
-            File.Copy(path, backupPath, true);
+            File.Copy(sourceFileName: path, destFileName: backupPath, overwrite: true);
 
-            string fileContents = File.ReadAllText(path, Encoding.Unicode);
+            string fileContents = File.ReadAllText(path: path, encoding: Encoding.Unicode);
 
             // Find the section [BatteryHealthCharging]
             string sectionPattern = @"\[BatteryHealthCharging\]\s*(version=\d+)?\s+value=(\d+)";
-            Match sectionMatch = Regex.Match(fileContents, sectionPattern);
+            Match sectionMatch = Regex.Match(input: fileContents, pattern: sectionPattern);
             if (sectionMatch.Success)
             {
                 // Replace the value with the new value
-                string oldValueString = sectionMatch.Groups[2].Value;
-                int oldValue = int.Parse(oldValueString);
-                string newSection = sectionMatch.Value.Replace($"value={oldValue}", $"value={newValue}");
+                string oldValueString = sectionMatch.Groups[groupnum: 2].Value;
+                int oldValue = int.Parse(s: oldValueString);
+                string newSection = sectionMatch.Value.Replace(oldValue: $"value={oldValue}", newValue: $"value={newValue}");
 
                 // Replace the section in the file contents
-                fileContents = fileContents.Replace(sectionMatch.Value, newSection);
+                fileContents = fileContents.Replace(oldValue: sectionMatch.Value, newValue: newSection);
 
-                File.WriteAllText(path, fileContents, Encoding.Unicode);
+                File.WriteAllText(path: path, contents: fileContents, encoding: Encoding.Unicode);
             }
         }
 
         public static bool IsRunning()
         {
-            return Process.GetProcessesByName("AsusOptimization").Count() > 0;
+            return Process.GetProcessesByName(processName: "AsusOptimization").Count() > 0;
         }
 
         public static bool IsOSDRunning()
         {
-            return Process.GetProcessesByName("AsusOSD").Count() > 0;
+            return Process.GetProcessesByName(processName: "AsusOSD").Count() > 0;
         }
 
 
@@ -66,7 +66,7 @@ namespace GHelper.Helpers
             int count = 0;
             foreach (string service in services)
             {
-                if (Process.GetProcessesByName(service).Count() > 0) count++;
+                if (Process.GetProcessesByName(processName: service).Count() > 0) count++;
             }
             return count;
         }
@@ -76,16 +76,16 @@ namespace GHelper.Helpers
         {
             try
             {
-                RegistryKey myKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\ASUS\ASUS System Control Interface\AsusOptimization\ASUS Keyboard Hotkeys", true);
+                RegistryKey myKey = Registry.LocalMachine.OpenSubKey(name: @"SOFTWARE\ASUS\ASUS System Control Interface\AsusOptimization\ASUS Keyboard Hotkeys", writable: true);
                 if (myKey != null)
                 {
-                    myKey.SetValue("TurnOffKeybdLight", value, RegistryValueKind.DWord);
+                    myKey.SetValue(name: "TurnOffKeybdLight", value: value, valueKind: RegistryValueKind.DWord);
                     myKey.Close();
                 }
             }
             catch (Exception ex)
             {
-                Logger.WriteLine(ex.Message);
+                Logger.WriteLine(logMessage: ex.Message);
             }
         }
 
@@ -95,7 +95,7 @@ namespace GHelper.Helpers
         {
             foreach (string service in services)
             {
-                ProcessHelper.StopDisableService(service);
+                ProcessHelper.StopDisableService(serviceName: service);
             }
         }
 
@@ -103,7 +103,7 @@ namespace GHelper.Helpers
         {
             foreach (string service in services)
             {
-                ProcessHelper.StartEnableService(service);
+                ProcessHelper.StartEnableService(serviceName: service);
             }
         }
 

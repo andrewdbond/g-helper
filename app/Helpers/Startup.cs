@@ -11,7 +11,7 @@ public class Startup
     public static bool IsScheduled()
     {
         using (TaskService taskService = new TaskService())
-            return (taskService.RootFolder.AllTasks.Any(t => t.Name == taskName));
+            return (taskService.RootFolder.AllTasks.Any(predicate: t => t.Name == taskName));
     }
 
     public static void ReScheduleAdmin()
@@ -27,15 +27,15 @@ public class Startup
     {
         using (TaskService taskService = new TaskService())
         {
-            var task = taskService.RootFolder.AllTasks.FirstOrDefault(t => t.Name == taskName);
+            var task = taskService.RootFolder.AllTasks.FirstOrDefault(predicate: t => t.Name == taskName);
             if (task != null)
             {
                 string strExeFilePath = Application.ExecutablePath.Trim();
                 string action = task.Definition.Actions.FirstOrDefault()!.ToString().Trim();
-                if (!strExeFilePath.Equals(action, StringComparison.OrdinalIgnoreCase) && !File.Exists(action))
+                if (!strExeFilePath.Equals(value: action, comparisonType: StringComparison.OrdinalIgnoreCase) && !File.Exists(path: action))
                 {
-                    Logger.WriteLine("File doesn't exist: " + action);
-                    Logger.WriteLine("Rescheduling to: " + strExeFilePath);
+                    Logger.WriteLine(logMessage: "File doesn't exist: " + action);
+                    Logger.WriteLine(logMessage: "Rescheduling to: " + strExeFilePath);
                     UnSchedule();
                     Schedule();
                 }
@@ -56,27 +56,27 @@ public class Startup
         {
 
             td.RegistrationInfo.Description = "G-Helper Auto Start";
-            td.Triggers.Add(new LogonTrigger { UserId = userId, Delay = TimeSpan.FromSeconds(1) });
-            td.Actions.Add(strExeFilePath);
+            td.Triggers.Add(unboundTrigger: new LogonTrigger { UserId = userId, Delay = TimeSpan.FromSeconds(value: 1) });
+            td.Actions.Add(path: strExeFilePath);
 
-            if (ProcessHelper.IsUserAdministrator()) 
+            if (ProcessHelper.IsUserAdministrator())
                 td.Principal.RunLevel = TaskRunLevel.Highest;
 
             td.Settings.StopIfGoingOnBatteries = false;
             td.Settings.DisallowStartIfOnBatteries = false;
             td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
 
-            Debug.WriteLine(strExeFilePath);
-            Debug.WriteLine(userId);
+            Debug.WriteLine(message: strExeFilePath);
+            Debug.WriteLine(message: userId);
 
             try
             {
-                TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, td);
+                TaskService.Instance.RootFolder.RegisterTaskDefinition(path: taskName, definition: td);
             }
             catch (Exception e)
             {
                 if (ProcessHelper.IsUserAdministrator())
-                    MessageBox.Show("Can't create a start up task. Try running Task Scheduler by hand and manually deleting GHelper task if it exists there.", "Scheduler Error", MessageBoxButtons.OK);
+                    MessageBox.Show(text: "Can't create a start up task. Try running Task Scheduler by hand and manually deleting GHelper task if it exists there.", caption: "Scheduler Error", buttons: MessageBoxButtons.OK);
                 else
                     ProcessHelper.RunAsAdmin();
             }
@@ -90,12 +90,12 @@ public class Startup
         {
             try
             {
-                taskService.RootFolder.DeleteTask(taskName);
+                taskService.RootFolder.DeleteTask(name: taskName);
             }
             catch (Exception e)
             {
                 if (ProcessHelper.IsUserAdministrator())
-                    MessageBox.Show("Can't remove task. Try running Task Scheduler by hand and manually deleting GHelper task if it exists there.", "Scheduler Error", MessageBoxButtons.OK);
+                    MessageBox.Show(text: "Can't remove task. Try running Task Scheduler by hand and manually deleting GHelper task if it exists there.", caption: "Scheduler Error", buttons: MessageBoxButtons.OK);
                 else
                     ProcessHelper.RunAsAdmin();
             }

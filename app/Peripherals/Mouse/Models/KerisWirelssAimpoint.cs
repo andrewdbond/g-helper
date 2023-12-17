@@ -3,11 +3,11 @@
     //P709_Wireless
     public class KerisWirelssAimpoint : AsusMouse
     {
-        public KerisWirelssAimpoint() : base(0x0B05, 0x1A68, "mi_00", true)
+        public KerisWirelssAimpoint() : base(vendorId: 0x0B05, productId: 0x1A68, path: "mi_00", wireless: true)
         {
         }
 
-        protected KerisWirelssAimpoint(ushort vendorId, bool wireless) : base(0x0B05, vendorId, "mi_00", wireless)
+        protected KerisWirelssAimpoint(ushort vendorId, bool wireless) : base(vendorId: 0x0B05, productId: vendorId, path: "mi_00", wireless: wireless)
         {
         }
 
@@ -103,7 +103,7 @@
 
     public class KerisWirelssAimpointWired : KerisWirelssAimpoint
     {
-        public KerisWirelssAimpointWired() : base(0x1A66, false)
+        public KerisWirelssAimpointWired() : base(vendorId: 0x1A66, wireless: false)
         {
         }
 

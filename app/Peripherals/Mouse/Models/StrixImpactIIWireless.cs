@@ -3,11 +3,11 @@
     //P513
     public class StrixImpactIIWireless : AsusMouse
     {
-        public StrixImpactIIWireless() : base(0x0B05, 0x1949, "mi_00", true)
+        public StrixImpactIIWireless() : base(vendorId: 0x0B05, productId: 0x1949, path: "mi_00", wireless: true)
         {
         }
 
-        protected StrixImpactIIWireless(ushort vendorId, bool wireless) : base(0x0B05, vendorId, "mi_00", wireless)
+        protected StrixImpactIIWireless(ushort vendorId, bool wireless) : base(vendorId: 0x0B05, productId: vendorId, path: "mi_00", wireless: wireless)
         {
         }
 
@@ -115,12 +115,12 @@
 
         protected override byte[] GetUpdateEnergySettingsPacket(int lowBatteryWarning, PowerOffSetting powerOff)
         {
-            return base.GetUpdateEnergySettingsPacket(lowBatteryWarning / 25, powerOff);
+            return base.GetUpdateEnergySettingsPacket(lowBatteryWarning: lowBatteryWarning / 25, powerOff: powerOff);
         }
 
         protected override int ParseLowBatteryWarning(byte[] packet)
         {
-            int lowBat = base.ParseLowBatteryWarning(packet);
+            int lowBat = base.ParseLowBatteryWarning(packet: packet);
 
             return lowBat * 25;
         }
@@ -175,10 +175,10 @@
 
             LightingSetting setting = new LightingSetting();
 
-            setting.LightingMode = LightingModeForIndex(packet[offset + 0]);
+            setting.LightingMode = LightingModeForIndex(lightingMode: packet[offset + 0]);
             setting.Brightness = packet[offset + 1];
 
-            setting.RGBColor = Color.FromArgb(packet[offset + 2], packet[offset + 3], packet[offset + 4]);
+            setting.RGBColor = Color.FromArgb(red: packet[offset + 2], green: packet[offset + 3], blue: packet[offset + 4]);
 
 
             return setting;
@@ -193,20 +193,20 @@
             //Mouse sends all lighting zones in one response
             //00 12 03 00 00 [00 04 ff 00 80] [00 04 00 ff ff] [00 04 ff ff ff] 00 00 00 00 00 00 00 00 00 00 00 00 00 0
             //No idea what the 3rd zone is as the mouse only has 2
-            byte[]? response = WriteForResponse(GetReadLightingModePacket(LightingZone.All));
+            byte[]? response = WriteForResponse(packet: GetReadLightingModePacket(zone: LightingZone.All));
             if (response is null) return;
 
             LightingZone[] lz = SupportedLightingZones();
             for (int i = 0; i < lz.Length; ++i)
             {
-                LightingSetting? ls = ParseLightingSetting(response, lz[i]);
+                LightingSetting? ls = ParseLightingSetting(packet: response, zone: lz[i]);
                 if (ls is null)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
                     continue;
                 }
 
-                Logger.WriteLine(GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
                 LightingSetting[i] = ls;
             }
         }
@@ -214,7 +214,7 @@
 
     public class StrixImpactIIWirelessWired : StrixImpactIIWireless
     {
-        public StrixImpactIIWirelessWired() : base(0x1947, false)
+        public StrixImpactIIWirelessWired() : base(vendorId: 0x1947, wireless: false)
         {
         }
 

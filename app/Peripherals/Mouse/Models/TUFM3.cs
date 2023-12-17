@@ -3,7 +3,7 @@
     //P306_Wireless
     public class TUFM3 : AsusMouse
     {
-        public TUFM3() : base(0x0B05, 0x1910, "mi_01", false)
+        public TUFM3() : base(vendorId: 0x0B05, productId: 0x1910, path: "mi_01", wireless: false)
         {
         }
 
@@ -45,7 +45,7 @@
             {
                 return LightingMode.React;
             }
-            return base.LightingModeForIndex(lightingMode);
+            return base.LightingModeForIndex(lightingMode: lightingMode);
 
         }
 

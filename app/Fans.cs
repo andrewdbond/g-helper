@@ -35,11 +35,11 @@ namespace GHelper
 
             InitializeComponent();
 
-            fanSensorControl = new FanSensorControl(this);
+            fanSensorControl = new FanSensorControl(fansForm: this);
 
             //float dpi = ControlHelper.GetDpiScale(this).Value;
             //comboModes.Size = new Size(comboModes.Width, (int)dpi * 18);
-            comboModes.ClientSize = new Size(comboModes.Width, comboModes.Height - 4);
+            comboModes.ClientSize = new Size(width: comboModes.Width, height: comboModes.Height - 4);
 
             Text = Properties.Strings.FansAndPower;
             labelPowerLimits.Text = Properties.Strings.PowerLimits;
@@ -63,36 +63,36 @@ namespace GHelper
 
             buttonCalibrate.Text = Properties.Strings.Calibrate;
 
-            InitTheme(true);
+            InitTheme(setDPI: true);
 
             labelTip.Visible = false;
             labelTip.BackColor = Color.Transparent;
 
             FormClosing += Fans_FormClosing;
 
-            seriesCPU = chartCPU.Series.Add("CPU");
-            seriesGPU = chartGPU.Series.Add("GPU");
-            seriesMid = chartMid.Series.Add("Mid");
-            seriesXGM = chartXGM.Series.Add("XGM");
+            seriesCPU = chartCPU.Series.Add(name: "CPU");
+            seriesGPU = chartGPU.Series.Add(name: "GPU");
+            seriesMid = chartMid.Series.Add(name: "Mid");
+            seriesXGM = chartXGM.Series.Add(name: "XGM");
 
             seriesCPU.Color = colorStandard;
             seriesGPU.Color = colorTurbo;
             seriesMid.Color = colorEco;
             seriesXGM.Color = Color.Orange;
 
-            chartCPU.MouseMove += (sender, e) => ChartCPU_MouseMove(sender, e, AsusFan.CPU);
+            chartCPU.MouseMove += (sender, e) => ChartCPU_MouseMove(sender: sender, e: e, device: AsusFan.CPU);
             chartCPU.MouseUp += ChartCPU_MouseUp;
             chartCPU.MouseLeave += ChartCPU_MouseLeave;
 
-            chartGPU.MouseMove += (sender, e) => ChartCPU_MouseMove(sender, e, AsusFan.GPU);
+            chartGPU.MouseMove += (sender, e) => ChartCPU_MouseMove(sender: sender, e: e, device: AsusFan.GPU);
             chartGPU.MouseUp += ChartCPU_MouseUp;
             chartGPU.MouseLeave += ChartCPU_MouseLeave;
 
-            chartMid.MouseMove += (sender, e) => ChartCPU_MouseMove(sender, e, AsusFan.Mid);
+            chartMid.MouseMove += (sender, e) => ChartCPU_MouseMove(sender: sender, e: e, device: AsusFan.Mid);
             chartMid.MouseUp += ChartCPU_MouseUp;
             chartMid.MouseLeave += ChartCPU_MouseLeave;
 
-            chartXGM.MouseMove += (sender, e) => ChartCPU_MouseMove(sender, e, AsusFan.XGM);
+            chartXGM.MouseMove += (sender, e) => ChartCPU_MouseMove(sender: sender, e: e, device: AsusFan.XGM);
             chartXGM.MouseUp += ChartCPU_MouseUp;
             chartXGM.MouseLeave += ChartCPU_MouseLeave;
 
@@ -171,7 +171,7 @@ namespace GHelper
             trackTemp.Maximum = RyzenControl.MaxTemp;
 
             comboPowerMode.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboPowerMode.DataSource = new BindingSource(PowerNative.powerModes, null);
+            comboPowerMode.DataSource = new BindingSource(dataSource: PowerNative.powerModes, dataMember: null);
             comboPowerMode.DisplayMember = "Value";
             comboPowerMode.ValueMember = "Key";
 
@@ -211,9 +211,9 @@ namespace GHelper
 
             buttonCalibrate.Click += ButtonCalibrate_Click;
 
-            ToggleNavigation(0);
+            ToggleNavigation(index: 0);
 
-            if (Program.acpi.DeviceGet(AsusACPI.DevsCPUFanCurve) < 0) buttonCalibrate.Visible = false;
+            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.DevsCPUFanCurve) < 0) buttonCalibrate.Visible = false;
 
             FormClosed += Fans_FormClosed;
 
@@ -232,15 +232,15 @@ namespace GHelper
             if (sender is null) return;
             Chart chart = (Chart)sender;
 
-            HitTestResult result = chart.HitTest(e.X, e.Y);
+            HitTestResult result = chart.HitTest(x: e.X, y: e.Y);
 
-            if ((result.ChartElementType == ChartElementType.AxisLabels || result.ChartElementType == ChartElementType.Axis) && result.Axis == chart.ChartAreas[0].AxisY)
+            if ((result.ChartElementType == ChartElementType.AxisLabels || result.ChartElementType == ChartElementType.Axis) && result.Axis == chart.ChartAreas[index: 0].AxisY)
             {
                 fanRpm = !fanRpm;
-                SetAxis(chartCPU, AsusFan.CPU);
-                SetAxis(chartGPU, AsusFan.GPU);
-                if (chartMid.Visible) SetAxis(chartMid, AsusFan.Mid);
-                if (chartXGM.Visible) SetAxis(chartXGM, AsusFan.XGM);
+                SetAxis(chart: chartCPU, device: AsusFan.CPU);
+                SetAxis(chart: chartGPU, device: AsusFan.GPU);
+                if (chartMid.Visible) SetAxis(chart: chartMid, device: AsusFan.Mid);
+                if (chartXGM.Visible) SetAxis(chart: chartXGM, device: AsusFan.XGM);
             }
 
         }
@@ -248,12 +248,12 @@ namespace GHelper
         private void Fans_FormClosed(object? sender, FormClosedEventArgs e)
         {
             //Because windows charts seem to eat a lot of memory :(
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+            GC.Collect(generation: GC.MaxGeneration, mode: GCCollectionMode.Forced);
         }
 
         private void CheckApplyUV_Click(object? sender, EventArgs e)
         {
-            AppConfig.SetMode("auto_uv", checkApplyUV.Checked ? 1 : 0);
+            AppConfig.SetMode(name: "auto_uv", value: checkApplyUV.Checked ? 1 : 0);
             modeControl.AutoRyzen();
         }
 
@@ -296,28 +296,28 @@ namespace GHelper
                     break;
             }
 
-            ResumeLayout(false);
+            ResumeLayout(performLayout: false);
             PerformLayout();
         }
 
         private void ButtonAdvanced_Click(object? sender, EventArgs e)
         {
-            ToggleNavigation(2);
+            ToggleNavigation(index: 2);
         }
 
         private void ButtonGPU_Click(object? sender, EventArgs e)
         {
-            ToggleNavigation(1);
+            ToggleNavigation(index: 1);
         }
 
         private void ButtonCPU_Click(object? sender, EventArgs e)
         {
-            ToggleNavigation(0);
+            ToggleNavigation(index: 0);
         }
 
         private void ButtonApplyAdvanced_Click(object? sender, EventArgs e)
         {
-            modeControl.SetRyzen(true);
+            modeControl.SetRyzen(launchAsAdmin: true);
             checkApplyUV.Enabled = true;
         }
 
@@ -326,13 +326,13 @@ namespace GHelper
 
             //if (!ProcessHelper.IsUserAdministrator()) return;
 
-            int cpuUV = Math.Max(trackUV.Minimum, Math.Min(trackUV.Maximum, AppConfig.GetMode("cpu_uv", 0)));
-            int igpuUV = Math.Max(trackUViGPU.Minimum, Math.Min(trackUViGPU.Maximum, AppConfig.GetMode("igpu_uv", 0)));
+            int cpuUV = Math.Max(val1: trackUV.Minimum, val2: Math.Min(val1: trackUV.Maximum, val2: AppConfig.GetMode(name: "cpu_uv", empty: 0)));
+            int igpuUV = Math.Max(val1: trackUViGPU.Minimum, val2: Math.Min(val1: trackUViGPU.Maximum, val2: AppConfig.GetMode(name: "igpu_uv", empty: 0)));
 
-            int temp = AppConfig.GetMode("cpu_temp");
+            int temp = AppConfig.GetMode(name: "cpu_temp");
             if (temp < RyzenControl.MinTemp || temp > RyzenControl.MaxTemp) temp = RyzenControl.MaxTemp;
 
-            checkApplyUV.Enabled = checkApplyUV.Checked = AppConfig.IsMode("auto_uv");
+            checkApplyUV.Enabled = checkApplyUV.Checked = AppConfig.IsMode(name: "auto_uv");
 
             trackUV.Value = cpuUV;
             trackUViGPU.Value = igpuUV;
@@ -366,14 +366,14 @@ namespace GHelper
 
         private void AdvancedScroll()
         {
-            AppConfig.SetMode("auto_uv", 0);
+            AppConfig.SetMode(name: "auto_uv", value: 0);
             checkApplyUV.Enabled = checkApplyUV.Checked = false;
 
             VisualiseAdvanced();
 
-            AppConfig.SetMode("cpu_temp", trackTemp.Value);
-            AppConfig.SetMode("cpu_uv", trackUV.Value);
-            AppConfig.SetMode("igpu_uv", trackUViGPU.Value);
+            AppConfig.SetMode(name: "cpu_temp", value: trackTemp.Value);
+            AppConfig.SetMode(name: "cpu_uv", value: trackUV.Value);
+            AppConfig.SetMode(name: "igpu_uv", value: trackUViGPU.Value);
         }
 
 
@@ -391,7 +391,7 @@ namespace GHelper
         {
             if (comboModes.DropDownStyle == ComboBoxStyle.DropDownList) return;
             if (!Modes.IsCurrentCustom()) return;
-            AppConfig.SetMode("mode_name", comboModes.Text);
+            AppConfig.SetMode(name: "mode_name", value: comboModes.Text);
         }
 
         private void RenameToggle()
@@ -416,17 +416,17 @@ namespace GHelper
             int mode = Modes.GetCurrent();
             if (!Modes.IsCurrentCustom()) return;
 
-            Modes.Remove(mode);
+            Modes.Remove(mode: mode);
             FillModes();
 
-            modeControl.SetPerformanceMode(AsusACPI.PerformanceBalanced);
+            modeControl.SetPerformanceMode(mode: AsusACPI.PerformanceBalanced);
 
         }
 
         private void FillModes()
         {
             comboModes.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboModes.DataSource = new BindingSource(Modes.GetDictonary(), null);
+            comboModes.DataSource = new BindingSource(dataSource: Modes.GetDictonary(), dataMember: null);
             comboModes.DisplayMember = "Value";
             comboModes.ValueMember = "Key";
         }
@@ -435,7 +435,7 @@ namespace GHelper
         {
             int mode = Modes.Add();
             FillModes();
-            modeControl.SetPerformanceMode(mode);
+            modeControl.SetPerformanceMode(mode: mode);
         }
 
         public void InitMode()
@@ -452,21 +452,21 @@ namespace GHelper
             if (selectedMode == null) return;
             if ((int)selectedMode == Modes.GetCurrent()) return;
 
-            Debug.WriteLine(selectedMode);
+            Debug.WriteLine(value: selectedMode);
 
-            modeControl.SetPerformanceMode((int)selectedMode);
+            modeControl.SetPerformanceMode(mode: (int)selectedMode);
         }
 
         private void TrackGPU_MouseUp(object? sender, MouseEventArgs e)
         {
             modeControl.SetGPUPower();
-            modeControl.SetGPUClocks(true);
+            modeControl.SetGPUClocks(launchAsAdmin: true);
         }
 
         public void InitGPU()
         {
 
-            if (Program.acpi.DeviceGet(AsusACPI.GPUEco) == 1)
+            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUEco) == 1)
             {
                 gpuVisible = buttonGPU.Visible = false;
                 return;
@@ -488,12 +488,12 @@ namespace GHelper
             {
                 gpuVisible = buttonGPU.Visible = true;
 
-                int gpu_boost = AppConfig.GetMode("gpu_boost");
-                int gpu_temp = AppConfig.GetMode("gpu_temp");
+                int gpu_boost = AppConfig.GetMode(name: "gpu_boost");
+                int gpu_temp = AppConfig.GetMode(name: "gpu_temp");
 
-                int core = AppConfig.GetMode("gpu_core");
-                int memory = AppConfig.GetMode("gpu_memory");
-                int clock_limit = AppConfig.GetMode("gpu_clock_limit");
+                int core = AppConfig.GetMode(name: "gpu_core");
+                int memory = AppConfig.GetMode(name: "gpu_memory");
+                int clock_limit = AppConfig.GetMode(name: "gpu_clock_limit");
 
                 if (gpu_boost < 0) gpu_boost = AsusACPI.MaxGPUBoost;
                 if (gpu_temp < 0) gpu_temp = AsusACPI.MaxGPUTemp;
@@ -502,7 +502,7 @@ namespace GHelper
                 if (memory == -1) memory = 0;
                 if (clock_limit == -1) clock_limit = NvidiaGpuControl.MaxClockLimit;
 
-                if (nvControl.GetClocks(out int current_core, out int current_memory))
+                if (nvControl.GetClocks(core: out int current_core, memory: out int current_memory))
                 {
                     core = current_core;
                     memory = current_memory;
@@ -523,23 +523,23 @@ namespace GHelper
                 }
 
                 //}
-                trackGPUClockLimit.Value = Math.Max(Math.Min(clock_limit, NvidiaGpuControl.MaxClockLimit), NvidiaGpuControl.MinClockLimit);
+                trackGPUClockLimit.Value = Math.Max(val1: Math.Min(val1: clock_limit, val2: NvidiaGpuControl.MaxClockLimit), val2: NvidiaGpuControl.MinClockLimit);
 
-                trackGPUCore.Value = Math.Max(Math.Min(core, NvidiaGpuControl.MaxCoreOffset), NvidiaGpuControl.MinCoreOffset);
-                trackGPUMemory.Value = Math.Max(Math.Min(memory, NvidiaGpuControl.MaxMemoryOffset), NvidiaGpuControl.MinMemoryOffset);
+                trackGPUCore.Value = Math.Max(val1: Math.Min(val1: core, val2: NvidiaGpuControl.MaxCoreOffset), val2: NvidiaGpuControl.MinCoreOffset);
+                trackGPUMemory.Value = Math.Max(val1: Math.Min(val1: memory, val2: NvidiaGpuControl.MaxMemoryOffset), val2: NvidiaGpuControl.MinMemoryOffset);
 
-                trackGPUBoost.Value = Math.Max(Math.Min(gpu_boost, AsusACPI.MaxGPUBoost), AsusACPI.MinGPUBoost);
-                trackGPUTemp.Value = Math.Max(Math.Min(gpu_temp, AsusACPI.MaxGPUTemp), AsusACPI.MinGPUTemp);
+                trackGPUBoost.Value = Math.Max(val1: Math.Min(val1: gpu_boost, val2: AsusACPI.MaxGPUBoost), val2: AsusACPI.MinGPUBoost);
+                trackGPUTemp.Value = Math.Max(val1: Math.Min(val1: gpu_temp, val2: AsusACPI.MaxGPUTemp), val2: AsusACPI.MinGPUTemp);
 
-                panelGPUBoost.Visible = (Program.acpi.DeviceGet(AsusACPI.PPT_GPUC0) >= 0);
-                panelGPUTemp.Visible = (Program.acpi.DeviceGet(AsusACPI.PPT_GPUC2) >= 0);
+                panelGPUBoost.Visible = (Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_GPUC0) >= 0);
+                panelGPUTemp.Visible = (Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_GPUC2) >= 0);
 
                 VisualiseGPUSettings();
 
             }
             catch (Exception ex)
             {
-                Logger.WriteLine(ex.ToString());
+                Logger.WriteLine(logMessage: ex.ToString());
                 gpuVisible = buttonGPU.Visible = false;
             }
 
@@ -562,10 +562,10 @@ namespace GHelper
         private void trackGPUClockLimit_Scroll(object? sender, EventArgs e)
         {
 
-            int maxClock = (int)Math.Round((float)trackGPUClockLimit.Value / 50) * 50;
+            int maxClock = (int)Math.Round(a: (float)trackGPUClockLimit.Value / 50) * 50;
 
             trackGPUClockLimit.Value = maxClock;
-            AppConfig.SetMode("gpu_clock_limit", maxClock);
+            AppConfig.SetMode(name: "gpu_clock_limit", value: maxClock);
             VisualiseGPUSettings();
         }
 
@@ -573,10 +573,10 @@ namespace GHelper
         {
             if (sender is null) return;
             TrackBar track = (TrackBar)sender;
-            track.Value = (int)Math.Round((float)track.Value / 5) * 5;
+            track.Value = (int)Math.Round(a: (float)track.Value / 5) * 5;
 
-            AppConfig.SetMode("gpu_core", trackGPUCore.Value);
-            AppConfig.SetMode("gpu_memory", trackGPUMemory.Value);
+            AppConfig.SetMode(name: "gpu_core", value: trackGPUCore.Value);
+            AppConfig.SetMode(name: "gpu_memory", value: trackGPUMemory.Value);
 
 
             VisualiseGPUSettings();
@@ -585,8 +585,8 @@ namespace GHelper
 
         private void trackGPUPower_Scroll(object? sender, EventArgs e)
         {
-            AppConfig.SetMode("gpu_boost", trackGPUBoost.Value);
-            AppConfig.SetMode("gpu_temp", trackGPUTemp.Value);
+            AppConfig.SetMode(name: "gpu_boost", value: trackGPUBoost.Value);
+            AppConfig.SetMode(name: "gpu_temp", value: trackGPUTemp.Value);
 
             VisualiseGPUSettings();
         }
@@ -596,10 +596,10 @@ namespace GHelper
             if (percentage == 0) return "OFF";
 
             int Min = FanSensorControl.DEFAULT_FAN_MIN;
-            int Max = FanSensorControl.GetFanMax(device);
+            int Max = FanSensorControl.GetFanMax(device: device);
 
             if (fanRpm)
-                return (200 * Math.Floor((float)(Min * 100 + (Max - Min) * percentage) / 200)).ToString() + unit;
+                return (200 * Math.Floor(d: (float)(Min * 100 + (Max - Min) * percentage) / 200)).ToString() + unit;
             else
                 return percentage + "%";
         }
@@ -607,15 +607,15 @@ namespace GHelper
         void SetAxis(Chart chart, AsusFan device)
         {
 
-            chart.ChartAreas[0].AxisY.CustomLabels.Clear();
+            chart.ChartAreas[index: 0].AxisY.CustomLabels.Clear();
 
             for (int i = 0; i <= fansMax; i += 10)
             {
-                chart.ChartAreas[0].AxisY.CustomLabels.Add(i - 2, i + 2, ChartYLabel(i, device));
+                chart.ChartAreas[index: 0].AxisY.CustomLabels.Add(fromPosition: i - 2, toPosition: i + 2, text: ChartYLabel(percentage: i, device: device));
             }
 
             //chart.ChartAreas[0].AxisY.CustomLabels.Add(fansMax -2, fansMax + 2, Properties.Strings.RPM);
-            chart.ChartAreas[0].AxisY.Interval = 10;
+            chart.ChartAreas[index: 0].AxisY.Interval = 10;
         }
 
         void SetChart(Chart chart, AsusFan device)
@@ -640,26 +640,26 @@ namespace GHelper
                     break;
             }
 
-            chart.Titles[0].Text = title;
+            chart.Titles[index: 0].Text = title;
 
-            chart.ChartAreas[0].AxisX.Minimum = 10;
-            chart.ChartAreas[0].AxisX.Maximum = 100;
-            chart.ChartAreas[0].AxisX.Interval = 10;
+            chart.ChartAreas[index: 0].AxisX.Minimum = 10;
+            chart.ChartAreas[index: 0].AxisX.Maximum = 100;
+            chart.ChartAreas[index: 0].AxisX.Interval = 10;
 
-            chart.ChartAreas[0].AxisY.Minimum = 0;
-            chart.ChartAreas[0].AxisY.Maximum = fansMax;
+            chart.ChartAreas[index: 0].AxisY.Minimum = 0;
+            chart.ChartAreas[index: 0].AxisY.Maximum = fansMax;
 
-            chart.ChartAreas[0].AxisY.LabelStyle.Font = new Font("Arial", 7F);
+            chart.ChartAreas[index: 0].AxisY.LabelStyle.Font = new Font(familyName: "Arial", emSize: 7F);
 
-            chart.ChartAreas[0].AxisX.MajorGrid.LineColor = chartGrid;
-            chart.ChartAreas[0].AxisY.MajorGrid.LineColor = chartGrid;
-            chart.ChartAreas[0].AxisX.LineColor = chartGrid;
-            chart.ChartAreas[0].AxisY.LineColor = chartGrid;
+            chart.ChartAreas[index: 0].AxisX.MajorGrid.LineColor = chartGrid;
+            chart.ChartAreas[index: 0].AxisY.MajorGrid.LineColor = chartGrid;
+            chart.ChartAreas[index: 0].AxisX.LineColor = chartGrid;
+            chart.ChartAreas[index: 0].AxisY.LineColor = chartGrid;
 
-            SetAxis(chart, device);
+            SetAxis(chart: chart, device: device);
 
             if (chart.Legends.Count > 0)
-                chart.Legends[0].Enabled = false;
+                chart.Legends[index: 0].Enabled = false;
 
         }
 
@@ -671,7 +671,7 @@ namespace GHelper
             }
             else
             {
-                Size = MinimumSize = new Size(0, Program.settingsForm.Height);
+                Size = MinimumSize = new Size(width: 0, height: Program.settingsForm.Height);
                 Height = Program.settingsForm.Height;
                 Top = Program.settingsForm.Top;
             }
@@ -695,7 +695,7 @@ namespace GHelper
         {
             int boost = PowerNative.GetCPUBoost();
             if (boost >= 0)
-                comboBoost.SelectedIndex = Math.Min(boost, comboBoost.Items.Count - 1);
+                comboBoost.SelectedIndex = Math.Min(val1: boost, val2: comboBoost.Items.Count - 1);
 
             string powerMode = PowerNative.GetPowerMode();
             bool batterySaver = PowerNative.GetBatterySaverStatus();
@@ -712,21 +712,21 @@ namespace GHelper
         private void ComboPowerMode_Changed(object? sender, EventArgs e)
         {
             string powerMode = (string)comboPowerMode.SelectedValue;
-            PowerNative.SetPowerMode(powerMode);
+            PowerNative.SetPowerMode(scheme: powerMode);
 
-            if (PowerNative.GetDefaultPowerMode(Modes.GetCurrentBase()) != powerMode)
-                AppConfig.SetMode("powermode", powerMode);
+            if (PowerNative.GetDefaultPowerMode(mode: Modes.GetCurrentBase()) != powerMode)
+                AppConfig.SetMode(name: "powermode", value: powerMode);
             else
-                AppConfig.RemoveMode("powermode");
+                AppConfig.RemoveMode(name: "powermode");
         }
 
         private void ComboBoost_Changed(object? sender, EventArgs e)
         {
-            if (AppConfig.GetMode("auto_boost") != comboBoost.SelectedIndex)
+            if (AppConfig.GetMode(name: "auto_boost") != comboBoost.SelectedIndex)
             {
-                PowerNative.SetCPUBoost(comboBoost.SelectedIndex);
+                PowerNative.SetCPUBoost(boost: comboBoost.SelectedIndex);
             }
-            AppConfig.SetMode("auto_boost", comboBoost.SelectedIndex);
+            AppConfig.SetMode(name: "auto_boost", value: comboBoost.SelectedIndex);
         }
 
         private void CheckApplyPower_Click(object? sender, EventArgs e)
@@ -734,7 +734,7 @@ namespace GHelper
             if (sender is null) return;
             CheckBox chk = (CheckBox)sender;
 
-            AppConfig.SetMode("auto_apply_power", chk.Checked ? 1 : 0);
+            AppConfig.SetMode(name: "auto_apply_power", value: chk.Checked ? 1 : 0);
             modeControl.SetPerformanceMode();
 
         }
@@ -744,7 +744,7 @@ namespace GHelper
             if (sender is null) return;
             CheckBox chk = (CheckBox)sender;
 
-            AppConfig.SetMode("auto_apply", chk.Checked ? 1 : 0);
+            AppConfig.SetMode(name: "auto_apply", value: chk.Checked ? 1 : 0);
             modeControl.SetPerformanceMode();
 
         }
@@ -753,22 +753,22 @@ namespace GHelper
         {
             if (this == null || this.Text == "") return;
 
-            Invoke(delegate
+            Invoke(method: delegate
             {
                 buttonCalibrate.Enabled = true;
-                SetAxis(chartCPU, AsusFan.CPU);
-                SetAxis(chartGPU, AsusFan.GPU);
-                if (chartMid.Visible) SetAxis(chartMid, AsusFan.Mid);
+                SetAxis(chart: chartCPU, device: AsusFan.CPU);
+                SetAxis(chart: chartGPU, device: AsusFan.GPU);
+                if (chartMid.Visible) SetAxis(chart: chartMid, device: AsusFan.Mid);
             });
         }
 
         public void LabelFansResult(string text)
         {
-            if (text.Length > 0) Logger.WriteLine(text);
+            if (text.Length > 0) Logger.WriteLine(logMessage: text);
 
             if (this == null || this.Text == "") return;
 
-            Invoke(delegate
+            Invoke(method: delegate
             {
                 labelFansResult.Text = text;
                 labelFansResult.Visible = (text.Length > 0);
@@ -789,10 +789,10 @@ namespace GHelper
         public void InitPower(bool changed = false)
         {
 
-            bool modeA0 = (Program.acpi.DeviceGet(AsusACPI.PPT_TotalA0) >= 0 || RyzenControl.IsAMD());
-            bool modeA3 = Program.acpi.DeviceGet(AsusACPI.PPT_APUA3) >= 0;
+            bool modeA0 = (Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_TotalA0) >= 0 || RyzenControl.IsAMD());
+            bool modeA3 = Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_APUA3) >= 0;
             bool modeB0 = Program.acpi.IsAllAmdPPT();
-            bool modeC1 = Program.acpi.DeviceGet(AsusACPI.PPT_APUC1) >= 0;
+            bool modeC1 = Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_APUC1) >= 0;
 
             panelA0.Visible = panelA3.Visible = modeA0;
             panelB0.Visible = modeB0;
@@ -832,7 +832,7 @@ namespace GHelper
             int limit_cpu;
             int limit_fast;
 
-            bool apply = AppConfig.IsMode("auto_apply_power");
+            bool apply = AppConfig.IsMode(name: "auto_apply_power");
 
             if (changed)
             {
@@ -843,10 +843,10 @@ namespace GHelper
             }
             else
             {
-                limit_total = AppConfig.GetMode("limit_total");
-                limit_slow = AppConfig.GetMode("limit_slow");
-                limit_cpu = AppConfig.GetMode("limit_cpu");
-                limit_fast = AppConfig.GetMode("limit_fast");
+                limit_total = AppConfig.GetMode(name: "limit_total");
+                limit_slow = AppConfig.GetMode(name: "limit_slow");
+                limit_cpu = AppConfig.GetMode(name: "limit_cpu");
+                limit_fast = AppConfig.GetMode(name: "limit_fast");
             }
 
             if (limit_total < 0) limit_total = AsusACPI.DefaultTotal;
@@ -878,10 +878,10 @@ namespace GHelper
             labelB0.Text = trackB0.Value.ToString() + "W";
             labelC1.Text = trackC1.Value.ToString() + "W";
 
-            AppConfig.SetMode("limit_total", limit_total);
-            AppConfig.SetMode("limit_slow", limit_slow);
-            AppConfig.SetMode("limit_cpu", limit_cpu);
-            AppConfig.SetMode("limit_fast", limit_fast);
+            AppConfig.SetMode(name: "limit_total", value: limit_total);
+            AppConfig.SetMode(name: "limit_slow", value: limit_slow);
+            AppConfig.SetMode(name: "limit_cpu", value: limit_cpu);
+            AppConfig.SetMode(name: "limit_fast", value: limit_fast);
 
 
         }
@@ -889,7 +889,7 @@ namespace GHelper
 
         private void TrackPower_Scroll(object? sender, EventArgs e)
         {
-            InitPower(true);
+            InitPower(changed: true);
         }
 
 
@@ -899,51 +899,51 @@ namespace GHelper
             int chartCount = 2;
 
             // Middle / system fan check
-            if (!AsusACPI.IsEmptyCurve(Program.acpi.GetFanCurve(AsusFan.Mid)))
+            if (!AsusACPI.IsEmptyCurve(curve: Program.acpi.GetFanCurve(device: AsusFan.Mid)))
             {
-                AppConfig.Set("mid_fan", 1);
+                AppConfig.Set(name: "mid_fan", value: 1);
                 chartCount++;
                 chartMid.Visible = true;
-                SetChart(chartMid, AsusFan.Mid);
-                LoadProfile(seriesMid, AsusFan.Mid);
+                SetChart(chart: chartMid, device: AsusFan.Mid);
+                LoadProfile(series: seriesMid, device: AsusFan.Mid);
             }
             else
             {
-                AppConfig.Set("mid_fan", 0);
+                AppConfig.Set(name: "mid_fan", value: 0);
             }
 
             // XG Mobile Fan check
             if (Program.acpi.IsXGConnected())
             {
-                AppConfig.Set("xgm_fan", 1);
+                AppConfig.Set(name: "xgm_fan", value: 1);
                 chartCount++;
                 chartXGM.Visible = true;
-                SetChart(chartXGM, AsusFan.XGM);
-                LoadProfile(seriesXGM, AsusFan.XGM);
+                SetChart(chart: chartXGM, device: AsusFan.XGM);
+                LoadProfile(series: seriesXGM, device: AsusFan.XGM);
             }
             else
             {
-                AppConfig.Set("xgm_fan", 0);
+                AppConfig.Set(name: "xgm_fan", value: 0);
             }
 
             try
             {
                 if (chartCount > 2)
-                    Size = MinimumSize = new Size(Size.Width, (int)(ControlHelper.GetDpiScale(this).Value * (chartCount * 200 + 100)));
+                    Size = MinimumSize = new Size(width: Size.Width, height: (int)(ControlHelper.GetDpiScale(control: this).Value * (chartCount * 200 + 100)));
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Debug.WriteLine(value: ex);
             }
 
 
-            SetChart(chartCPU, AsusFan.CPU);
-            SetChart(chartGPU, AsusFan.GPU);
+            SetChart(chart: chartCPU, device: AsusFan.CPU);
+            SetChart(chart: chartGPU, device: AsusFan.GPU);
 
-            LoadProfile(seriesCPU, AsusFan.CPU);
-            LoadProfile(seriesGPU, AsusFan.GPU);
+            LoadProfile(series: seriesCPU, device: AsusFan.CPU);
+            LoadProfile(series: seriesGPU, device: AsusFan.GPU);
 
-            checkApplyFans.Checked = AppConfig.IsMode("auto_apply");
+            checkApplyFans.Checked = AppConfig.IsMode(name: "auto_apply");
 
         }
 
@@ -957,16 +957,16 @@ namespace GHelper
 
             series.Points.Clear();
 
-            byte[] curve = AppConfig.GetFanConfig(device);
+            byte[] curve = AppConfig.GetFanConfig(device: device);
 
-            if (reset || AsusACPI.IsInvalidCurve(curve))
+            if (reset || AsusACPI.IsInvalidCurve(curve: curve))
             {
-                curve = Program.acpi.GetFanCurve(device, Modes.GetCurrentBase());
+                curve = Program.acpi.GetFanCurve(device: device, mode: Modes.GetCurrentBase());
 
-                if (AsusACPI.IsInvalidCurve(curve))
-                    curve = AppConfig.GetDefaultCurve(device);
+                if (AsusACPI.IsInvalidCurve(curve: curve))
+                    curve = AppConfig.GetDefaultCurve(device: device);
 
-                curve = AsusACPI.FixFanCurve(curve);
+                curve = AsusACPI.FixFanCurve(curve: curve);
 
             }
 
@@ -976,11 +976,11 @@ namespace GHelper
             for (int i = 0; i < 8; i++)
             {
                 if (curve[i] == old) curve[i]++; // preventing 2 points in same spot from default asus profiles
-                series.Points.AddXY(curve[i], curve[i + 8]);
+                series.Points.AddXY(xValue: curve[i], yValue: curve[i + 8]);
                 old = curve[i];
             }
 
-            SaveProfile(series, device);
+            SaveProfile(series: series, device: device);
 
         }
 
@@ -995,7 +995,7 @@ namespace GHelper
                 i++;
             }
 
-            AppConfig.SetFanConfig(device, curve);
+            AppConfig.SetFanConfig(device: device, curve: curve);
             //Program.wmi.SetFanCurve(device, curve);
 
         }
@@ -1004,27 +1004,27 @@ namespace GHelper
         private void ButtonReset_Click(object? sender, EventArgs e)
         {
 
-            LoadProfile(seriesCPU, AsusFan.CPU, true);
-            LoadProfile(seriesGPU, AsusFan.GPU, true);
+            LoadProfile(series: seriesCPU, device: AsusFan.CPU, reset: true);
+            LoadProfile(series: seriesGPU, device: AsusFan.GPU, reset: true);
 
-            if (AppConfig.Is("mid_fan"))
-                LoadProfile(seriesMid, AsusFan.Mid, true);
+            if (AppConfig.Is(name: "mid_fan"))
+                LoadProfile(series: seriesMid, device: AsusFan.Mid, reset: true);
 
-            if (AppConfig.Is("xgm_fan"))
-                LoadProfile(seriesXGM, AsusFan.XGM, true);
+            if (AppConfig.Is(name: "xgm_fan"))
+                LoadProfile(series: seriesXGM, device: AsusFan.XGM, reset: true);
 
             checkApplyFans.Checked = false;
             checkApplyPower.Checked = false;
 
-            AppConfig.SetMode("auto_apply", 0);
-            AppConfig.SetMode("auto_apply_power", 0);
+            AppConfig.SetMode(name: "auto_apply", value: 0);
+            AppConfig.SetMode(name: "auto_apply_power", value: 0);
 
             trackUV.Value = RyzenControl.MaxCPUUV;
             trackUViGPU.Value = RyzenControl.MaxIGPUUV;
             trackTemp.Value = RyzenControl.MaxTemp;
 
             AdvancedScroll();
-            AppConfig.SetMode("cpu_temp", -1);
+            AppConfig.SetMode(name: "cpu_temp", value: -1);
 
             modeControl.ResetPerformanceMode();
 
@@ -1041,16 +1041,16 @@ namespace GHelper
                 trackGPUBoost.Value = AsusACPI.MaxGPUBoost;
                 trackGPUTemp.Value = AsusACPI.MaxGPUTemp;
 
-                AppConfig.SetMode("gpu_clock_limit", trackGPUClockLimit.Value);
+                AppConfig.SetMode(name: "gpu_clock_limit", value: trackGPUClockLimit.Value);
 
-                AppConfig.SetMode("gpu_boost", trackGPUBoost.Value);
-                AppConfig.SetMode("gpu_temp", trackGPUTemp.Value);
+                AppConfig.SetMode(name: "gpu_boost", value: trackGPUBoost.Value);
+                AppConfig.SetMode(name: "gpu_temp", value: trackGPUTemp.Value);
 
-                AppConfig.SetMode("gpu_core", trackGPUCore.Value);
-                AppConfig.SetMode("gpu_memory", trackGPUMemory.Value);
+                AppConfig.SetMode(name: "gpu_core", value: trackGPUCore.Value);
+                AppConfig.SetMode(name: "gpu_memory", value: trackGPUMemory.Value);
 
                 VisualiseGPUSettings();
-                modeControl.SetGPUClocks(true);
+                modeControl.SetGPUClocks(launchAsAdmin: true);
                 modeControl.SetGPUPower();
             }
 
@@ -1062,14 +1062,14 @@ namespace GHelper
             curIndex = -1;
             labelTip.Visible = false;
 
-            SaveProfile(seriesCPU, AsusFan.CPU);
-            SaveProfile(seriesGPU, AsusFan.GPU);
+            SaveProfile(series: seriesCPU, device: AsusFan.CPU);
+            SaveProfile(series: seriesGPU, device: AsusFan.GPU);
 
-            if (AppConfig.Is("mid_fan"))
-                SaveProfile(seriesMid, AsusFan.Mid);
+            if (AppConfig.Is(name: "mid_fan"))
+                SaveProfile(series: seriesMid, device: AsusFan.Mid);
 
-            if (AppConfig.Is("xgm_fan"))
-                SaveProfile(seriesXGM, AsusFan.XGM);
+            if (AppConfig.Is(name: "xgm_fan"))
+                SaveProfile(series: seriesXGM, device: AsusFan.XGM);
 
             modeControl.AutoFans();
         }
@@ -1093,19 +1093,19 @@ namespace GHelper
             if (sender is null) return;
             Chart chart = (Chart)sender;
 
-            ChartArea ca = chart.ChartAreas[0];
+            ChartArea ca = chart.ChartAreas[index: 0];
             Axis ax = ca.AxisX;
             Axis ay = ca.AxisY;
 
             bool tip = false;
 
-            HitTestResult hit = chart.HitTest(e.X, e.Y);
-            Series series = chart.Series[0];
+            HitTestResult hit = chart.HitTest(x: e.X, y: e.Y);
+            Series series = chart.Series[index: 0];
 
             if (hit.Series is not null && hit.PointIndex >= 0)
             {
                 curIndex = hit.PointIndex;
-                curPoint = hit.Series.Points[curIndex];
+                curPoint = hit.Series.Points[index: curIndex];
                 tip = true;
             }
 
@@ -1117,8 +1117,8 @@ namespace GHelper
 
                 try
                 {
-                    dx = ax.PixelPositionToValue(e.X);
-                    dy = ay.PixelPositionToValue(e.Y);
+                    dx = ax.PixelPositionToValue(position: e.X);
+                    dy = ay.PixelPositionToValue(position: e.Y);
 
                     if (dx < 20) dx = 20;
                     if (dx > 100) dx = 100;
@@ -1130,7 +1130,7 @@ namespace GHelper
 
                     if (dy < dymin) dy = dymin;
 
-                    if (e.Button.HasFlag(MouseButtons.Left))
+                    if (e.Button.HasFlag(flag: MouseButtons.Left))
                     {
                         double deltaY = dy - curPoint.YValues[0];
                         double deltaX = dx - curPoint.XValue;
@@ -1138,24 +1138,24 @@ namespace GHelper
                         curPoint.XValue = dx;
 
                         if (Control.ModifierKeys == Keys.Shift)
-                            AdjustAll(0, deltaY, series);
+                            AdjustAll(deltaX: 0, deltaY: deltaY, series: series);
                         else
                         {
                             curPoint.YValues[0] = dy;
-                            AdjustAllLevels(curIndex, dx, dy, series);
+                            AdjustAllLevels(index: curIndex, curXVal: dx, curYVal: dy, series: series);
                         }
 
                         tip = true;
                     }
 
-                    labelTip.Text = Math.Floor(curPoint.XValue) + "C, " + ChartYLabel((int)curPoint.YValues[0], device, " " + Properties.Strings.RPM);
+                    labelTip.Text = Math.Floor(d: curPoint.XValue) + "C, " + ChartYLabel(percentage: (int)curPoint.YValues[0], device: device, unit: " " + Properties.Strings.RPM);
                     labelTip.Top = e.Y + ((Control)sender).Top;
                     labelTip.Left = e.X - 50;
 
                 }
                 catch
                 {
-                    Debug.WriteLine(e.Y);
+                    Debug.WriteLine(value: e.Y);
                     tip = false;
                 }
 
@@ -1170,8 +1170,8 @@ namespace GHelper
         {
             for (int i = 0; i < series.Points.Count; i++)
             {
-                series.Points[i].XValue = Math.Max(20, Math.Min(100, series.Points[i].XValue + deltaX));
-                series.Points[i].YValues[0] = Math.Max(0, Math.Min(100, series.Points[i].YValues[0] + deltaY));
+                series.Points[index: i].XValue = Math.Max(val1: 20, val2: Math.Min(val1: 100, val2: series.Points[index: i].XValue + deltaX));
+                series.Points[index: i].YValues[0] = Math.Max(val1: 0, val2: Math.Min(val1: 100, val2: series.Points[index: i].YValues[0] + deltaY));
             }
         }
 
@@ -1184,12 +1184,12 @@ namespace GHelper
 
             if (index > 0)
             {
-                lowerPoint = series.Points[index - 1];
+                lowerPoint = series.Points[index: index - 1];
             }
 
             if (index < series.Points.Count - 1)
             {
-                upperPoint = series.Points[index + 1];
+                upperPoint = series.Points[index: index + 1];
             }
 
             // Adjust the values according to the comparison between the value and its neighbors
@@ -1200,7 +1200,7 @@ namespace GHelper
 
                     for (int i = index + 1; i < series.Points.Count; i++)
                     {
-                        DataPoint curUpper = series.Points[i];
+                        DataPoint curUpper = series.Points[index: i];
                         if (curUpper.YValues[0] >= curYVal) break;
 
                         curUpper.YValues[0] = curYVal;
@@ -1211,7 +1211,7 @@ namespace GHelper
 
                     for (int i = index + 1; i < series.Points.Count; i++)
                     {
-                        DataPoint curUpper = series.Points[i];
+                        DataPoint curUpper = series.Points[index: i];
                         if (curUpper.XValue >= curXVal) break;
 
                         curUpper.XValue = curXVal;
@@ -1222,13 +1222,13 @@ namespace GHelper
             if (lowerPoint != null)
             {
                 //Debug.WriteLine(curYVal + " <? " + Math.Floor(lowerPoint.YValues[0]));
-                if (curYVal <= Math.Floor(lowerPoint.YValues[0]))
+                if (curYVal <= Math.Floor(d: lowerPoint.YValues[0]))
                 {
                     for (int i = index - 1; i >= 0; i--)
                     {
-                        DataPoint curLower = series.Points[i];
+                        DataPoint curLower = series.Points[index: i];
                         if (curLower.YValues[0] < curYVal) break;
-                        curLower.YValues[0] = Math.Floor(curYVal);
+                        curLower.YValues[0] = Math.Floor(d: curYVal);
                     }
                 }
                 if (curXVal < lowerPoint.XValue)
@@ -1236,7 +1236,7 @@ namespace GHelper
 
                     for (int i = index - 1; i >= 0; i--)
                     {
-                        DataPoint curLower = series.Points[i];
+                        DataPoint curLower = series.Points[index: i];
                         if (curLower.XValue <= curXVal) break;
 
                         curLower.XValue = curXVal;

@@ -8,54 +8,54 @@ namespace GHelper.AnimeMatrix.Communication.Platform
         protected HidDevice HidDevice { get; }
         protected HidStream HidStream { get; }
 
-        public WindowsUsbProvider(ushort vendorId, ushort productId, string path, int timeout = 500) : base(vendorId, productId)
+        public WindowsUsbProvider(ushort vendorId, ushort productId, string path, int timeout = 500) : base(vendorId: vendorId, productId: productId)
         {
             try
             {
-                HidDevice = DeviceList.Local.GetHidDevices(vendorId, productId)
-                   .First(x => x.DevicePath.Contains(path));
+                HidDevice = DeviceList.Local.GetHidDevices(vendorID: vendorId, productID: productId)
+                   .First(predicate: x => x.DevicePath.Contains(value: path));
             }
             catch
             {
-                throw new IOException("HID device was not found on your machine.");
+                throw new IOException(message: "HID device was not found on your machine.");
             }
 
             var config = new OpenConfiguration();
-            config.SetOption(OpenOption.Interruptible, true);
-            config.SetOption(OpenOption.Exclusive, false);
-            config.SetOption(OpenOption.Priority, 10);
-            HidStream = HidDevice.Open(config);
+            config.SetOption(option: OpenOption.Interruptible, value: true);
+            config.SetOption(option: OpenOption.Exclusive, value: false);
+            config.SetOption(option: OpenOption.Priority, value: 10);
+            HidStream = HidDevice.Open(openConfig: config);
             HidStream.ReadTimeout = timeout;
             HidStream.WriteTimeout = timeout;
         }
 
         public WindowsUsbProvider(ushort vendorId, ushort productId, int maxFeatureReportLength)
-            : base(vendorId, productId)
+            : base(vendorId: vendorId, productId: productId)
         {
             try
             {
                 HidDevice = DeviceList.Local
-                    .GetHidDevices(vendorId, productId)
-                    .First(x => x.GetMaxFeatureReportLength() == maxFeatureReportLength);
+                    .GetHidDevices(vendorID: vendorId, productID: productId)
+                    .First(predicate: x => x.GetMaxFeatureReportLength() == maxFeatureReportLength);
             }
             catch
             {
-                throw new IOException("AniMe Matrix control device was not found on your machine.");
+                throw new IOException(message: "AniMe Matrix control device was not found on your machine.");
             }
 
             var config = new OpenConfiguration();
-            config.SetOption(OpenOption.Interruptible, true);
-            config.SetOption(OpenOption.Exclusive, false);
-            config.SetOption(OpenOption.Priority, 10);
+            config.SetOption(option: OpenOption.Interruptible, value: true);
+            config.SetOption(option: OpenOption.Exclusive, value: false);
+            config.SetOption(option: OpenOption.Priority, value: 10);
 
-            HidStream = HidDevice.Open(config);
+            HidStream = HidDevice.Open(openConfig: config);
         }
 
         public override void Set(byte[] data)
         {
-            WrapException(() =>
+            WrapException(action: () =>
             {
-                HidStream.SetFeature(data);
+                HidStream.SetFeature(buffer: data);
                 HidStream.Flush();
             });
         }
@@ -63,11 +63,11 @@ namespace GHelper.AnimeMatrix.Communication.Platform
         public override byte[] Get(byte[] data)
         {
             var outData = new byte[data.Length];
-            Array.Copy(data, outData, data.Length);
+            Array.Copy(sourceArray: data, destinationArray: outData, length: data.Length);
 
-            WrapException(() =>
+            WrapException(action: () =>
             {
-                HidStream.GetFeature(outData);
+                HidStream.GetFeature(buffer: outData);
                 HidStream.Flush();
             });
 
@@ -76,17 +76,17 @@ namespace GHelper.AnimeMatrix.Communication.Platform
 
         public override void Read(byte[] data)
         {
-            WrapException(() =>
+            WrapException(action: () =>
             {
-                HidStream.Read(data);
+                HidStream.Read(buffer: data);
             });
         }
 
         public override void Write(byte[] data)
         {
-            WrapException(() =>
+            WrapException(action: () =>
             {
-                HidStream.Write(data);
+                HidStream.Write(buffer: data);
                 HidStream.Flush();
             });
         }

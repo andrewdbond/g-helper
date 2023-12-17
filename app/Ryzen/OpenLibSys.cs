@@ -82,15 +82,15 @@ namespace Ryzen
             return address & 7;
         }
 
-        [DllImport("kernel32")]
+        [DllImport(dllName: "kernel32")]
         public extern static nint LoadLibrary(string lpFileName);
 
 
-        [DllImport("kernel32", SetLastError = true)]
+        [DllImport(dllName: "kernel32", SetLastError = true)]
         private static extern bool FreeLibrary(nint hModule);
 
-        [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = false)]
-        private static extern nint GetProcAddress(nint hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+        [DllImport(dllName: "kernel32", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = false)]
+        private static extern nint GetProcAddress(nint hModule, [MarshalAs(unmanagedType: UnmanagedType.LPStr)] string lpProcName);
 
         private nint module = nint.Zero;
         private uint status = (uint)Status.NO_ERROR;
@@ -108,7 +108,7 @@ namespace Ryzen
                 fileName = dllName;
             }
 
-            module = LoadLibrary(fileName);
+            module = LoadLibrary(lpFileName: fileName);
             if (module == nint.Zero)
             {
                 status = (uint)Status.DLL_NOT_FOUND;
@@ -116,67 +116,67 @@ namespace Ryzen
             else
             {
 
-                GetDllStatus = (_GetDllStatus)GetDelegate("GetDllStatus", typeof(_GetDllStatus));
-                GetDllVersion = (_GetDllVersion)GetDelegate("GetDllVersion", typeof(_GetDllVersion));
-                GetDriverVersion = (_GetDriverVersion)GetDelegate("GetDriverVersion", typeof(_GetDriverVersion));
-                GetDriverType = (_GetDriverType)GetDelegate("GetDriverType", typeof(_GetDriverType));
+                GetDllStatus = (_GetDllStatus)GetDelegate(procName: "GetDllStatus", delegateType: typeof(_GetDllStatus));
+                GetDllVersion = (_GetDllVersion)GetDelegate(procName: "GetDllVersion", delegateType: typeof(_GetDllVersion));
+                GetDriverVersion = (_GetDriverVersion)GetDelegate(procName: "GetDriverVersion", delegateType: typeof(_GetDriverVersion));
+                GetDriverType = (_GetDriverType)GetDelegate(procName: "GetDriverType", delegateType: typeof(_GetDriverType));
 
-                InitializeOls = (_InitializeOls)GetDelegate("InitializeOls", typeof(_InitializeOls));
-                DeinitializeOls = (_DeinitializeOls)GetDelegate("DeinitializeOls", typeof(_DeinitializeOls));
+                InitializeOls = (_InitializeOls)GetDelegate(procName: "InitializeOls", delegateType: typeof(_InitializeOls));
+                DeinitializeOls = (_DeinitializeOls)GetDelegate(procName: "DeinitializeOls", delegateType: typeof(_DeinitializeOls));
 
-                IsCpuid = (_IsCpuid)GetDelegate("IsCpuid", typeof(_IsCpuid));
-                IsMsr = (_IsMsr)GetDelegate("IsMsr", typeof(_IsMsr));
-                IsTsc = (_IsTsc)GetDelegate("IsTsc", typeof(_IsTsc));
-                Hlt = (_Hlt)GetDelegate("Hlt", typeof(_Hlt));
-                HltTx = (_HltTx)GetDelegate("HltTx", typeof(_HltTx));
-                HltPx = (_HltPx)GetDelegate("HltPx", typeof(_HltPx));
-                Rdmsr = (_Rdmsr)GetDelegate("Rdmsr", typeof(_Rdmsr));
-                RdmsrTx = (_RdmsrTx)GetDelegate("RdmsrTx", typeof(_RdmsrTx));
-                RdmsrPx = (_RdmsrPx)GetDelegate("RdmsrPx", typeof(_RdmsrPx));
-                Wrmsr = (_Wrmsr)GetDelegate("Wrmsr", typeof(_Wrmsr));
-                WrmsrTx = (_WrmsrTx)GetDelegate("WrmsrTx", typeof(_WrmsrTx));
-                WrmsrPx = (_WrmsrPx)GetDelegate("WrmsrPx", typeof(_WrmsrPx));
-                Rdpmc = (_Rdpmc)GetDelegate("Rdpmc", typeof(_Rdpmc));
-                RdpmcTx = (_RdpmcTx)GetDelegate("RdpmcTx", typeof(_RdpmcTx));
-                RdpmcPx = (_RdpmcPx)GetDelegate("RdpmcPx", typeof(_RdpmcPx));
-                Cpuid = (_Cpuid)GetDelegate("Cpuid", typeof(_Cpuid));
-                CpuidTx = (_CpuidTx)GetDelegate("CpuidTx", typeof(_CpuidTx));
-                CpuidPx = (_CpuidPx)GetDelegate("CpuidPx", typeof(_CpuidPx));
-                Rdtsc = (_Rdtsc)GetDelegate("Rdtsc", typeof(_Rdtsc));
-                RdtscTx = (_RdtscTx)GetDelegate("RdtscTx", typeof(_RdtscTx));
-                RdtscPx = (_RdtscPx)GetDelegate("RdtscPx", typeof(_RdtscPx));
+                IsCpuid = (_IsCpuid)GetDelegate(procName: "IsCpuid", delegateType: typeof(_IsCpuid));
+                IsMsr = (_IsMsr)GetDelegate(procName: "IsMsr", delegateType: typeof(_IsMsr));
+                IsTsc = (_IsTsc)GetDelegate(procName: "IsTsc", delegateType: typeof(_IsTsc));
+                Hlt = (_Hlt)GetDelegate(procName: "Hlt", delegateType: typeof(_Hlt));
+                HltTx = (_HltTx)GetDelegate(procName: "HltTx", delegateType: typeof(_HltTx));
+                HltPx = (_HltPx)GetDelegate(procName: "HltPx", delegateType: typeof(_HltPx));
+                Rdmsr = (_Rdmsr)GetDelegate(procName: "Rdmsr", delegateType: typeof(_Rdmsr));
+                RdmsrTx = (_RdmsrTx)GetDelegate(procName: "RdmsrTx", delegateType: typeof(_RdmsrTx));
+                RdmsrPx = (_RdmsrPx)GetDelegate(procName: "RdmsrPx", delegateType: typeof(_RdmsrPx));
+                Wrmsr = (_Wrmsr)GetDelegate(procName: "Wrmsr", delegateType: typeof(_Wrmsr));
+                WrmsrTx = (_WrmsrTx)GetDelegate(procName: "WrmsrTx", delegateType: typeof(_WrmsrTx));
+                WrmsrPx = (_WrmsrPx)GetDelegate(procName: "WrmsrPx", delegateType: typeof(_WrmsrPx));
+                Rdpmc = (_Rdpmc)GetDelegate(procName: "Rdpmc", delegateType: typeof(_Rdpmc));
+                RdpmcTx = (_RdpmcTx)GetDelegate(procName: "RdpmcTx", delegateType: typeof(_RdpmcTx));
+                RdpmcPx = (_RdpmcPx)GetDelegate(procName: "RdpmcPx", delegateType: typeof(_RdpmcPx));
+                Cpuid = (_Cpuid)GetDelegate(procName: "Cpuid", delegateType: typeof(_Cpuid));
+                CpuidTx = (_CpuidTx)GetDelegate(procName: "CpuidTx", delegateType: typeof(_CpuidTx));
+                CpuidPx = (_CpuidPx)GetDelegate(procName: "CpuidPx", delegateType: typeof(_CpuidPx));
+                Rdtsc = (_Rdtsc)GetDelegate(procName: "Rdtsc", delegateType: typeof(_Rdtsc));
+                RdtscTx = (_RdtscTx)GetDelegate(procName: "RdtscTx", delegateType: typeof(_RdtscTx));
+                RdtscPx = (_RdtscPx)GetDelegate(procName: "RdtscPx", delegateType: typeof(_RdtscPx));
 
-                ReadIoPortByte = (_ReadIoPortByte)GetDelegate("ReadIoPortByte", typeof(_ReadIoPortByte));
-                ReadIoPortWord = (_ReadIoPortWord)GetDelegate("ReadIoPortWord", typeof(_ReadIoPortWord));
-                ReadIoPortDword = (_ReadIoPortDword)GetDelegate("ReadIoPortDword", typeof(_ReadIoPortDword));
-                ReadIoPortByteEx = (_ReadIoPortByteEx)GetDelegate("ReadIoPortByteEx", typeof(_ReadIoPortByteEx));
-                ReadIoPortWordEx = (_ReadIoPortWordEx)GetDelegate("ReadIoPortWordEx", typeof(_ReadIoPortWordEx));
-                ReadIoPortDwordEx = (_ReadIoPortDwordEx)GetDelegate("ReadIoPortDwordEx", typeof(_ReadIoPortDwordEx));
+                ReadIoPortByte = (_ReadIoPortByte)GetDelegate(procName: "ReadIoPortByte", delegateType: typeof(_ReadIoPortByte));
+                ReadIoPortWord = (_ReadIoPortWord)GetDelegate(procName: "ReadIoPortWord", delegateType: typeof(_ReadIoPortWord));
+                ReadIoPortDword = (_ReadIoPortDword)GetDelegate(procName: "ReadIoPortDword", delegateType: typeof(_ReadIoPortDword));
+                ReadIoPortByteEx = (_ReadIoPortByteEx)GetDelegate(procName: "ReadIoPortByteEx", delegateType: typeof(_ReadIoPortByteEx));
+                ReadIoPortWordEx = (_ReadIoPortWordEx)GetDelegate(procName: "ReadIoPortWordEx", delegateType: typeof(_ReadIoPortWordEx));
+                ReadIoPortDwordEx = (_ReadIoPortDwordEx)GetDelegate(procName: "ReadIoPortDwordEx", delegateType: typeof(_ReadIoPortDwordEx));
 
-                WriteIoPortByte = (_WriteIoPortByte)GetDelegate("WriteIoPortByte", typeof(_WriteIoPortByte));
-                WriteIoPortWord = (_WriteIoPortWord)GetDelegate("WriteIoPortWord", typeof(_WriteIoPortWord));
-                WriteIoPortDword = (_WriteIoPortDword)GetDelegate("WriteIoPortDword", typeof(_WriteIoPortDword));
-                WriteIoPortByteEx = (_WriteIoPortByteEx)GetDelegate("WriteIoPortByteEx", typeof(_WriteIoPortByteEx));
-                WriteIoPortWordEx = (_WriteIoPortWordEx)GetDelegate("WriteIoPortWordEx", typeof(_WriteIoPortWordEx));
-                WriteIoPortDwordEx = (_WriteIoPortDwordEx)GetDelegate("WriteIoPortDwordEx", typeof(_WriteIoPortDwordEx));
+                WriteIoPortByte = (_WriteIoPortByte)GetDelegate(procName: "WriteIoPortByte", delegateType: typeof(_WriteIoPortByte));
+                WriteIoPortWord = (_WriteIoPortWord)GetDelegate(procName: "WriteIoPortWord", delegateType: typeof(_WriteIoPortWord));
+                WriteIoPortDword = (_WriteIoPortDword)GetDelegate(procName: "WriteIoPortDword", delegateType: typeof(_WriteIoPortDword));
+                WriteIoPortByteEx = (_WriteIoPortByteEx)GetDelegate(procName: "WriteIoPortByteEx", delegateType: typeof(_WriteIoPortByteEx));
+                WriteIoPortWordEx = (_WriteIoPortWordEx)GetDelegate(procName: "WriteIoPortWordEx", delegateType: typeof(_WriteIoPortWordEx));
+                WriteIoPortDwordEx = (_WriteIoPortDwordEx)GetDelegate(procName: "WriteIoPortDwordEx", delegateType: typeof(_WriteIoPortDwordEx));
 
-                SetPciMaxBusIndex = (_SetPciMaxBusIndex)GetDelegate("SetPciMaxBusIndex", typeof(_SetPciMaxBusIndex));
-                ReadPciConfigByte = (_ReadPciConfigByte)GetDelegate("ReadPciConfigByte", typeof(_ReadPciConfigByte));
-                ReadPciConfigWord = (_ReadPciConfigWord)GetDelegate("ReadPciConfigWord", typeof(_ReadPciConfigWord));
-                ReadPciConfigDword = (_ReadPciConfigDword)GetDelegate("ReadPciConfigDword", typeof(_ReadPciConfigDword));
-                ReadPciConfigByteEx = (_ReadPciConfigByteEx)GetDelegate("ReadPciConfigByteEx", typeof(_ReadPciConfigByteEx));
-                ReadPciConfigWordEx = (_ReadPciConfigWordEx)GetDelegate("ReadPciConfigWordEx", typeof(_ReadPciConfigWordEx));
-                ReadPciConfigDwordEx = (_ReadPciConfigDwordEx)GetDelegate("ReadPciConfigDwordEx", typeof(_ReadPciConfigDwordEx));
-                ReadPciConfigDwordEx64 = (_ReadPciConfigDwordEx64)GetDelegate("ReadPciConfigDwordEx", typeof(_ReadPciConfigDwordEx64));
-                WritePciConfigByte = (_WritePciConfigByte)GetDelegate("WritePciConfigByte", typeof(_WritePciConfigByte));
-                WritePciConfigWord = (_WritePciConfigWord)GetDelegate("WritePciConfigWord", typeof(_WritePciConfigWord));
-                WritePciConfigDword = (_WritePciConfigDword)GetDelegate("WritePciConfigDword", typeof(_WritePciConfigDword));
-                WritePciConfigByteEx = (_WritePciConfigByteEx)GetDelegate("WritePciConfigByteEx", typeof(_WritePciConfigByteEx));
-                WritePciConfigWordEx = (_WritePciConfigWordEx)GetDelegate("WritePciConfigWordEx", typeof(_WritePciConfigWordEx));
-                WritePciConfigDwordEx = (_WritePciConfigDwordEx)GetDelegate("WritePciConfigDwordEx", typeof(_WritePciConfigDwordEx));
-                WritePciConfigDwordEx64 = (_WritePciConfigDwordEx64)GetDelegate("WritePciConfigDwordEx", typeof(_WritePciConfigDwordEx64));
-                FindPciDeviceById = (_FindPciDeviceById)GetDelegate("FindPciDeviceById", typeof(_FindPciDeviceById));
-                FindPciDeviceByClass = (_FindPciDeviceByClass)GetDelegate("FindPciDeviceByClass", typeof(_FindPciDeviceByClass));
+                SetPciMaxBusIndex = (_SetPciMaxBusIndex)GetDelegate(procName: "SetPciMaxBusIndex", delegateType: typeof(_SetPciMaxBusIndex));
+                ReadPciConfigByte = (_ReadPciConfigByte)GetDelegate(procName: "ReadPciConfigByte", delegateType: typeof(_ReadPciConfigByte));
+                ReadPciConfigWord = (_ReadPciConfigWord)GetDelegate(procName: "ReadPciConfigWord", delegateType: typeof(_ReadPciConfigWord));
+                ReadPciConfigDword = (_ReadPciConfigDword)GetDelegate(procName: "ReadPciConfigDword", delegateType: typeof(_ReadPciConfigDword));
+                ReadPciConfigByteEx = (_ReadPciConfigByteEx)GetDelegate(procName: "ReadPciConfigByteEx", delegateType: typeof(_ReadPciConfigByteEx));
+                ReadPciConfigWordEx = (_ReadPciConfigWordEx)GetDelegate(procName: "ReadPciConfigWordEx", delegateType: typeof(_ReadPciConfigWordEx));
+                ReadPciConfigDwordEx = (_ReadPciConfigDwordEx)GetDelegate(procName: "ReadPciConfigDwordEx", delegateType: typeof(_ReadPciConfigDwordEx));
+                ReadPciConfigDwordEx64 = (_ReadPciConfigDwordEx64)GetDelegate(procName: "ReadPciConfigDwordEx", delegateType: typeof(_ReadPciConfigDwordEx64));
+                WritePciConfigByte = (_WritePciConfigByte)GetDelegate(procName: "WritePciConfigByte", delegateType: typeof(_WritePciConfigByte));
+                WritePciConfigWord = (_WritePciConfigWord)GetDelegate(procName: "WritePciConfigWord", delegateType: typeof(_WritePciConfigWord));
+                WritePciConfigDword = (_WritePciConfigDword)GetDelegate(procName: "WritePciConfigDword", delegateType: typeof(_WritePciConfigDword));
+                WritePciConfigByteEx = (_WritePciConfigByteEx)GetDelegate(procName: "WritePciConfigByteEx", delegateType: typeof(_WritePciConfigByteEx));
+                WritePciConfigWordEx = (_WritePciConfigWordEx)GetDelegate(procName: "WritePciConfigWordEx", delegateType: typeof(_WritePciConfigWordEx));
+                WritePciConfigDwordEx = (_WritePciConfigDwordEx)GetDelegate(procName: "WritePciConfigDwordEx", delegateType: typeof(_WritePciConfigDwordEx));
+                WritePciConfigDwordEx64 = (_WritePciConfigDwordEx64)GetDelegate(procName: "WritePciConfigDwordEx", delegateType: typeof(_WritePciConfigDwordEx64));
+                FindPciDeviceById = (_FindPciDeviceById)GetDelegate(procName: "FindPciDeviceById", delegateType: typeof(_FindPciDeviceById));
+                FindPciDeviceByClass = (_FindPciDeviceByClass)GetDelegate(procName: "FindPciDeviceByClass", delegateType: typeof(_FindPciDeviceByClass));
 
                 /*
                 ReadDmiMemory = (_ReadDmiMemory)GetDelegate("ReadDmiMemory", typeof(_ReadDmiMemory));
@@ -267,22 +267,22 @@ namespace Ryzen
             if (module != nint.Zero)
             {
                 DeinitializeOls();
-                FreeLibrary(module);
+                FreeLibrary(hModule: module);
                 module = nint.Zero;
             }
         }
 
         public Delegate GetDelegate(string procName, Type delegateType)
         {
-            nint ptr = GetProcAddress(module, procName);
+            nint ptr = GetProcAddress(hModule: module, lpProcName: procName);
             if (ptr != nint.Zero)
             {
-                Delegate d = Marshal.GetDelegateForFunctionPointer(ptr, delegateType);
+                Delegate d = Marshal.GetDelegateForFunctionPointer(ptr: ptr, t: delegateType);
                 return d;
             }
 
             int result = Marshal.GetHRForLastWin32Error();
-            throw Marshal.GetExceptionForHR(result);
+            throw Marshal.GetExceptionForHR(errorCode: result);
         }
 
         //-----------------------------------------------------------------------------

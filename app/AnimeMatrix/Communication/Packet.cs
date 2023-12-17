@@ -13,8 +13,8 @@ namespace GHelper.AnimeMatrix.Communication
             if (packetLength < 1)
             {
                 throw new ArgumentOutOfRangeException(
-                    nameof(packetLength),
-                    "Packet length must be at least 1."
+                    paramName: nameof(packetLength),
+                    message: "Packet length must be at least 1."
                 );
             }
 
@@ -26,17 +26,17 @@ namespace GHelper.AnimeMatrix.Communication
                 if (_currentDataIndex >= Data.Length)
                 {
                     throw new ArgumentOutOfRangeException(
-                        nameof(data),
-                        "Your packet length does not allow for initial data to be appended."
+                        paramName: nameof(data),
+                        message: "Your packet length does not allow for initial data to be appended."
                     );
                 }
 
-                AppendData(data);
+                AppendData(data: data);
             }
         }
 
         public Packet AppendData(params byte[] data)
-            => AppendData(out _, data);
+            => AppendData(bytesWritten: out _, data: data);
 
         public Packet AppendData(out int bytesWritten, params byte[] data)
         {

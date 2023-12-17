@@ -15,15 +15,15 @@ public static class ControlHelper
         container.ForeColor = RForm.foreMain;
 
         _invert = invert;
-        AdjustControls(container.Controls);
+        AdjustControls(controls: container.Controls);
         _invert = false;
 
     }
 
     public static void Resize(RForm container, float baseScale = 2)
     {
-        _scale = GetDpiScale(container).Value / baseScale;
-        if (Math.Abs(_scale - 1) > 0.2) ResizeControls(container.Controls);
+        _scale = GetDpiScale(control: container).Value / baseScale;
+        if (Math.Abs(value: _scale - 1) > 0.2) ResizeControls(controls: container.Controls);
 
     }
 
@@ -33,7 +33,7 @@ public static class ControlHelper
         {
             var button = control as RButton;
             if (button != null && button.Image is not null)
-                button.Image = ResizeImage(button.Image);
+                button.Image = ResizeImage(image: button.Image);
 
             /*
             var pictureBox = control as PictureBox;
@@ -41,7 +41,7 @@ public static class ControlHelper
                 pictureBox.BackgroundImage = ResizeImage(pictureBox.BackgroundImage);
             */
 
-            ResizeControls(control.Controls);
+            ResizeControls(controls: control.Controls);
         }
     }
 
@@ -60,12 +60,12 @@ public static class ControlHelper
                 button.FlatAppearance.BorderColor = RForm.borderMain;
 
                 if (button.Image is not null)
-                    button.Image = AdjustImage(button.Image);
+                    button.Image = AdjustImage(image: button.Image);
             }
 
             var pictureBox = control as PictureBox;
             if (pictureBox != null && pictureBox.BackgroundImage is not null)
-                pictureBox.BackgroundImage = AdjustImage(pictureBox.BackgroundImage);
+                pictureBox.BackgroundImage = AdjustImage(image: pictureBox.BackgroundImage);
 
 
             var combo = control as RComboBox;
@@ -91,7 +91,7 @@ public static class ControlHelper
             }
 
             var pn = control as Panel;
-            if (pn != null && pn.Name.Contains("Header"))
+            if (pn != null && pn.Name.Contains(value: "Header"))
             {
                 pn.BackColor = RForm.buttonSecond;
             }
@@ -112,33 +112,33 @@ public static class ControlHelper
             if (chart != null)
             {
                 chart.BackColor = RForm.chartMain;
-                chart.ChartAreas[0].BackColor = RForm.chartMain;
+                chart.ChartAreas[index: 0].BackColor = RForm.chartMain;
 
-                chart.ChartAreas[0].AxisX.TitleForeColor = RForm.foreMain;
-                chart.ChartAreas[0].AxisY.TitleForeColor = RForm.foreMain;
+                chart.ChartAreas[index: 0].AxisX.TitleForeColor = RForm.foreMain;
+                chart.ChartAreas[index: 0].AxisY.TitleForeColor = RForm.foreMain;
 
-                chart.ChartAreas[0].AxisX.LabelStyle.ForeColor = RForm.foreMain;
-                chart.ChartAreas[0].AxisY.LabelStyle.ForeColor = RForm.foreMain;
+                chart.ChartAreas[index: 0].AxisX.LabelStyle.ForeColor = RForm.foreMain;
+                chart.ChartAreas[index: 0].AxisY.LabelStyle.ForeColor = RForm.foreMain;
 
-                chart.ChartAreas[0].AxisX.MajorTickMark.LineColor = RForm.foreMain;
-                chart.ChartAreas[0].AxisY.MajorTickMark.LineColor = RForm.foreMain;
+                chart.ChartAreas[index: 0].AxisX.MajorTickMark.LineColor = RForm.foreMain;
+                chart.ChartAreas[index: 0].AxisY.MajorTickMark.LineColor = RForm.foreMain;
 
-                chart.ChartAreas[0].AxisX.MajorGrid.LineColor = RForm.chartGrid;
-                chart.ChartAreas[0].AxisY.MajorGrid.LineColor = RForm.chartGrid;
-                chart.ChartAreas[0].AxisX.LineColor = RForm.chartGrid;
-                chart.ChartAreas[0].AxisY.LineColor = RForm.chartGrid;
+                chart.ChartAreas[index: 0].AxisX.MajorGrid.LineColor = RForm.chartGrid;
+                chart.ChartAreas[index: 0].AxisY.MajorGrid.LineColor = RForm.chartGrid;
+                chart.ChartAreas[index: 0].AxisX.LineColor = RForm.chartGrid;
+                chart.ChartAreas[index: 0].AxisY.LineColor = RForm.chartGrid;
 
-                chart.Titles[0].ForeColor = RForm.foreMain;
+                chart.Titles[index: 0].ForeColor = RForm.foreMain;
 
             }
 
-            AdjustControls(control.Controls);
+            AdjustControls(controls: control.Controls);
         }
     }
 
     public static Lazy<float> GetDpiScale(Control control)
     {
-        return new Lazy<float>(() =>
+        return new Lazy<float>(valueFactory: () =>
         {
             using (var graphics = control.CreateGraphics())
                 return graphics.DpiX / 96.0f;
@@ -147,20 +147,20 @@ public static class ControlHelper
 
     private static Image ResizeImage(Image image)
     {
-        var newSize = new Size((int)(image.Width * _scale), (int)(image.Height * _scale));
-        var pic = new Bitmap(newSize.Width, newSize.Height);
+        var newSize = new Size(width: (int)(image.Width * _scale), height: (int)(image.Height * _scale));
+        var pic = new Bitmap(width: newSize.Width, height: newSize.Height);
 
-        using (var g = Graphics.FromImage(pic))
+        using (var g = Graphics.FromImage(image: pic))
         {
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.DrawImage(image, new Rectangle(new Point(), newSize));
+            g.DrawImage(image: image, rect: new Rectangle(location: new Point(), size: newSize));
         }
         return pic;
     }
 
     private static Image AdjustImage(Image image)
     {
-        var pic = new Bitmap(image);
+        var pic = new Bitmap(original: image);
 
         if (_invert)
         {
@@ -168,8 +168,8 @@ public static class ControlHelper
             {
                 for (int x = 0; (x <= (pic.Width - 1)); x++)
                 {
-                    Color col = pic.GetPixel(x, y);
-                    pic.SetPixel(x, y, Color.FromArgb(col.A, (255 - col.R), (255 - col.G), (255 - col.B)));
+                    Color col = pic.GetPixel(x: x, y: y);
+                    pic.SetPixel(x: x, y: y, color: Color.FromArgb(alpha: col.A, red: (255 - col.R), green: (255 - col.G), blue: (255 - col.B)));
                 }
             }
         }
@@ -180,14 +180,14 @@ public static class ControlHelper
 
     public static Image TintImage(Image image, Color tintColor)
     {
-        var pic = new Bitmap(image);
+        var pic = new Bitmap(original: image);
 
         for (int y = 0; (y <= (pic.Height - 1)); y++)
         {
             for (int x = 0; (x <= (pic.Width - 1)); x++)
             {
-                Color col = pic.GetPixel(x, y);
-                pic.SetPixel(x, y, Color.FromArgb(col.A, tintColor.R, tintColor.G, tintColor.B));
+                Color col = pic.GetPixel(x: x, y: y);
+                pic.SetPixel(x: x, y: y, color: Color.FromArgb(alpha: col.A, red: tintColor.R, green: tintColor.G, blue: tintColor.B));
             }
         }
         

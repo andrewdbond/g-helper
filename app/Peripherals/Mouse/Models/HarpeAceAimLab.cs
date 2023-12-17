@@ -5,11 +5,11 @@ namespace GHelper.Peripherals.Mouse.Models
     //P713_Wireless
     public class HarpeAceAimLabEdition : AsusMouse
     {
-        public HarpeAceAimLabEdition() : base(0x0B05, 0x1A94, "mi_00", true)
+        public HarpeAceAimLabEdition() : base(vendorId: 0x0B05, productId: 0x1A94, path: "mi_00", wireless: true)
         {
         }
 
-        protected HarpeAceAimLabEdition(ushort productId, bool wireless, string endpoint, byte reportId) : base(0x0B05, productId, endpoint, wireless, reportId)
+        protected HarpeAceAimLabEdition(ushort productId, bool wireless, string endpoint, byte reportId) : base(vendorId: 0x0B05, productId: productId, path: endpoint, wireless: wireless, reportId: reportId)
         {
         }
 
@@ -145,7 +145,7 @@ namespace GHelper.Peripherals.Mouse.Models
 
     public class HarpeAceAimLabEditionWired : HarpeAceAimLabEdition
     {
-        public HarpeAceAimLabEditionWired() : base(0x1A92, false, "mi_00", 0x00)
+        public HarpeAceAimLabEditionWired() : base(productId: 0x1A92, wireless: false, endpoint: "mi_00", reportId: 0x00)
         {
         }
 
@@ -157,7 +157,7 @@ namespace GHelper.Peripherals.Mouse.Models
 
     public class HarpeAceAimLabEditionOmni : HarpeAceAimLabEdition
     {
-        public HarpeAceAimLabEditionOmni() : base(0x1ACE, true, "mi_02&col03", 0x03)
+        public HarpeAceAimLabEditionOmni() : base(productId: 0x1ACE, wireless: true, endpoint: "mi_02&col03", reportId: 0x03)
         {
         }
 

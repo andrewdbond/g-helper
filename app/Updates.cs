@@ -30,7 +30,7 @@ namespace GHelper
         private void LoadUpdates(bool force = false)
         {
 
-            if (!force && (Math.Abs(DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastUpdate) < 5000)) return;
+            if (!force && (Math.Abs(value: DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastUpdate) < 5000)) return;
             lastUpdate = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             (bios, model) = AppConfig.GetBiosAndModel();
@@ -49,17 +49,17 @@ namespace GHelper
             tableBios.Visible = false;
             tableDrivers.Visible = false;
 
-            ClearTable(tableBios);
-            ClearTable(tableDrivers);
+            ClearTable(tableLayoutPanel: tableBios);
+            ClearTable(tableLayoutPanel: tableDrivers);
 
-            Task.Run(async () =>
+            Task.Run(function: async () =>
             {
-                DriversAsync($"https://rog.asus.com/support/webapi/product/GetPDBIOS?website=global&model={model}&cpu=", 1, tableBios);
+                DriversAsync(url: $"https://rog.asus.com/support/webapi/product/GetPDBIOS?website=global&model={model}&cpu=", type: 1, table: tableBios);
             });
 
-            Task.Run(async () =>
+            Task.Run(function: async () =>
             {
-                DriversAsync($"https://rog.asus.com/support/webapi/product/GetPDDrivers?website=global&model={model}&cpu={model}&osid=52", 0, tableDrivers);
+                DriversAsync(url: $"https://rog.asus.com/support/webapi/product/GetPDDrivers?website=global&model={model}&cpu={model}&osid=52", type: 0, table: tableDrivers);
             });
         }
 
@@ -67,7 +67,7 @@ namespace GHelper
         {
             while (tableLayoutPanel.Controls.Count > 0)
             {
-                tableLayoutPanel.Controls[0].Dispose();
+                tableLayoutPanel.Controls[index: 0].Dispose();
             }
 
             tableLayoutPanel.RowCount = 0;
@@ -76,10 +76,10 @@ namespace GHelper
         public Updates()
         {
             InitializeComponent();
-            InitTheme(true);
+            InitTheme(setDPI: true);
 
 
-            LoadUpdates(true);
+            LoadUpdates(force: true);
 
             //buttonRefresh.Visible = false;
             buttonRefresh.Click += ButtonRefresh_Click;
@@ -99,7 +99,7 @@ namespace GHelper
         }
         private Dictionary<string, string> GetDeviceVersions()
         {
-            using (ManagementObjectSearcher objSearcher = new ManagementObjectSearcher("Select * from Win32_PnPSignedDriver"))
+            using (ManagementObjectSearcher objSearcher = new ManagementObjectSearcher(queryString: "Select * from Win32_PnPSignedDriver"))
             {
                 using (ManagementObjectCollection objCollection = objSearcher.Get())
                 {
@@ -107,8 +107,8 @@ namespace GHelper
 
                     foreach (ManagementObject obj in objCollection)
                     {
-                        if (obj["DeviceID"] is not null && obj["DriverVersion"] is not null)
-                            list[obj["DeviceID"].ToString()] = obj["DriverVersion"].ToString();
+                        if (obj[propertyName: "DeviceID"] is not null && obj[propertyName: "DriverVersion"] is not null)
+                            list[key: obj[propertyName: "DeviceID"].ToString()] = obj[propertyName: "DriverVersion"].ToString();
                     }
 
                     return list;
@@ -119,48 +119,48 @@ namespace GHelper
 
         public void VisualiseDriver(DriverDownload driver, TableLayoutPanel table)
         {
-            Invoke(delegate
+            Invoke(method: delegate
             {
-                string versionText = driver.version.Replace("latest version at the ", "");
+                string versionText = driver.version.Replace(oldValue: "latest version at the ", newValue: "");
                 Label versionLabel = new Label { Text = versionText, Anchor = AnchorStyles.Left, AutoSize = true };
                 versionLabel.Cursor = Cursors.Hand;
-                versionLabel.Font = new Font(versionLabel.Font, FontStyle.Underline);
+                versionLabel.Font = new Font(prototype: versionLabel.Font, newStyle: FontStyle.Underline);
                 versionLabel.ForeColor = colorEco;
-                versionLabel.Padding = new Padding(5, 5, 5, 5);
+                versionLabel.Padding = new Padding(left: 5, top: 5, right: 5, bottom: 5);
                 versionLabel.Click += delegate
                 {
-                    Process.Start(new ProcessStartInfo(driver.downloadUrl) { UseShellExecute = true });
+                    Process.Start(startInfo: new ProcessStartInfo(fileName: driver.downloadUrl) { UseShellExecute = true });
                 };
 
-                table.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-                table.Controls.Add(new Label { Text = driver.categoryName, Anchor = AnchorStyles.Left, Dock = DockStyle.Fill, Padding = new Padding(5, 5, 5, 5) }, 0, table.RowCount);
-                table.Controls.Add(new Label { Text = driver.title, Anchor = AnchorStyles.Left, Dock = DockStyle.Fill, Padding = new Padding(5, 5, 5, 5) }, 1, table.RowCount);
-                table.Controls.Add(new Label { Text = driver.date, Anchor = AnchorStyles.Left, Dock = DockStyle.Fill, Padding = new Padding(5, 5, 5, 5) }, 2, table.RowCount);
-                table.Controls.Add(versionLabel, 3, table.RowCount);
+                table.RowStyles.Add(rowStyle: new RowStyle(sizeType: SizeType.AutoSize));
+                table.Controls.Add(control: new Label { Text = driver.categoryName, Anchor = AnchorStyles.Left, Dock = DockStyle.Fill, Padding = new Padding(left: 5, top: 5, right: 5, bottom: 5) }, column: 0, row: table.RowCount);
+                table.Controls.Add(control: new Label { Text = driver.title, Anchor = AnchorStyles.Left, Dock = DockStyle.Fill, Padding = new Padding(left: 5, top: 5, right: 5, bottom: 5) }, column: 1, row: table.RowCount);
+                table.Controls.Add(control: new Label { Text = driver.date, Anchor = AnchorStyles.Left, Dock = DockStyle.Fill, Padding = new Padding(left: 5, top: 5, right: 5, bottom: 5) }, column: 2, row: table.RowCount);
+                table.Controls.Add(control: versionLabel, column: 3, row: table.RowCount);
                 table.RowCount++;
             });
         }
 
         public void ShowTable(TableLayoutPanel table)
         {
-            Invoke(delegate
+            Invoke(method: delegate
             {
                 table.Visible = true;
-                ResumeLayout(false);
+                ResumeLayout(performLayout: false);
                 PerformLayout();
             });
         }
 
         public void VisualiseNewDriver(int position, int newer, TableLayoutPanel table)
         {
-            var label = table.GetControlFromPosition(3, position) as Label;
+            var label = table.GetControlFromPosition(column: 3, row: position) as Label;
             if (label != null)
             {
-                Invoke(delegate
+                Invoke(method: delegate
                 {
                     if (newer == DRIVER_NEWER)
                     {
-                        label.Font = new Font(label.Font, FontStyle.Underline | FontStyle.Bold);
+                        label.Font = new Font(prototype: label.Font, newStyle: FontStyle.Underline | FontStyle.Bold);
                         label.ForeColor = colorTurbo;
                     }
 
@@ -172,11 +172,11 @@ namespace GHelper
 
         public void VisualiseNewCount(int updatesCount, TableLayoutPanel table)
         {
-            Invoke(delegate
+            Invoke(method: delegate
             {
                 labelUpdates.Text = $"{Properties.Strings.NewUpdates}: {updatesCount}";
                 labelUpdates.ForeColor = colorTurbo;
-                labelUpdates.Font = new Font(labelUpdates.Font, FontStyle.Bold);
+                labelUpdates.Font = new Font(prototype: labelUpdates.Font, newStyle: FontStyle.Bold);
             });
         }
 
@@ -185,17 +185,17 @@ namespace GHelper
 
             try
             {
-                using (var httpClient = new HttpClient(new HttpClientHandler
+                using (var httpClient = new HttpClient(handler: new HttpClientHandler
                 {
                     AutomaticDecompression = DecompressionMethods.All
                 }))
                 {
-                    httpClient.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip, deflate, br");
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", "C# App");
-                    var json = await httpClient.GetStringAsync(url);
+                    httpClient.DefaultRequestHeaders.AcceptEncoding.ParseAdd(input: "gzip, deflate, br");
+                    httpClient.DefaultRequestHeaders.Add(name: "User-Agent", value: "C# App");
+                    var json = await httpClient.GetStringAsync(requestUri: url);
 
-                    var data = JsonSerializer.Deserialize<JsonElement>(json);
-                    var groups = data.GetProperty("Result").GetProperty("Obj");
+                    var data = JsonSerializer.Deserialize<JsonElement>(json: json);
+                    var groups = data.GetProperty(propertyName: "Result").GetProperty(propertyName: "Obj");
 
 
                     List<string> skipList = new() { "Armoury Crate & Aura Creator Installer", "MyASUS", "ASUS Smart Display Control", "Aura Wallpaper", "Virtual Pet", "ROG Font V1.5" };
@@ -203,37 +203,37 @@ namespace GHelper
 
                     for (int i = 0; i < groups.GetArrayLength(); i++)
                     {
-                        var categoryName = groups[i].GetProperty("Name").ToString();
-                        var files = groups[i].GetProperty("Files");
+                        var categoryName = groups[index: i].GetProperty(propertyName: "Name").ToString();
+                        var files = groups[index: i].GetProperty(propertyName: "Files");
 
                         var oldTitle = "";
 
                         for (int j = 0; j < files.GetArrayLength(); j++)
                         {
 
-                            var file = files[j];
-                            var title = file.GetProperty("Title").ToString();
+                            var file = files[index: j];
+                            var title = file.GetProperty(propertyName: "Title").ToString();
 
-                            if (oldTitle != title && !skipList.Contains(title))
+                            if (oldTitle != title && !skipList.Contains(item: title))
                             {
 
                                 var driver = new DriverDownload();
                                 driver.categoryName = categoryName;
                                 driver.title = title;
-                                driver.version = file.GetProperty("Version").ToString().Replace("V", "");
-                                driver.downloadUrl = file.GetProperty("DownloadUrl").GetProperty("Global").ToString();
-                                driver.hardwares = file.GetProperty("HardwareInfoList");
-                                driver.date = file.GetProperty("ReleaseDate").ToString();
-                                drivers.Add(driver);
+                                driver.version = file.GetProperty(propertyName: "Version").ToString().Replace(oldValue: "V", newValue: "");
+                                driver.downloadUrl = file.GetProperty(propertyName: "DownloadUrl").GetProperty(propertyName: "Global").ToString();
+                                driver.hardwares = file.GetProperty(propertyName: "HardwareInfoList");
+                                driver.date = file.GetProperty(propertyName: "ReleaseDate").ToString();
+                                drivers.Add(item: driver);
 
-                                VisualiseDriver(driver, table);
+                                VisualiseDriver(driver: driver, table: table);
                             }
 
                             oldTitle = title;
                         }
                     }
 
-                    ShowTable(table);
+                    ShowTable(table: table);
 
 
                     Dictionary<string, string> devices = new();
@@ -248,25 +248,25 @@ namespace GHelper
                         if (type == 0 && driver.hardwares.ToString().Length > 0)
                             for (int k = 0; k < driver.hardwares.GetArrayLength(); k++)
                             {
-                                var deviceID = driver.hardwares[k].GetProperty("hardwareid").ToString();
-                                var localVersions = devices.Where(p => p.Key.Contains(deviceID)).Select(p => p.Value);
+                                var deviceID = driver.hardwares[index: k].GetProperty(propertyName: "hardwareid").ToString();
+                                var localVersions = devices.Where(predicate: p => p.Key.Contains(value: deviceID)).Select(selector: p => p.Value);
                                 foreach (var localVersion in localVersions)
                                 {
-                                    newer = Math.Min(newer, new Version(driver.version).CompareTo(new Version(localVersion)));
-                                    Logger.WriteLine(driver.title + " " + deviceID  + " "+ driver.version + " vs " + localVersion + " = " + newer);
+                                    newer = Math.Min(val1: newer, val2: new Version(version: driver.version).CompareTo(value: new Version(version: localVersion)));
+                                    Logger.WriteLine(logMessage: driver.title + " " + deviceID  + " "+ driver.version + " vs " + localVersion + " = " + newer);
                                 }
 
                             }
 
                         if (type == 1)
-                            newer = Int32.Parse(driver.version) > Int32.Parse(bios) ? 1 : -1;
+                            newer = Int32.Parse(s: driver.version) > Int32.Parse(s: bios) ? 1 : -1;
 
-                        VisualiseNewDriver(count, newer, table);
+                        VisualiseNewDriver(position: count, newer: newer, table: table);
 
                         if (newer == DRIVER_NEWER)
                         {
                             updatesCount++;
-                            VisualiseNewCount(updatesCount, table);
+                            VisualiseNewCount(updatesCount: updatesCount, table: table);
                         }
 
                         count++;
@@ -278,7 +278,7 @@ namespace GHelper
             }
             catch (Exception ex)
             {
-                Logger.WriteLine(ex.ToString());
+                Logger.WriteLine(logMessage: ex.ToString());
 
             }
 

@@ -102,14 +102,14 @@ namespace GHelper.Display
 
         #region structs
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct LUID
         {
             public uint LowPart;
             public int HighPart;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_PATH_SOURCE_INFO
         {
             public LUID adapterId;
@@ -118,7 +118,7 @@ namespace GHelper.Display
             public uint statusFlags;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_PATH_TARGET_INFO
         {
             public LUID adapterId;
@@ -133,14 +133,14 @@ namespace GHelper.Display
             public uint statusFlags;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_RATIONAL
         {
             public uint Numerator;
             public uint Denominator;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_PATH_INFO
         {
             public DISPLAYCONFIG_PATH_SOURCE_INFO sourceInfo;
@@ -148,14 +148,14 @@ namespace GHelper.Display
             public uint flags;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_2DREGION
         {
             public uint cx;
             public uint cy;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_VIDEO_SIGNAL_INFO
         {
             public ulong pixelRate;
@@ -167,20 +167,20 @@ namespace GHelper.Display
             public DISPLAYCONFIG_SCANLINE_ORDERING scanLineOrdering;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_TARGET_MODE
         {
             public DISPLAYCONFIG_VIDEO_SIGNAL_INFO targetVideoSignalInfo;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct POINTL
         {
             private int x;
             private int y;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_SOURCE_MODE
         {
             public uint width;
@@ -189,17 +189,17 @@ namespace GHelper.Display
             public POINTL position;
         }
 
-        [StructLayout(LayoutKind.Explicit)]
+        [StructLayout(layoutKind: LayoutKind.Explicit)]
         public struct DISPLAYCONFIG_MODE_INFO_UNION
         {
-            [FieldOffset(0)]
+            [FieldOffset(offset: 0)]
             public DISPLAYCONFIG_TARGET_MODE targetMode;
 
-            [FieldOffset(0)]
+            [FieldOffset(offset: 0)]
             public DISPLAYCONFIG_SOURCE_MODE sourceMode;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_MODE_INFO
         {
             public DISPLAYCONFIG_MODE_INFO_TYPE infoType;
@@ -208,13 +208,13 @@ namespace GHelper.Display
             public DISPLAYCONFIG_MODE_INFO_UNION modeInfo;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS
         {
             public uint value;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct DISPLAYCONFIG_DEVICE_INFO_HEADER
         {
             public DISPLAYCONFIG_DEVICE_INFO_TYPE type;
@@ -223,7 +223,7 @@ namespace GHelper.Display
             public uint id;
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [StructLayout(layoutKind: LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct DISPLAYCONFIG_TARGET_DEVICE_NAME
         {
             public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
@@ -233,10 +233,10 @@ namespace GHelper.Display
             public ushort edidProductCodeId;
             public uint connectorInstance;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 64)]
             public string monitorFriendlyDeviceName;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 128)]
             public string monitorDevicePath;
         }
 
@@ -244,11 +244,11 @@ namespace GHelper.Display
 
         #region DLL-Imports
 
-        [DllImport("user32.dll")]
+        [DllImport(dllName: "user32.dll")]
         public static extern int GetDisplayConfigBufferSizes(
             QUERY_DEVICE_CONFIG_FLAGS flags, out uint numPathArrayElements, out uint numModeInfoArrayElements);
 
-        [DllImport("user32.dll")]
+        [DllImport(dllName: "user32.dll")]
         public static extern int QueryDisplayConfig(
             QUERY_DEVICE_CONFIG_FLAGS flags,
             ref uint numPathArrayElements, [Out] DISPLAYCONFIG_PATH_INFO[] PathInfoArray,
@@ -256,7 +256,7 @@ namespace GHelper.Display
             nint currentTopologyId
             );
 
-        [DllImport("user32.dll")]
+        [DllImport(dllName: "user32.dll")]
         public static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName);
 
         #endregion
@@ -275,28 +275,28 @@ namespace GHelper.Display
             MODESPRUNED = 0x8000000
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [StructLayout(layoutKind: LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct DISPLAY_DEVICE
         {
             public int cb;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 32)]
             public string DeviceName;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 128)]
             public string DeviceString;
 
             public DisplayDeviceStates StateFlags;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 128)]
             public string DeviceID;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 128)]
             public string DeviceKey;
         }
 
 
-        [DllImport(nameof(User32), CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport(dllName: nameof(User32), CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool EnumDisplayDevices(
             string? lpDevice,
             uint iDevNum,
@@ -310,15 +310,15 @@ namespace GHelper.Display
             {
                 header =
                 {
-                    size = (uint)Marshal.SizeOf(typeof (DISPLAYCONFIG_TARGET_DEVICE_NAME)),
+                    size = (uint)Marshal.SizeOf(t: typeof (DISPLAYCONFIG_TARGET_DEVICE_NAME)),
                     adapterId = adapterId,
                     id = targetId,
                     type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME
                 }
             };
-            var error = DisplayConfigGetDeviceInfo(ref deviceName);
+            var error = DisplayConfigGetDeviceInfo(deviceName: ref deviceName);
             if (error != ERROR_SUCCESS)
-                throw new Win32Exception(error);
+                throw new Win32Exception(error: error);
 
             return deviceName;
         }
@@ -326,20 +326,20 @@ namespace GHelper.Display
         public static IEnumerable<DISPLAYCONFIG_TARGET_DEVICE_NAME> GetAllDevices()
         {
             uint pathCount, modeCount;
-            var error = GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS, out pathCount, out modeCount);
+            var error = GetDisplayConfigBufferSizes(flags: QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS, numPathArrayElements: out pathCount, numModeInfoArrayElements: out modeCount);
             if (error != ERROR_SUCCESS)
-                throw new Win32Exception(error);
+                throw new Win32Exception(error: error);
 
             var displayPaths = new DISPLAYCONFIG_PATH_INFO[pathCount];
             var displayModes = new DISPLAYCONFIG_MODE_INFO[modeCount];
-            error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
-                ref pathCount, displayPaths, ref modeCount, displayModes, nint.Zero);
+            error = QueryDisplayConfig(flags: QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
+                numPathArrayElements: ref pathCount, PathInfoArray: displayPaths, numModeInfoArrayElements: ref modeCount, ModeInfoArray: displayModes, currentTopologyId: nint.Zero);
             if (error != ERROR_SUCCESS)
-                throw new Win32Exception(error);
+                throw new Win32Exception(error: error);
 
             for (var i = 0; i < modeCount; i++)
                 if (displayModes[i].infoType == DISPLAYCONFIG_MODE_INFO_TYPE.DISPLAYCONFIG_MODE_INFO_TYPE_TARGET)
-                    yield return DeviceName(displayModes[i].adapterId, displayModes[i].id);
+                    yield return DeviceName(adapterId: displayModes[i].adapterId, targetId: displayModes[i].id);
         }
 
 
@@ -350,13 +350,13 @@ namespace GHelper.Display
             displayAdapter.cb = Marshal.SizeOf<DISPLAY_DEVICE>();
 
             var displayAdapterNumber = default(uint);
-            while (EnumDisplayDevices(null, displayAdapterNumber, ref displayAdapter, 1))
+            while (EnumDisplayDevices(lpDevice: null, iDevNum: displayAdapterNumber, lpDisplayDevice: ref displayAdapter, dwFlags: 1))
             {
                 var displayMonitor = new DISPLAY_DEVICE();
                 displayMonitor.cb = Marshal.SizeOf<DISPLAY_DEVICE>();
 
                 var displayMonitorNumber = default(uint);
-                while (EnumDisplayDevices(displayAdapter.DeviceName, displayMonitorNumber, ref displayMonitor, 1))
+                while (EnumDisplayDevices(lpDevice: displayAdapter.DeviceName, iDevNum: displayMonitorNumber, lpDisplayDevice: ref displayMonitor, dwFlags: 1))
                 {
                     var isAttached = (displayMonitor.StateFlags & DisplayDeviceStates.ATTACHED_TO_DESKTOP) == DisplayDeviceStates.ATTACHED_TO_DESKTOP;
                     var isMirroring = (displayMonitor.StateFlags & DisplayDeviceStates.MIRRORING_DRIVER) == DisplayDeviceStates.MIRRORING_DRIVER;

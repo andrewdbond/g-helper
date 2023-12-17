@@ -3,11 +3,11 @@
     //P513
     public class ROGKerisWireless : AsusMouse
     {
-        public ROGKerisWireless() : base(0x0B05, 0x1960, "mi_00", true)
+        public ROGKerisWireless() : base(vendorId: 0x0B05, productId: 0x1960, path: "mi_00", wireless: true)
         {
         }
 
-        protected ROGKerisWireless(ushort vendorId, bool wireless) : base(0x0B05, vendorId, "mi_00", wireless)
+        protected ROGKerisWireless(ushort vendorId, bool wireless) : base(vendorId: 0x0B05, productId: vendorId, path: "mi_00", wireless: wireless)
         {
         }
 
@@ -114,12 +114,12 @@
 
         protected override byte[] GetUpdateEnergySettingsPacket(int lowBatteryWarning, PowerOffSetting powerOff)
         {
-            return base.GetUpdateEnergySettingsPacket(lowBatteryWarning / 25, powerOff);
+            return base.GetUpdateEnergySettingsPacket(lowBatteryWarning: lowBatteryWarning / 25, powerOff: powerOff);
         }
 
         protected override int ParseLowBatteryWarning(byte[] packet)
         {
-            int lowBat = base.ParseLowBatteryWarning(packet);
+            int lowBat = base.ParseLowBatteryWarning(packet: packet);
 
             return lowBat * 25;
         }
@@ -161,7 +161,7 @@
 
     public class ROGKerisWirelessWired : ROGKerisWireless
     {
-        public ROGKerisWirelessWired() : base(0x195E, false)
+        public ROGKerisWirelessWired() : base(vendorId: 0x195E, wireless: false)
         {
         }
 
@@ -173,7 +173,7 @@
 
     public class ROGKerisWirelessEvaEdition : ROGKerisWireless
     {
-        public ROGKerisWirelessEvaEdition() : base(0x1A59, true)
+        public ROGKerisWirelessEvaEdition() : base(vendorId: 0x1A59, wireless: true)
         {
         }
 
@@ -185,7 +185,7 @@
 
     public class ROGKerisWirelessEvaEditionWired : ROGKerisWireless
     {
-        public ROGKerisWirelessEvaEditionWired() : base(0x1A57, false)
+        public ROGKerisWirelessEvaEditionWired() : base(vendorId: 0x1A57, wireless: false)
         {
         }
 

@@ -29,7 +29,7 @@ namespace GHelper
         public static SettingsForm settingsForm = new SettingsForm();
 
         public static ModeControl modeControl = new ModeControl();
-        public static GPUModeControl gpuControl = new GPUModeControl(settingsForm);
+        public static GPUModeControl gpuControl = new GPUModeControl(settingsForm: settingsForm);
         public static ScreenControl screenControl = new ScreenControl();
         public static ClamshellModeControl clamshellControl = new ClamshellModeControl();
 
@@ -51,30 +51,30 @@ namespace GHelper
             string action = "";
             if (args.Length > 0) action = args[0];
 
-            string language = AppConfig.GetString("language");
+            string language = AppConfig.GetString(name: "language");
 
             if (language != null && language.Length > 0)
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(name: language);
             else
             {
                 var culture = CultureInfo.CurrentUICulture;
-                if (culture.ToString() == "kr") culture = CultureInfo.GetCultureInfo("ko");
+                if (culture.ToString() == "kr") culture = CultureInfo.GetCultureInfo(name: "ko");
                 Thread.CurrentThread.CurrentUICulture = culture;
             }
 
             ProcessHelper.CheckAlreadyRunning();
 
-            Logger.WriteLine("------------");
-            Logger.WriteLine("App launched: " + AppConfig.GetModel() + " :" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + CultureInfo.CurrentUICulture + (ProcessHelper.IsUserAdministrator() ? "." : ""));
+            Logger.WriteLine(logMessage: "------------");
+            Logger.WriteLine(logMessage: "App launched: " + AppConfig.GetModel() + " :" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + CultureInfo.CurrentUICulture + (ProcessHelper.IsUserAdministrator() ? "." : ""));
 
             acpi = new AsusACPI();
 
             if (!acpi.IsConnected() && AppConfig.IsASUS())
             {
-                DialogResult dialogResult = MessageBox.Show(Properties.Strings.ACPIError, Properties.Strings.StartupError, MessageBoxButtons.YesNo);
+                DialogResult dialogResult = MessageBox.Show(text: Properties.Strings.ACPIError, caption: Properties.Strings.StartupError, buttons: MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
-                    Process.Start(new ProcessStartInfo("https://www.asus.com/support/FAQ/1047338/") { UseShellExecute = true });
+                    Process.Start(startInfo: new ProcessStartInfo(fileName: "https://www.asus.com/support/FAQ/1047338/") { UseShellExecute = true });
                 }
 
                 Application.Exit();
@@ -109,15 +109,15 @@ namespace GHelper
 
             // Subscribing for monitor power on events
             PowerSettingGuid settingGuid = new NativeMethods.PowerSettingGuid();
-            unRegPowerNotify = NativeMethods.RegisterPowerSettingNotification(settingsForm.Handle, settingGuid.ConsoleDisplayState, NativeMethods.DEVICE_NOTIFY_WINDOW_HANDLE);
+            unRegPowerNotify = NativeMethods.RegisterPowerSettingNotification(hWnd: settingsForm.Handle, PowerSettingGuid: settingGuid.ConsoleDisplayState, Flags: NativeMethods.DEVICE_NOTIFY_WINDOW_HANDLE);
 
 
-            Task task = Task.Run((Action)PeripheralsProvider.DetectAllAsusMice);
+            Task task = Task.Run(action: (Action)PeripheralsProvider.DetectAllAsusMice);
             PeripheralsProvider.RegisterForDeviceEvents();
 
-            if (Environment.CurrentDirectory.Trim('\\') == Application.StartupPath.Trim('\\') || action.Length > 0)
+            if (Environment.CurrentDirectory.Trim(trimChar: '\\') == Application.StartupPath.Trim(trimChar: '\\') || action.Length > 0)
             {
-                SettingsToggle(false);
+                SettingsToggle(checkForFocus: false);
             }
 
             switch (action)
@@ -128,10 +128,10 @@ namespace GHelper
                     break;
                 case "gpu":
                     Startup.ReScheduleAdmin();
-                    settingsForm.FansToggle(1);
+                    settingsForm.FansToggle(index: 1);
                     break;
                 case "gpurestart":
-                    gpuControl.RestartGPU(false);
+                    gpuControl.RestartGPU(confirm: false);
                     break;
                 case "services":
                     settingsForm.extraForm = new Extra();
@@ -140,7 +140,7 @@ namespace GHelper
                     break;
                 case "uv":
                     Startup.ReScheduleAdmin();
-                    settingsForm.FansToggle(2);
+                    settingsForm.FansToggle(index: 2);
                     modeControl.SetRyzen();
                     break;
                 default:
@@ -163,7 +163,7 @@ namespace GHelper
         {
             if (e.Reason == SessionSwitchReason.SessionLogon || e.Reason == SessionSwitchReason.SessionUnlock)
             {
-                Logger.WriteLine("Session:" + e.Reason.ToString());
+                Logger.WriteLine(logMessage: "Session:" + e.Reason.ToString());
                 screenControl.AutoScreen();
             }
         }
@@ -171,7 +171,7 @@ namespace GHelper
         static void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
 
-            if (Math.Abs(DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastTheme) < 2000) return;
+            if (Math.Abs(value: DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastTheme) < 2000) return;
 
             switch (e.Category)
             {
@@ -179,7 +179,7 @@ namespace GHelper
                     bool changed = settingsForm.InitTheme();
                     if (changed)
                     {
-                        Debug.WriteLine("Theme Changed");
+                        Debug.WriteLine(message: "Theme Changed");
                         lastTheme = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     }
 
@@ -203,15 +203,15 @@ namespace GHelper
         public static void SetAutoModes(bool powerChanged = false, bool init = false)
         {
 
-            if (Math.Abs(DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastAuto) < 3000) return;
+            if (Math.Abs(value: DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastAuto) < 3000) return;
             lastAuto = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             isPlugged = SystemInformation.PowerStatus.PowerLineStatus;
-            Logger.WriteLine("AutoSetting for " + isPlugged.ToString());
+            Logger.WriteLine(logMessage: "AutoSetting for " + isPlugged.ToString());
 
             inputDispatcher.Init();
 
-            modeControl.AutoPerformance(powerChanged);
+            modeControl.AutoPerformance(powerChanged: powerChanged);
 
             bool switched = gpuControl.AutoGPUMode();
 
@@ -221,10 +221,10 @@ namespace GHelper
                 screenControl.AutoScreen();
             }
 
-            BatteryControl.AutoBattery(init);
+            BatteryControl.AutoBattery(init: init);
 
             settingsForm.AutoKeyboard();
-            settingsForm.matrixControl.SetMatrix(true);
+            settingsForm.matrixControl.SetMatrix(wakeUp: true);
         }
 
         private static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
@@ -232,12 +232,12 @@ namespace GHelper
 
             if (e.Mode == PowerModes.Suspend)
             {
-                Logger.WriteLine("Power Mode Changed:" + e.Mode.ToString());
+                Logger.WriteLine(logMessage: "Power Mode Changed:" + e.Mode.ToString());
                 gpuControl.StandardModeFix();
             }
 
             if (SystemInformation.PowerStatus.PowerLineStatus == isPlugged) return;
-            SetAutoModes(true);
+            SetAutoModes(powerChanged: true);
         }
 
         public static void SettingsToggle(bool checkForFocus = true, bool trayClick = false)
@@ -246,7 +246,7 @@ namespace GHelper
             {
                 // If helper window is not on top, this just focuses on the app again
                 // Pressing the ghelper button again will hide the app
-                if (checkForFocus && !settingsForm.HasAnyFocus(trayClick))
+                if (checkForFocus && !settingsForm.HasAnyFocus(lostFocusCheck: trayClick))
                 {
                     settingsForm.ShowAll();
                 }
@@ -258,14 +258,14 @@ namespace GHelper
             else
             {
 
-                settingsForm.Left = Screen.FromControl(settingsForm).WorkingArea.Width - 10 - settingsForm.Width;
-                settingsForm.Top = Screen.FromControl(settingsForm).WorkingArea.Height - 10 - settingsForm.Height;
+                settingsForm.Left = Screen.FromControl(control: settingsForm).WorkingArea.Width - 10 - settingsForm.Width;
+                settingsForm.Top = Screen.FromControl(control: settingsForm).WorkingArea.Height - 10 - settingsForm.Height;
 
                 settingsForm.Show();
                 settingsForm.Activate();
 
-                settingsForm.Left = Screen.FromControl(settingsForm).WorkingArea.Width - 10 - settingsForm.Width;
-                settingsForm.Top = Screen.FromControl(settingsForm).WorkingArea.Height - 10 - settingsForm.Height;
+                settingsForm.Left = Screen.FromControl(control: settingsForm).WorkingArea.Width - 10 - settingsForm.Width;
+                settingsForm.Top = Screen.FromControl(control: settingsForm).WorkingArea.Height - 10 - settingsForm.Height;
 
                 settingsForm.VisualiseGPUMode();
             }
@@ -285,7 +285,7 @@ namespace GHelper
             trayIcon.Visible = false;
             PeripheralsProvider.UnregisterForDeviceEvents();
             clamshellControl.UnregisterDisplayEvents();
-            NativeMethods.UnregisterPowerSettingNotification(unRegPowerNotify);
+            NativeMethods.UnregisterPowerSettingNotification(hWnd: unRegPowerNotify);
             Application.Exit();
         }
 

@@ -3,7 +3,7 @@
     //P306_Wireless
     public class TUFM4Wirelss : AsusMouse
     {
-        public TUFM4Wirelss() : base(0x0B05, 0x19F4, "mi_00", true)
+        public TUFM4Wirelss() : base(vendorId: 0x0B05, productId: 0x19F4, path: "mi_00", wireless: true)
         {
         }
 

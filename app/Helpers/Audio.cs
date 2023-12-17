@@ -8,9 +8,9 @@ namespace GHelper.Helpers
         {
             using (var enumerator = new MMDeviceEnumerator())
             {
-                var commDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
-                var consoleDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
-                var mmDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+                var commDevice = enumerator.GetDefaultAudioEndpoint(dataFlow: DataFlow.Capture, role: Role.Communications);
+                var consoleDevice = enumerator.GetDefaultAudioEndpoint(dataFlow: DataFlow.Capture, role: Role.Console);
+                var mmDevice = enumerator.GetDefaultAudioEndpoint(dataFlow: DataFlow.Capture, role: Role.Multimedia);
 
                 bool status = !commDevice.AudioEndpointVolume.Mute;
                 
@@ -18,9 +18,9 @@ namespace GHelper.Helpers
                 consoleDevice.AudioEndpointVolume.Mute = status;
                 mmDevice.AudioEndpointVolume.Mute = status;
 
-                Logger.WriteLine(commDevice.ToString() + ":" + status);
-                Logger.WriteLine(consoleDevice.ToString() + ":" + status);
-                Logger.WriteLine(mmDevice.ToString() + ":" + status);
+                Logger.WriteLine(logMessage: commDevice.ToString() + ":" + status);
+                Logger.WriteLine(logMessage: consoleDevice.ToString() + ":" + status);
+                Logger.WriteLine(logMessage: mmDevice.ToString() + ":" + status);
 
                 return status;
             }

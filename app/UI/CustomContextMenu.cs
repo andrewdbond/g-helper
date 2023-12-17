@@ -4,7 +4,7 @@ namespace GHelper.UI
 {
     class CustomContextMenu : ContextMenuStrip
     {
-        [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport(dllName: "dwmapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern long DwmSetWindowAttribute(nint hwnd,
                                                             DWMWINDOWATTRIBUTE attribute,
                                                             ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute,
@@ -13,10 +13,10 @@ namespace GHelper.UI
         public CustomContextMenu()
         {
             var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL;     //change as you want
-            DwmSetWindowAttribute(Handle,
-                                  DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
-                                  ref preference,
-                                  sizeof(uint));
+            DwmSetWindowAttribute(hwnd: Handle,
+                                  attribute: DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
+                                  pvAttribute: ref preference,
+                                  cbAttribute: sizeof(uint));
         }
 
         public enum DWMWINDOWATTRIBUTE

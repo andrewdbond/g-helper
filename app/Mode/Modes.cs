@@ -16,7 +16,7 @@
 
             for (int i = 3; i < maxModes; i++)
             {
-                if (Exists(i)) modes.Add(i, GetName(i));
+                if (Exists(mode: i)) modes.Add(key: i, value: GetName(mode: i));
             }
 
             return modes;
@@ -27,7 +27,7 @@
             List<int> modes = new() { 2, 0, 1 };
             for (int i = 3; i < maxModes; i++)
             {
-                if (Exists(i)) modes.Add(i);
+                if (Exists(mode: i)) modes.Add(item: i);
             }
 
             return modes;
@@ -57,7 +57,7 @@
 
             foreach (string clean in cleanup)
             {
-                AppConfig.Remove(clean + "_" + mode);
+                AppConfig.Remove(name: clean + "_" + mode);
             }
         }
 
@@ -65,12 +65,12 @@
         {
             for (int i = 3; i < maxModes; i++)
             {
-                if (!Exists(i))
+                if (!Exists(mode: i))
                 {
                     int modeBase = GetCurrentBase();
                     string nameName = "Custom " + (i - 2);
-                    AppConfig.Set("mode_base_" + i, modeBase);
-                    AppConfig.Set("mode_name_" + i, nameName);
+                    AppConfig.Set(name: "mode_base_" + i, value: modeBase);
+                    AppConfig.Set(name: "mode_name_" + i, value: nameName);
                     return i;
                 }
             }
@@ -80,7 +80,7 @@
 
         public static int GetCurrent()
         {
-            return AppConfig.Get("performance_mode");
+            return AppConfig.Get(name: "performance_mode");
         }
 
         public static bool IsCurrentCustom()
@@ -90,23 +90,23 @@
 
         public static void SetCurrent(int mode)
         {
-            AppConfig.Set("performance_" + (int)SystemInformation.PowerStatus.PowerLineStatus, mode);
-            AppConfig.Set("performance_mode", mode);
+            AppConfig.Set(name: "performance_" + (int)SystemInformation.PowerStatus.PowerLineStatus, value: mode);
+            AppConfig.Set(name: "performance_mode", value: mode);
         }
 
         public static int GetCurrentBase()
         {
-            return GetBase(GetCurrent());
+            return GetBase(mode: GetCurrent());
         }
 
         public static string GetCurrentName()
         {
-            return GetName(GetCurrent());
+            return GetName(mode: GetCurrent());
         }
 
         public static bool Exists(int mode)
         {
-            return GetBase(mode) >= 0;
+            return GetBase(mode: mode) >= 0;
         }
 
         public static int GetBase(int mode)
@@ -114,7 +114,7 @@
             if (mode >= 0 && mode <= 2)
                 return mode;
             else
-                return AppConfig.Get("mode_base_" + mode);
+                return AppConfig.Get(name: "mode_base_" + mode);
         }
 
         public static string GetName(int mode)
@@ -128,7 +128,7 @@
                 case 2:
                     return Properties.Strings.Silent;
                 default:
-                    return AppConfig.GetString("mode_name_" + mode);
+                    return AppConfig.GetString(name: "mode_name_" + mode);
             }
         }
 
@@ -136,19 +136,19 @@
         public static int GetNext(bool back = false)
         {
             var modes = GetList();
-            int index = modes.IndexOf(GetCurrent());
+            int index = modes.IndexOf(item: GetCurrent());
 
             if (back)
             {
                 index--;
                 if (index < 0) index = modes.Count - 1;
-                return modes[index];
+                return modes[index: index];
             }
             else
             {
                 index++;
                 if (index > modes.Count - 1) index = 0;
-                return modes[index];
+                return modes[index: index];
             }
         }
     }

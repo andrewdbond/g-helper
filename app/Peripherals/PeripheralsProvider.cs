@@ -12,7 +12,7 @@ namespace GHelper.Peripherals
 
         public static event EventHandler? DeviceChanged;
 
-        private static System.Timers.Timer timer = new System.Timers.Timer(1000);
+        private static System.Timers.Timer timer = new System.Timers.Timer(interval: 1000);
 
         static PeripheralsProvider()
         {
@@ -32,7 +32,7 @@ namespace GHelper.Peripherals
 
         public static bool IsDeviceConnected(IPeripheral peripheral)
         {
-            return AllPeripherals().Contains(peripheral);
+            return AllPeripherals().Contains(item: peripheral);
         }
 
         //Expand if keyboards or other device get supported later.
@@ -46,20 +46,20 @@ namespace GHelper.Peripherals
             List<IPeripheral> l = new List<IPeripheral>();
             lock (_LOCK)
             {
-                l.AddRange(ConnectedMice);
+                l.AddRange(collection: ConnectedMice);
             }
             return l;
         }
 
         public static void RefreshBatteryForAllDevices()
         {
-            RefreshBatteryForAllDevices(false);
+            RefreshBatteryForAllDevices(force: false);
         }
 
         public static void RefreshBatteryForAllDevices(bool force)
         {
             //Polling the battery every 20s should be enough
-            if (!force && Math.Abs(DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastRefresh) < 20_000) return;
+            if (!force && Math.Abs(value: DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastRefresh) < 20_000) return;
             lastRefresh = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             List<IPeripheral> l = AllPeripherals();
@@ -85,18 +85,18 @@ namespace GHelper.Peripherals
                 am.Disconnect -= Mouse_Disconnect;
                 am.MouseReadyChanged -= MouseReadyChanged;
                 am.BatteryUpdated -= BatteryUpdated;
-                ConnectedMice.Remove(am);
+                ConnectedMice.Remove(item: am);
             }
             if (DeviceChanged is not null)
             {
-                DeviceChanged(am, EventArgs.Empty);
+                DeviceChanged(sender: am, e: EventArgs.Empty);
             }
         }
 
         public static void Connect(AsusMouse am)
         {
 
-            if (IsDeviceConnected(am))
+            if (IsDeviceConnected(peripheral: am))
             {
                 //Mouse already connected;
                 return;
@@ -108,7 +108,7 @@ namespace GHelper.Peripherals
             }
             catch (IOException e)
             {
-                Logger.WriteLine(am.GetDisplayName() + " failed to connect to device: " + e);
+                Logger.WriteLine(logMessage: am.GetDisplayName() + " failed to connect to device: " + e);
                 return;
             }
 
@@ -118,17 +118,17 @@ namespace GHelper.Peripherals
             int tries = 0;
             while (!am.IsDeviceReady && tries < 3)
             {
-                Thread.Sleep(250);
-                Logger.WriteLine(am.GetDisplayName() + " synchronising. Try " + (tries + 1));
+                Thread.Sleep(millisecondsTimeout: 250);
+                Logger.WriteLine(logMessage: am.GetDisplayName() + " synchronising. Try " + (tries + 1));
                 am.SynchronizeDevice();
                 ++tries;
             }
 
             lock (_LOCK)
             {
-                ConnectedMice.Add(am);
+                ConnectedMice.Add(item: am);
             }
-            Logger.WriteLine(am.GetDisplayName() + " added to the list: " + ConnectedMice.Count + " device are conneted.");
+            Logger.WriteLine(logMessage: am.GetDisplayName() + " added to the list: " + ConnectedMice.Count + " device are conneted.");
 
 
             am.Disconnect += Mouse_Disconnect;
@@ -136,7 +136,7 @@ namespace GHelper.Peripherals
             am.BatteryUpdated += BatteryUpdated;
             if (DeviceChanged is not null)
             {
-                DeviceChanged(am, EventArgs.Empty);
+                DeviceChanged(sender: am, e: EventArgs.Empty);
             }
             UpdateSettingsView();
         }
@@ -161,10 +161,10 @@ namespace GHelper.Peripherals
             AsusMouse am = (AsusMouse)sender;
             lock (_LOCK)
             {
-                ConnectedMice.Remove(am);
+                ConnectedMice.Remove(item: am);
             }
 
-            Logger.WriteLine(am.GetDisplayName() + " reported disconnect. " + ConnectedMice.Count + " device are conneted.");
+            Logger.WriteLine(logMessage: am.GetDisplayName() + " reported disconnect. " + ConnectedMice.Count + " device are conneted.");
             am.Dispose();
 
             UpdateSettingsView();
@@ -173,50 +173,50 @@ namespace GHelper.Peripherals
 
         private static void UpdateSettingsView()
         {
-            Program.settingsForm.Invoke(delegate
+            Program.settingsForm.Invoke(method: delegate
             {
                 Program.settingsForm.VisualizePeripherals();
             });
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        [MethodImpl(methodImplOptions: MethodImplOptions.Synchronized)]
         public static void DetectAllAsusMice()
         {
             //Add one line for every supported mouse class here to support them.
-            DetectMouse(new ChakramX());
-            DetectMouse(new ChakramXWired());
-            DetectMouse(new GladiusIIIAimpoint());
-            DetectMouse(new GladiusIIIAimpointWired());
-            DetectMouse(new ROGKerisWireless());
-            DetectMouse(new ROGKerisWirelessWired());
-            DetectMouse(new ROGKerisWirelessEvaEdition());
-            DetectMouse(new ROGKerisWirelessEvaEditionWired());
-            DetectMouse(new TUFM4Wirelss());
-            DetectMouse(new StrixImpactIIWireless());
-            DetectMouse(new StrixImpactIIWirelessWired());
-            DetectMouse(new GladiusIII());
-            DetectMouse(new GladiusIIIWired());
-            DetectMouse(new HarpeAceAimLabEdition());
-            DetectMouse(new HarpeAceAimLabEditionWired());
-            DetectMouse(new HarpeAceAimLabEditionOmni());
-            DetectMouse(new TUFM3());
-            DetectMouse(new TUFM5());
-            DetectMouse(new KerisWirelssAimpoint());
-            DetectMouse(new KerisWirelssAimpointWired());
-            DetectMouse(new PugioII());
-            DetectMouse(new PugioIIWired());
-            DetectMouse(new StrixImpactII());
-            DetectMouse(new Chakram());
-            DetectMouse(new ChakramWired());
-            DetectMouse(new ChakramCore());
+            DetectMouse(am: new ChakramX());
+            DetectMouse(am: new ChakramXWired());
+            DetectMouse(am: new GladiusIIIAimpoint());
+            DetectMouse(am: new GladiusIIIAimpointWired());
+            DetectMouse(am: new ROGKerisWireless());
+            DetectMouse(am: new ROGKerisWirelessWired());
+            DetectMouse(am: new ROGKerisWirelessEvaEdition());
+            DetectMouse(am: new ROGKerisWirelessEvaEditionWired());
+            DetectMouse(am: new TUFM4Wirelss());
+            DetectMouse(am: new StrixImpactIIWireless());
+            DetectMouse(am: new StrixImpactIIWirelessWired());
+            DetectMouse(am: new GladiusIII());
+            DetectMouse(am: new GladiusIIIWired());
+            DetectMouse(am: new HarpeAceAimLabEdition());
+            DetectMouse(am: new HarpeAceAimLabEditionWired());
+            DetectMouse(am: new HarpeAceAimLabEditionOmni());
+            DetectMouse(am: new TUFM3());
+            DetectMouse(am: new TUFM5());
+            DetectMouse(am: new KerisWirelssAimpoint());
+            DetectMouse(am: new KerisWirelssAimpointWired());
+            DetectMouse(am: new PugioII());
+            DetectMouse(am: new PugioIIWired());
+            DetectMouse(am: new StrixImpactII());
+            DetectMouse(am: new Chakram());
+            DetectMouse(am: new ChakramWired());
+            DetectMouse(am: new ChakramCore());
         }
 
         public static void DetectMouse(AsusMouse am)
         {
-            if (am.IsDeviceConnected() && !IsDeviceConnected(am))
+            if (am.IsDeviceConnected() && !IsDeviceConnected(peripheral: am))
             {
-                Logger.WriteLine("Detected a new" + am.GetDisplayName() + " . Connecting...");
-                Connect(am);
+                Logger.WriteLine(logMessage: "Detected a new" + am.GetDisplayName() + " . Connecting...");
+                Connect(am: am);
             }
         }
 
@@ -238,7 +238,7 @@ namespace GHelper.Peripherals
         private static void DeviceTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             timer.Stop();
-            Logger.WriteLine("HID Device Event: Checking for new ASUS Mice");
+            Logger.WriteLine(logMessage: "HID Device Event: Checking for new ASUS Mice");
             DetectAllAsusMice();
             if (AppConfig.IsZ13()) Program.inputDispatcher.Init();
         }

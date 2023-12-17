@@ -3,16 +3,16 @@
 public sealed class KeyboardHook : IDisposable
 {
     // Registers a hot key with Windows.
-    [DllImport("user32.dll")]
+    [DllImport(dllName: "user32.dll")]
     private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
     // Unregisters the hot key with Windows.
-    [DllImport("user32.dll")]
+    [DllImport(dllName: "user32.dll")]
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
-    [DllImport("user32.dll")]
+    [DllImport(dllName: "user32.dll")]
     private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport(dllName: "user32.dll", SetLastError = true)]
     public static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, IntPtr extraInfo);
 
     public const int KEYEVENTF_EXTENDEDKEY = 1;
@@ -23,31 +23,31 @@ public sealed class KeyboardHook : IDisposable
 
     public static void KeyPress(Keys key)
     {
-        keybd_event((byte)key, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY, extraInfo: IntPtr.Zero);
     }
 
     public static void KeyKeyPress(Keys key, Keys key2)
     {
-        keybd_event((byte)key, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero);
-        keybd_event((byte)key2, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero);
-        keybd_event((byte)key2, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, IntPtr.Zero);
-        keybd_event((byte)key, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY, extraInfo: IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key2, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY, extraInfo: IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key2, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, extraInfo: IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, extraInfo: IntPtr.Zero);
     }
 
     public static void KeyKeyKeyPress(Keys key, Keys key2, Keys key3, int sleep = 0)
     {
-        keybd_event((byte)key, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero);
-        keybd_event((byte)key2, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero);
-        keybd_event((byte)key3, 0, KEYEVENTF_EXTENDEDKEY, IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY, extraInfo: IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key2, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY, extraInfo: IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key3, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY, extraInfo: IntPtr.Zero);
 
         if (sleep > 0)
         {
-            Thread.Sleep(sleep);
+            Thread.Sleep(millisecondsTimeout: sleep);
         }
 
-        keybd_event((byte)key3, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, IntPtr.Zero);
-        keybd_event((byte)key2, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, IntPtr.Zero);
-        keybd_event((byte)key, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key3, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, extraInfo: IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key2, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, extraInfo: IntPtr.Zero);
+        keybd_event(virtualKey: (byte)key, scanCode: 0, flags: KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, extraInfo: IntPtr.Zero);
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ public sealed class KeyboardHook : IDisposable
         public Window()
         {
             // create the handle for the window.
-            this.CreateHandle(new CreateParams());
+            this.CreateHandle(cp: new CreateParams());
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ public sealed class KeyboardHook : IDisposable
         /// <param name="m"></param>
         protected override void WndProc(ref Message m)
         {
-            base.WndProc(ref m);
+            base.WndProc(m: ref m);
 
             // check if we got a hot key pressed.
             if (m.Msg == WM_HOTKEY)
@@ -81,7 +81,7 @@ public sealed class KeyboardHook : IDisposable
 
                 // invoke the event to notify the parent.
                 if (KeyPressed != null)
-                    KeyPressed(this, new KeyPressedEventArgs(modifier, key));
+                    KeyPressed(sender: this, e: new KeyPressedEventArgs(modifier: modifier, key: key));
             }
         }
 
@@ -106,7 +106,7 @@ public sealed class KeyboardHook : IDisposable
         _window.KeyPressed += delegate (object sender, KeyPressedEventArgs args)
         {
             if (KeyPressed != null)
-                KeyPressed(this, args);
+                KeyPressed(sender: this, e: args);
         };
     }
 
@@ -121,8 +121,8 @@ public sealed class KeyboardHook : IDisposable
         _currentId = _currentId + 1;
 
         // register the hot key.
-        if (!RegisterHotKey(_window.Handle, _currentId, (uint)modifier, (uint)key))
-            Logger.WriteLine("Couldn’t register " + key);
+        if (!RegisterHotKey(hWnd: _window.Handle, id: _currentId, fsModifiers: (uint)modifier, vk: (uint)key))
+            Logger.WriteLine(logMessage: "Couldn’t register " + key);
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public sealed class KeyboardHook : IDisposable
         // unregister all the registered hot keys.
         for (int i = _currentId; i > 0; i--)
         {
-            UnregisterHotKey(_window.Handle, i);
+            UnregisterHotKey(hWnd: _window.Handle, id: i);
         }
     }
 

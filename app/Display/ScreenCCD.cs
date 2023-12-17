@@ -8,17 +8,17 @@ namespace GHelper.Display
 
         public static bool GetHDRStatus()
         {
-            var err = GetDisplayConfigBufferSizes(QDC.QDC_ONLY_ACTIVE_PATHS, out var pathCount, out var modeCount);
+            var err = GetDisplayConfigBufferSizes(flags: QDC.QDC_ONLY_ACTIVE_PATHS, numPathArrayElements: out var pathCount, numModeInfoArrayElements: out var modeCount);
             if (err != 0)
-                throw new Win32Exception(err);
+                throw new Win32Exception(error: err);
 
             var paths = new DISPLAYCONFIG_PATH_INFO[pathCount];
             var modes = new DISPLAYCONFIG_MODE_INFO[modeCount];
-            err = QueryDisplayConfig(QDC.QDC_ONLY_ACTIVE_PATHS, ref pathCount, paths, ref modeCount, modes, IntPtr.Zero);
+            err = QueryDisplayConfig(flags: QDC.QDC_ONLY_ACTIVE_PATHS, numPathArrayElements: ref pathCount, pathArray: paths, numModeInfoArrayElements: ref modeCount, modeInfoArray: modes, currentTopologyId: IntPtr.Zero);
             if (err != 0)
-                throw new Win32Exception(err);
+                throw new Win32Exception(error: err);
 
-            string internalName = AppConfig.GetString("internal_display");
+            string internalName = AppConfig.GetString(name: "internal_display");
 
             foreach (var path in paths)
             {
@@ -28,25 +28,25 @@ namespace GHelper.Display
                 info.header.size = Marshal.SizeOf<DISPLAYCONFIG_TARGET_DEVICE_NAME>();
                 info.header.adapterId = path.targetInfo.adapterId;
                 info.header.id = path.targetInfo.id;
-                err = DisplayConfigGetDeviceInfo(ref info);
+                err = DisplayConfigGetDeviceInfo(requestPacket: ref info);
                 if (err != 0)
-                    throw new Win32Exception(err);
+                    throw new Win32Exception(error: err);
 
                 var colorInfo = new DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO();
                 colorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
                 colorInfo.header.size = Marshal.SizeOf<DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO>();
                 colorInfo.header.adapterId = path.targetInfo.adapterId;
                 colorInfo.header.id = path.targetInfo.id;
-                err = DisplayConfigGetDeviceInfo(ref colorInfo);
+                err = DisplayConfigGetDeviceInfo(requestPacket: ref colorInfo);
                 if (err != 0)
-                    throw new Win32Exception(err);
+                    throw new Win32Exception(error: err);
 
 
                 if (info.outputTechnology == DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY.DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL ||
                     info.outputTechnology == DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY.DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED ||
                     info.monitorFriendlyDeviceName == internalName)
                 {
-                    Logger.WriteLine(info.monitorFriendlyDeviceName + " HDR: " + colorInfo.advancedColorEnabled);
+                    Logger.WriteLine(logMessage: info.monitorFriendlyDeviceName + " HDR: " + colorInfo.advancedColorEnabled);
                     return colorInfo.advancedColorEnabled;
                 }
 
@@ -184,7 +184,7 @@ namespace GHelper.Display
             DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3,
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_DEVICE_INFO_HEADER
         {
             public DISPLAYCONFIG_DEVICE_INFO_TYPE type;
@@ -193,7 +193,7 @@ namespace GHelper.Display
             public uint id;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO
         {
             public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
@@ -207,14 +207,14 @@ namespace GHelper.Display
             public bool advancedColorForceDisabled => (value & 0x8) == 0x8;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct POINTL
         {
             public int x;
             public int y;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct LUID
         {
             public uint LowPart;
@@ -224,7 +224,7 @@ namespace GHelper.Display
             public override string ToString() => Value.ToString();
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_SOURCE_MODE
         {
             public uint width;
@@ -233,7 +233,7 @@ namespace GHelper.Display
             public POINTL position;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_RATIONAL
         {
             public uint Numerator;
@@ -242,14 +242,14 @@ namespace GHelper.Display
             public override string ToString() => Numerator + " / " + Denominator;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_2DREGION
         {
             public uint cx;
             public uint cy;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_DESKTOP_IMAGE_INFO
         {
             public POINTL PathSourceSize;
@@ -257,7 +257,7 @@ namespace GHelper.Display
             public RECT DesktopImageClip;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_VIDEO_SIGNAL_INFO
         {
             public ulong pixelRate;
@@ -269,26 +269,26 @@ namespace GHelper.Display
             public DISPLAYCONFIG_SCANLINE_ORDERING scanLineOrdering;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_TARGET_MODE
         {
             public DISPLAYCONFIG_VIDEO_SIGNAL_INFO targetVideoSignalInfo;
         }
 
-        [StructLayout(LayoutKind.Explicit)]
+        [StructLayout(layoutKind: LayoutKind.Explicit)]
         private struct DISPLAYCONFIG_MODE_INFO_union
         {
-            [FieldOffset(0)]
+            [FieldOffset(offset: 0)]
             public DISPLAYCONFIG_TARGET_MODE targetMode;
 
-            [FieldOffset(0)]
+            [FieldOffset(offset: 0)]
             public DISPLAYCONFIG_SOURCE_MODE sourceMode;
 
-            [FieldOffset(0)]
+            [FieldOffset(offset: 0)]
             public DISPLAYCONFIG_DESKTOP_IMAGE_INFO desktopImageInfo;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_PATH_SOURCE_INFO
         {
             public LUID adapterId;
@@ -297,7 +297,7 @@ namespace GHelper.Display
             public DISPLAYCONFIG_SOURCE_FLAGS statusFlags;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_PATH_TARGET_INFO
         {
             public LUID adapterId;
@@ -312,7 +312,7 @@ namespace GHelper.Display
             public DISPLAYCONFIG_TARGET_FLAGS statusFlags;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_PATH_INFO
         {
             public DISPLAYCONFIG_PATH_SOURCE_INFO sourceInfo;
@@ -320,7 +320,7 @@ namespace GHelper.Display
             public DISPLAYCONFIG_PATH flags;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_MODE_INFO
         {
             public DISPLAYCONFIG_MODE_INFO_TYPE infoType;
@@ -329,21 +329,21 @@ namespace GHelper.Display
             public DISPLAYCONFIG_MODE_INFO_union info;
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [StructLayout(layoutKind: LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct DISPLAYCONFIG_SOURCE_DEVICE_NAME
         {
             public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 32)]
             public string viewGdiDeviceName;
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [StructLayout(layoutKind: LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS
         {
             public uint value;
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [StructLayout(layoutKind: LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct DISPLAYCONFIG_TARGET_DEVICE_NAME
         {
             public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
@@ -352,13 +352,13 @@ namespace GHelper.Display
             public ushort edidManufactureId;
             public ushort edidProductCodeId;
             public uint connectorInstance;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 64)]
             public string monitorFriendlyDeviceName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 128)]
             public string monitorDevicePat;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         private struct RECT
         {
             public int left;
@@ -367,22 +367,22 @@ namespace GHelper.Display
             public int bottom;
         }
 
-        [DllImport("user32")]
+        [DllImport(dllName: "user32")]
         private static extern int GetDisplayConfigBufferSizes(QDC flags, out int numPathArrayElements, out int numModeInfoArrayElements);
 
-        [DllImport("user32")]
+        [DllImport(dllName: "user32")]
         private static extern int QueryDisplayConfig(QDC flags, ref int numPathArrayElements, [In, Out] DISPLAYCONFIG_PATH_INFO[] pathArray, ref int numModeInfoArrayElements, [In, Out] DISPLAYCONFIG_MODE_INFO[] modeInfoArray, out DISPLAYCONFIG_TOPOLOGY_ID currentTopologyId);
 
-        [DllImport("user32")]
+        [DllImport(dllName: "user32")]
         private static extern int QueryDisplayConfig(QDC flags, ref int numPathArrayElements, [In, Out] DISPLAYCONFIG_PATH_INFO[] pathArray, ref int numModeInfoArrayElements, [In, Out] DISPLAYCONFIG_MODE_INFO[] modeInfoArray, IntPtr currentTopologyId);
 
-        [DllImport("user32")]
+        [DllImport(dllName: "user32")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO requestPacket);
 
-        [DllImport("user32")]
+        [DllImport(dllName: "user32")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_SOURCE_DEVICE_NAME requestPacket);
 
-        [DllImport("user32")]
+        [DllImport(dllName: "user32")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_TARGET_DEVICE_NAME requestPacket);
     }
 }

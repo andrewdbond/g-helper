@@ -4,11 +4,11 @@ namespace GHelper.Peripherals.Mouse.Models
     //P705
     public class PugioII : AsusMouse
     {
-        public PugioII() : base(0x0B05, 0x1908, "mi_00", true)
+        public PugioII() : base(vendorId: 0x0B05, productId: 0x1908, path: "mi_00", wireless: true)
         {
         }
 
-        protected PugioII(ushort vendorId, bool wireless) : base(0x0B05, vendorId, "mi_00", wireless)
+        protected PugioII(ushort vendorId, bool wireless) : base(vendorId: 0x0B05, productId: vendorId, path: "mi_00", wireless: wireless)
         {
         }
         public override int DPIProfileCount()
@@ -100,15 +100,15 @@ namespace GHelper.Peripherals.Mouse.Models
 
         protected override int ParseBattery(byte[] packet)
         {
-            return base.ParseBattery(packet) * 25;
+            return base.ParseBattery(packet: packet) * 25;
         }
         protected override int ParseLowBatteryWarning(byte[] packet)
         {
-            return base.ParseLowBatteryWarning(packet) * 25;
+            return base.ParseLowBatteryWarning(packet: packet) * 25;
         }
         protected override byte[] GetUpdateEnergySettingsPacket(int lowBatteryWarning, PowerOffSetting powerOff)
         {
-            return base.GetUpdateEnergySettingsPacket(lowBatteryWarning / 25, powerOff);
+            return base.GetUpdateEnergySettingsPacket(lowBatteryWarning: lowBatteryWarning / 25, powerOff: powerOff);
         }
         protected override byte[] GetReadLightingModePacket(LightingZone zone)
         {
@@ -126,12 +126,12 @@ namespace GHelper.Peripherals.Mouse.Models
 
             LightingSetting setting = new LightingSetting();
 
-            setting.LightingMode = LightingModeForIndex(packet[offset + 0]);
+            setting.LightingMode = LightingModeForIndex(lightingMode: packet[offset + 0]);
             setting.Brightness = packet[offset + 1];
 
-            setting.RGBColor = Color.FromArgb(packet[offset + 2], packet[offset + 3], packet[offset + 4]);
+            setting.RGBColor = Color.FromArgb(red: packet[offset + 2], green: packet[offset + 3], blue: packet[offset + 4]);
 
-            setting.AnimationDirection = SupportsAnimationDirection(setting.LightingMode)
+            setting.AnimationDirection = SupportsAnimationDirection(lightingMode: setting.LightingMode)
                  ? (AnimationDirection)packet[21]
                  : AnimationDirection.Clockwise;
 
@@ -141,8 +141,8 @@ namespace GHelper.Peripherals.Mouse.Models
                 setting.AnimationDirection = AnimationDirection.Clockwise;
             }
 
-            setting.RandomColor = SupportsRandomColor(setting.LightingMode) && packet[22] == 0x01;
-            setting.AnimationSpeed = SupportsAnimationSpeed(setting.LightingMode)
+            setting.RandomColor = SupportsRandomColor(lightingMode: setting.LightingMode) && packet[22] == 0x01;
+            setting.AnimationSpeed = SupportsAnimationSpeed(lightingMode: setting.LightingMode)
                 ? (AnimationSpeed)packet[23]
                 : AnimationSpeed.Medium;
 
@@ -170,20 +170,20 @@ namespace GHelper.Peripherals.Mouse.Models
             //00 12 03 00 00 [03 04 00 00 ff] [03 04 00 00 ff] [03 04 00 00 ff] 00 04 00 00
             //00 12 03 00 00 [05 02 ff 00 ff] [05 02 ff 00 ff] [05 02 ff 00 ff] 00 01 01 00
             //00 12 03 00 00 [03 01 00 00 ff] [03 01 00 00 ff] [03 01 00 00 ff] 00 01 00 01
-            byte[]? response = WriteForResponse(GetReadLightingModePacket(LightingZone.All));
+            byte[]? response = WriteForResponse(packet: GetReadLightingModePacket(zone: LightingZone.All));
             if (response is null) return;
 
             LightingZone[] lz = SupportedLightingZones();
             for (int i = 0; i < lz.Length; ++i)
             {
-                LightingSetting? ls = ParseLightingSetting(response, lz[i]);
+                LightingSetting? ls = ParseLightingSetting(packet: response, zone: lz[i]);
                 if (ls is null)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
                     continue;
                 }
 
-                Logger.WriteLine(GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
                 LightingSetting[i] = ls;
             }
         }
@@ -197,7 +197,7 @@ namespace GHelper.Peripherals.Mouse.Models
 
     public class PugioIIWired : PugioII
     {
-        public PugioIIWired() : base(0x1906, false)
+        public PugioIIWired() : base(vendorId: 0x1906, wireless: false)
         {
         }
 

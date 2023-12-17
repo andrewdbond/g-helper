@@ -10,7 +10,7 @@ namespace GHelper.Helpers
         public static void CheckAlreadyRunning()
         {
             Process currentProcess = Process.GetCurrentProcess();
-            Process[] processes = Process.GetProcessesByName(currentProcess.ProcessName);
+            Process[] processes = Process.GetProcessesByName(processName: currentProcess.ProcessName);
 
             if (processes.Length > 1)
             {
@@ -22,8 +22,8 @@ namespace GHelper.Helpers
                         }
                         catch (Exception ex)
                         {
-                            Logger.WriteLine(ex.ToString());
-                            MessageBox.Show(Properties.Strings.AppAlreadyRunningText, Properties.Strings.AppAlreadyRunning, MessageBoxButtons.OK);
+                            Logger.WriteLine(logMessage: ex.ToString());
+                            MessageBox.Show(text: Properties.Strings.AppAlreadyRunningText, caption: Properties.Strings.AppAlreadyRunning, buttons: MessageBoxButtons.OK);
                             Application.Exit();
                             return;
                         }
@@ -33,14 +33,14 @@ namespace GHelper.Helpers
         public static bool IsUserAdministrator()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            WindowsPrincipal principal = new WindowsPrincipal(ntIdentity: identity);
+            return principal.IsInRole(role: WindowsBuiltInRole.Administrator);
         }
 
         public static void RunAsAdmin(string? param = null)
         {
 
-            if (Math.Abs(DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastAdmin) < 2000) return;
+            if (Math.Abs(value: DateTimeOffset.Now.ToUnixTimeMilliseconds() - lastAdmin) < 2000) return;
             lastAdmin = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             // Check if the current user is an administrator
@@ -54,12 +54,12 @@ namespace GHelper.Helpers
                 startInfo.Verb = "runas";
                 try
                 {
-                    Process.Start(startInfo);
+                    Process.Start(startInfo: startInfo);
                     Application.Exit();
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLine(ex.Message);
+                    Logger.WriteLine(logMessage: ex.Message);
                 }
             }
         }
@@ -67,16 +67,16 @@ namespace GHelper.Helpers
 
         public static void KillByName(string name)
         {
-            foreach (var process in Process.GetProcessesByName(name))
+            foreach (var process in Process.GetProcessesByName(processName: name))
             {
                 try
                 {
                     process.Kill();
-                    Logger.WriteLine($"Stopped: {process.ProcessName}");
+                    Logger.WriteLine(logMessage: $"Stopped: {process.ProcessName}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLine($"Failed to stop: {process.ProcessName} {ex.Message}");
+                    Logger.WriteLine(logMessage: $"Failed to stop: {process.ProcessName} {ex.Message}");
                 }
             }
         }
@@ -86,11 +86,11 @@ namespace GHelper.Helpers
             try
             {
                 process.Kill();
-                Logger.WriteLine($"Stopped: {process.ProcessName}");
+                Logger.WriteLine(logMessage: $"Stopped: {process.ProcessName}");
             }
             catch (Exception ex)
             {
-                Logger.WriteLine($"Failed to stop: {process.ProcessName} {ex.Message}");
+                Logger.WriteLine(logMessage: $"Failed to stop: {process.ProcessName} {ex.Message}");
             }
         }
 
@@ -99,12 +99,12 @@ namespace GHelper.Helpers
             try
             {
                 string script = $"Get-Service -Name \"{serviceName}\" | Stop-Service -Force -PassThru | Set-Service -StartupType Disabled";
-                Logger.WriteLine(script);
-                RunCMD("powershell", script);
+                Logger.WriteLine(logMessage: script);
+                RunCMD(name: "powershell", args: script);
             }
             catch (Exception ex)
             {
-                Logger.WriteLine(ex.ToString());
+                Logger.WriteLine(logMessage: ex.ToString());
             }
         }
 
@@ -113,12 +113,12 @@ namespace GHelper.Helpers
             try
             {
                 string script = $"Set-Service -Name \"{serviceName}\" -Status running -StartupType Automatic";
-                Logger.WriteLine(script);
-                RunCMD("powershell", script);
+                Logger.WriteLine(logMessage: script);
+                RunCMD(name: "powershell", args: script);
             }
             catch (Exception ex)
             {
-                Logger.WriteLine(ex.ToString());
+                Logger.WriteLine(logMessage: ex.ToString());
             }
         }
 
@@ -133,12 +133,12 @@ namespace GHelper.Helpers
             cmd.StartInfo.Arguments = args;
             cmd.Start();
 
-            Logger.WriteLine(args);
+            Logger.WriteLine(logMessage: args);
 
-            string result = cmd.StandardOutput.ReadToEnd().Replace(Environment.NewLine, " ").Trim(' ');
+            string result = cmd.StandardOutput.ReadToEnd().Replace(oldValue: Environment.NewLine, newValue: " ").Trim(trimChar: ' ');
 
-            Logger.WriteLine(result);
-            
+            Logger.WriteLine(logMessage: result);
+
             cmd.WaitForExit();
         }
 

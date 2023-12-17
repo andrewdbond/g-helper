@@ -9,32 +9,32 @@ namespace GHelper.Helpers
         public static GraphicsPath RoundedRect(Rectangle bounds, int radius)
         {
             int diameter = radius * 2;
-            Size size = new Size(diameter, diameter);
-            Rectangle arc = new Rectangle(bounds.Location, size);
+            Size size = new Size(width: diameter, height: diameter);
+            Rectangle arc = new Rectangle(location: bounds.Location, size: size);
             GraphicsPath path = new GraphicsPath();
 
             if (radius == 0)
             {
-                path.AddRectangle(bounds);
+                path.AddRectangle(rect: bounds);
                 return path;
             }
 
-            path.AddArc(arc, 180, 90);
+            path.AddArc(rect: arc, startAngle: 180, sweepAngle: 90);
             arc.X = bounds.Right - diameter;
-            path.AddArc(arc, 270, 90);
+            path.AddArc(rect: arc, startAngle: 270, sweepAngle: 90);
             arc.Y = bounds.Bottom - diameter;
-            path.AddArc(arc, 0, 90);
+            path.AddArc(rect: arc, startAngle: 0, sweepAngle: 90);
             arc.X = bounds.Left;
-            path.AddArc(arc, 90, 90);
+            path.AddArc(rect: arc, startAngle: 90, sweepAngle: 90);
             path.CloseFigure();
             return path;
         }
 
         public static void FillRoundedRectangle(this Graphics graphics, Brush brush, Rectangle bounds, int cornerRadius)
         {
-            using (GraphicsPath path = RoundedRect(bounds, cornerRadius))
+            using (GraphicsPath path = RoundedRect(bounds: bounds, radius: cornerRadius))
             {
-                graphics.FillPath(brush, path);
+                graphics.FillPath(brush: brush, path: path);
             }
         }
     }
@@ -70,8 +70,8 @@ namespace GHelper.Helpers
 
         protected override void PerformPaint(PaintEventArgs e)
         {
-            Brush brush = new SolidBrush(Color.FromArgb(150, Color.Black));
-            e.Graphics.FillRoundedRectangle(brush, Bound, 10);
+            Brush brush = new SolidBrush(color: Color.FromArgb(alpha: 150, baseColor: Color.Black));
+            e.Graphics.FillRoundedRectangle(brush: brush, bounds: Bound, cornerRadius: 10);
 
             StringFormat format = new StringFormat();
             format.LineAlignment = StringAlignment.Center;
@@ -118,24 +118,24 @@ namespace GHelper.Helpers
 
             if (icon is not null)
             {
-                e.Graphics.DrawImage(icon, 18, 18, 64, 64);
+                e.Graphics.DrawImage(image: icon, x: 18, y: 18, width: 64, height: 64);
                 shiftX = 40;
             }
 
-            e.Graphics.DrawString(toastText,
-                new Font("Segoe UI", 36f, FontStyle.Bold, GraphicsUnit.Pixel),
-                new SolidBrush(Color.White),
-                new PointF(Bound.Width / 2 + shiftX, Bound.Height / 2),
-            format);
+            e.Graphics.DrawString(s: toastText,
+                font: new Font(familyName: "Segoe UI", emSize: 36f, style: FontStyle.Bold, unit: GraphicsUnit.Pixel),
+                brush: new SolidBrush(color: Color.White),
+                point: new PointF(x: Bound.Width / 2 + shiftX, y: Bound.Height / 2),
+            format: format);
 
         }
 
         public void RunToast(string text, ToastIcon? icon = null)
         {
 
-            if (AppConfig.Is("disable_osd")) return;
+            if (AppConfig.Is(name: "disable_osd")) return;
 
-            Program.settingsForm.Invoke(delegate
+            Program.settingsForm.Invoke(method: delegate
             {
                 //Hide();
                 timer.Stop();
@@ -143,9 +143,9 @@ namespace GHelper.Helpers
                 toastText = text;
                 toastIcon = icon;
 
-                Screen screen1 = Screen.FromHandle(Handle);
+                Screen screen1 = Screen.FromHandle(hwnd: Handle);
 
-                Width = Math.Max(300, 100 + toastText.Length * 22);
+                Width = Math.Max(val1: 300, val2: 100 + toastText.Length * 22);
                 Height = 100;
                 X = (screen1.Bounds.Width - Width) / 2;
                 Y = screen1.Bounds.Height - 300 - Height;

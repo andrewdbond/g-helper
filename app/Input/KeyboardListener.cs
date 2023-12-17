@@ -10,25 +10,25 @@ namespace GHelper.Input
 
         public KeyboardListener(Action<int> KeyHandler)
         {
-            HidStream? input = AsusHid.FindHidStream(AsusHid.INPUT_ID);
+            HidStream? input = AsusHid.FindHidStream(reportId: AsusHid.INPUT_ID);
             
             // Fallback
             if (input == null)
             {
                 Aura.Init();
-                Thread.Sleep(1000);
-                input = input = AsusHid.FindHidStream(AsusHid.INPUT_ID);
+                Thread.Sleep(millisecondsTimeout: 1000);
+                input = input = AsusHid.FindHidStream(reportId: AsusHid.INPUT_ID);
             }
 
             if (input == null)
             {
-                Logger.WriteLine($"Input device not found");
+                Logger.WriteLine(logMessage: $"Input device not found");
                 return;
             }
 
-            Logger.WriteLine($"Input: {input.Device.DevicePath}");
+            Logger.WriteLine(logMessage: $"Input: {input.Device.DevicePath}");
 
-            var task = Task.Run(() =>
+            var task = Task.Run(action: () =>
             {
                 try
                 {
@@ -38,7 +38,7 @@ namespace GHelper.Input
                         // Emergency break
                         if (input == null || !input.CanRead)
                         {
-                            Logger.WriteLine("Listener terminated");
+                            Logger.WriteLine(logMessage: "Listener terminated");
                             break;
                         }
 
@@ -47,17 +47,17 @@ namespace GHelper.Input
                         var data = input.Read();
                         if (data.Length > 1 && data[0] == AsusHid.INPUT_ID && data[1] > 0 && data[1] != 236)
                         {
-                            Logger.WriteLine($"Key: {data[1]}");
-                            KeyHandler(data[1]);
+                            Logger.WriteLine(logMessage: $"Key: {data[1]}");
+                            KeyHandler(obj: data[1]);
                         }
                     }
 
-                    Logger.WriteLine("Listener stopped");
+                    Logger.WriteLine(logMessage: "Listener stopped");
 
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLine(ex.ToString());
+                    Logger.WriteLine(logMessage: ex.ToString());
                 }
             });
 

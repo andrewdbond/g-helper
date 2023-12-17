@@ -3,11 +3,11 @@ namespace GHelper.Peripherals.Mouse.Models
 {
     public class ChakramX : AsusMouse
     {
-        public ChakramX() : base(0x0B05, 0x1A1A, "mi_00", true)
+        public ChakramX() : base(vendorId: 0x0B05, productId: 0x1A1A, path: "mi_00", wireless: true)
         {
         }
 
-        protected ChakramX(ushort vendorId, bool wireless) : base(0x0B05, vendorId, "mi_00", wireless)
+        protected ChakramX(ushort vendorId, bool wireless) : base(vendorId: 0x0B05, productId: vendorId, path: "mi_00", wireless: wireless)
         {
         }
 
@@ -93,7 +93,7 @@ namespace GHelper.Peripherals.Mouse.Models
 
     public class ChakramXWired : ChakramX
     {
-        public ChakramXWired() : base(0x1A18, false)
+        public ChakramXWired() : base(vendorId: 0x1A18, wireless: false)
         {
         }
 

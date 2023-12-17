@@ -3,7 +3,7 @@
     //P506
     public class StrixImpactII : AsusMouse
     {
-        public StrixImpactII() : base(0x0B05, 0x18E1, "mi_00", false)
+        public StrixImpactII() : base(vendorId: 0x0B05, productId: 0x18E1, path: "mi_00", wireless: false)
         {
         }
 
@@ -120,7 +120,7 @@
             {
                 return LightingMode.React;
             }
-            return base.LightingModeForIndex(lightingMode);
+            return base.LightingModeForIndex(lightingMode: lightingMode);
         }
 
         protected override byte[] GetReadLightingModePacket(LightingZone zone)
@@ -139,10 +139,10 @@
 
             LightingSetting setting = new LightingSetting();
 
-            setting.LightingMode = LightingModeForIndex(packet[offset + 0]);
+            setting.LightingMode = LightingModeForIndex(lightingMode: packet[offset + 0]);
             setting.Brightness = packet[offset + 1];
 
-            setting.RGBColor = Color.FromArgb(packet[offset + 2], packet[offset + 3], packet[offset + 4]);
+            setting.RGBColor = Color.FromArgb(red: packet[offset + 2], green: packet[offset + 3], blue: packet[offset + 4]);
 
 
             return setting;
@@ -156,20 +156,20 @@
             }
             //Mouse sends all lighting zones in one response
             //00 12 03 00 00 [00 04 ff 00 80] [00 04 00 ff ff] [00 04 ff ff ff] 00 00 00 00 00 00 00 00 00 00 00 00 00 0
-            byte[]? response = WriteForResponse(GetReadLightingModePacket(LightingZone.All));
+            byte[]? response = WriteForResponse(packet: GetReadLightingModePacket(zone: LightingZone.All));
             if (response is null) return;
 
             LightingZone[] lz = SupportedLightingZones();
             for (int i = 0; i < lz.Length; ++i)
             {
-                LightingSetting? ls = ParseLightingSetting(response, lz[i]);
+                LightingSetting? ls = ParseLightingSetting(packet: response, zone: lz[i]);
                 if (ls is null)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
                     continue;
                 }
 
-                Logger.WriteLine(GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
                 LightingSetting[i] = ls;
             }
         }

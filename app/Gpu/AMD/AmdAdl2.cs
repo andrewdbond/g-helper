@@ -6,16 +6,16 @@ namespace GHelper.Gpu.AMD;
 
 #region Export Struct
 
-[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+[StructLayout(layoutKind: LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 public struct ADLSGApplicationInfo
 {
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 256)]
     public string strFileName;
 
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 256)]
     public string strFilePath;
 
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 256)]
     public string strVersion;
 
     public long timeStamp;
@@ -24,7 +24,7 @@ public struct ADLSGApplicationInfo
     public ADLBdf GPUBdf;
 }
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLBdf
 {
     public int iBus;
@@ -32,23 +32,23 @@ public struct ADLBdf
     public int iFunction;
 }
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLSingleSensorData
 {
     public int Supported;
     public int Value;
 }
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLPMLogDataOutput
 {
     int Size;
 
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = Adl2.ADL_PMLOG_MAX_SENSORS)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValArray, SizeConst = Adl2.ADL_PMLOG_MAX_SENSORS)]
     public ADLSingleSensorData[] Sensors;
 }
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLGcnInfo
 {
     public int CuCount; //Number of compute units on the ASIC.
@@ -242,7 +242,7 @@ public enum ADL_PMLOG_SENSORS
 #region ADLAdapterInfo
 
 /// <summary> ADLAdapterInfo Structure</summary>
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLAdapterInfo
 {
     /// <summary>The size of the structure</summary>
@@ -252,7 +252,7 @@ public struct ADLAdapterInfo
     public int AdapterIndex;
 
     /// <summary> Adapter UDID</summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string UDID;
 
     /// <summary> Adapter Bus Number</summary>
@@ -268,11 +268,11 @@ public struct ADLAdapterInfo
     public int VendorID;
 
     /// <summary> Adapter Adapter name</summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string AdapterName;
 
     /// <summary> Adapter Display name</summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string DisplayName;
 
     /// <summary> Adapter Present status</summary>
@@ -282,15 +282,15 @@ public struct ADLAdapterInfo
     public int Exist;
 
     /// <summary> Adapter Driver Path</summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string DriverPath;
 
     /// <summary> Adapter Driver Ext Path</summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string DriverPathExt;
 
     /// <summary> Adapter PNP String</summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string PNPString;
 
     /// <summary> OS Display Index</summary>
@@ -298,11 +298,11 @@ public struct ADLAdapterInfo
 }
 
 /// <summary> ADLAdapterInfo Array</summary>
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLAdapterInfoArray
 {
     /// <summary> ADLAdapterInfo Array </summary>
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = Adl2.ADL_MAX_ADAPTERS)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValArray, SizeConst = Adl2.ADL_MAX_ADAPTERS)]
     public ADLAdapterInfo[] ADLAdapterInfo;
 }
 
@@ -311,7 +311,7 @@ public struct ADLAdapterInfoArray
 #region ADLDisplayInfo
 
 /// <summary> ADLDisplayID Structure</summary>
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLDisplayID
 {
     /// <summary> Display Logical Index </summary>
@@ -328,7 +328,7 @@ public struct ADLDisplayID
 }
 
 /// <summary> ADLDisplayInfo Structure</summary>
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(layoutKind: LayoutKind.Sequential)]
 public struct ADLDisplayInfo
 {
     /// <summary> Display Index </summary>
@@ -338,11 +338,11 @@ public struct ADLDisplayInfo
     public int DisplayControllerIndex;
 
     /// <summary> Display Name </summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string DisplayName;
 
     /// <summary> Display Manufacturer Name </summary>
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
+    [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = Adl2.ADL_MAX_PATH)]
     public string DisplayManufacturerName;
 
     /// <summary> Display Type : < The Display type. CRT, TV,CV,DFP are some of display types,</summary>
@@ -411,12 +411,12 @@ public class Adl2
     ///// <returns> retrun ADL Error Code</returns>
     public static int ADL2_Main_Control_Create(int enumConnectedAdapters, out nint adlContextHandle)
     {
-        return NativeMethods.ADL2_Main_Control_Create(ADL_Main_Memory_Alloc_Impl_Reference, enumConnectedAdapters, out adlContextHandle);
+        return NativeMethods.ADL2_Main_Control_Create(callback: ADL_Main_Memory_Alloc_Impl_Reference, enumConnectedAdapters: enumConnectedAdapters, adlContextHandle: out adlContextHandle);
     }
 
     public static void FreeMemory(nint buffer)
     {
-        Memory_Free_Impl(buffer);
+        Memory_Free_Impl(buffer: buffer);
     }
 
     private static bool? isDllLoaded;
@@ -428,12 +428,12 @@ public class Adl2
 
         try
         {
-            Marshal.PrelinkAll(typeof(Adl2));
+            Marshal.PrelinkAll(c: typeof(Adl2));
             isDllLoaded = true;
         }
         catch (Exception e) when (e is DllNotFoundException or EntryPointNotFoundException)
         {
-            Debug.WriteLine(e);
+            Debug.WriteLine(value: e);
             isDllLoaded = false;
         }
 
@@ -447,7 +447,7 @@ public class Adl2
     /// <returns>return the memory buffer</returns>
     private static nint Memory_Alloc_Impl(int size)
     {
-        return Marshal.AllocCoTaskMem(size);
+        return Marshal.AllocCoTaskMem(cb: size);
     }
 
     /// <summary> Build in memory free function</summary>
@@ -456,7 +456,7 @@ public class Adl2
     {
         if (nint.Zero != buffer)
         {
-            Marshal.FreeCoTaskMem(buffer);
+            Marshal.FreeCoTaskMem(ptr: buffer);
         }
     }
 
@@ -471,25 +471,25 @@ public class Adl2
         /// <param name="callback">Call back functin pointer which is ised to allocate memeory </param>
         /// <param name="enumConnectedAdapters">If it is 1, then ADL will only retuen the physical exist adapters </param>
         ///// <returns> retrun ADL Error Code</returns>
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Main_Control_Create(ADL_Main_Memory_Alloc callback, int enumConnectedAdapters, out nint adlContextHandle);
 
         /// <summary> ADL Destroy Function to free up ADL Data</summary>
         /// <returns> retrun ADL Error Code</returns>
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Main_Control_Destroy(nint adlContextHandle);
 
         /// <summary> ADL Function to get the number of adapters</summary>
         /// <param name="numAdapters">return number of adapters</param>
         /// <returns> retrun ADL Error Code</returns>
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Adapter_NumberOfAdapters_Get(nint adlContextHandle, out int numAdapters);
 
         /// <summary> ADL Function to get the GPU adapter information</summary>
         /// <param name="info">return GPU adapter information</param>
         /// <param name="inputSize">the size of the GPU adapter struct</param>
         /// <returns> retrun ADL Error Code</returns>
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Adapter_AdapterInfo_Get(nint adlContextHandle, nint info, int inputSize);
 
         /// <summary> Function to determine if the adapter is active or not.</summary>
@@ -497,7 +497,7 @@ public class Adl2
         /// <param name="adapterIndex"> Adapter Index.</param>
         /// <param name="status"> Status of the adapter. True: Active; False: Dsiabled</param>
         /// <returns>Non zero is successfull</returns> 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Adapter_Active_Get(nint adlContextHandle, int adapterIndex, out int status);
 
         /// <summary>Get display information based on adapter index</summary>
@@ -506,7 +506,7 @@ public class Adl2
         /// <param name="displayInfoArray">return ADLDisplayInfo Array for supported displays' information</param>
         /// <param name="forceDetect">force detect or not</param>
         /// <returns>return ADL Error Code</returns>
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Display_DisplayInfo_Get(
             nint adlContextHandle,
             int adapterIndex,
@@ -515,7 +515,7 @@ public class Adl2
             int forceDetect
         );
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Overdrive_Caps(
             nint adlContextHandle,
             int adapterIndex,
@@ -524,20 +524,20 @@ public class Adl2
             out int version
         );
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_New_QueryPMLogData_Get(nint adlContextHandle, int adapterIndex, out ADLPMLogDataOutput adlpmLogDataOutput);
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Adapter_ASICFamilyType_Get(nint adlContextHandle, int adapterIndex, out ADLAsicFamilyType asicFamilyType, out int asicFamilyTypeValids);
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_SwitchableGraphics_Applications_Get(
             nint context,
             int iListType,
             out int lpNumApps,
             out nint lppAppList);
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Adapter_VariBright_Caps(
             nint context,
             int iAdapterIndex,
@@ -545,7 +545,7 @@ public class Adl2
             out int iEnabled,
             out int iVersion);
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_Adapter_VariBrightEnable_Set(
             nint context,
             int iAdapterIndex,
@@ -553,7 +553,7 @@ public class Adl2
 
         // Clocks
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct ADLODNPerformanceLevel
         {
             public int iClock;
@@ -561,36 +561,36 @@ public class Adl2
             public int iEnabled;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(layoutKind: LayoutKind.Sequential)]
         public struct ADLODNPerformanceLevels
         {
             public int iSize;
             public int iMode;
             public int iNumberOfPerformanceLevels;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValArray, SizeConst = 1)]
             public ADLODNPerformanceLevel[] aLevels;
         }
 
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_OverdriveN_SystemClocks_Get(
             nint context,
             int adapterIndex,
             ref ADLODNPerformanceLevels performanceLevels);
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_OverdriveN_SystemClocks_Set(
             nint context,
             int adapterIndex,
             ref ADLODNPerformanceLevels performanceLevels);
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_OverdriveN_MemoryClocks_Get(
             nint context,
             int adapterIndex,
             ref ADLODNPerformanceLevels performanceLevels);
 
-        [DllImport(Atiadlxx_FileName)]
+        [DllImport(dllName: Atiadlxx_FileName)]
         public static extern int ADL2_OverdriveN_MemoryClocks_Set(
             nint context,
             int adapterIndex,

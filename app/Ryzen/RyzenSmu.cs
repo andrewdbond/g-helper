@@ -3,7 +3,7 @@
 // I do not take credit for the full functionality of the code (c)
 //
 
-[assembly: CLSCompliant(false)]
+[assembly: CLSCompliant(isCompliant: false)]
 
 
 namespace Ryzen
@@ -52,27 +52,27 @@ namespace Ryzen
                     break;
                 case (uint)Ols.OlsDllStatus.OLS_DLL_DRIVER_NOT_LOADED:
                     //MessageBox.Show("WinRing OLS_DRIVER_NOT_LOADED", "Ols.OlsDllStatus:");
-                    throw new ApplicationException("WinRing OLS_DRIVER_NOT_LOADED");
+                    throw new ApplicationException(message: "WinRing OLS_DRIVER_NOT_LOADED");
 
                 case (uint)Ols.OlsDllStatus.OLS_DLL_UNSUPPORTED_PLATFORM:
                     //MessageBox.Show("WinRing OLS_UNSUPPORTED_PLATFORM", "Ols.OlsDllStatus:");
-                    throw new ApplicationException("WinRing OLS_UNSUPPORTED_PLATFORM");
+                    throw new ApplicationException(message: "WinRing OLS_UNSUPPORTED_PLATFORM");
 
                 case (uint)Ols.OlsDllStatus.OLS_DLL_DRIVER_NOT_FOUND:
                     //MessageBox.Show("WinRing OLS_DLL_DRIVER_NOT_FOUND", "Ols.OlsDllStatus:");
-                    throw new ApplicationException("WinRing OLS_DLL_DRIVER_NOT_FOUND");
+                    throw new ApplicationException(message: "WinRing OLS_DLL_DRIVER_NOT_FOUND");
 
                 case (uint)Ols.OlsDllStatus.OLS_DLL_DRIVER_UNLOADED:
                     //MessageBox.Show("WinRing OLS_DLL_DRIVER_UNLOADED", "Ols.OlsDllStatus:");
-                    throw new ApplicationException("WinRing OLS_DLL_DRIVER_UNLOADED");
+                    throw new ApplicationException(message: "WinRing OLS_DLL_DRIVER_UNLOADED");
 
                 case (uint)Ols.OlsDllStatus.OLS_DLL_DRIVER_NOT_LOADED_ON_NETWORK:
                     //MessageBox.Show("WinRing DRIVER_NOT_LOADED_ON_NETWORK", "Ols.OlsDllStatus:");
-                    throw new ApplicationException("WinRing DRIVER_NOT_LOADED_ON_NETWORK");
+                    throw new ApplicationException(message: "WinRing DRIVER_NOT_LOADED_ON_NETWORK");
 
                 case (uint)Ols.OlsDllStatus.OLS_DLL_UNKNOWN_ERROR:
                     //MessageBox.Show("WinRing OLS_DLL_UNKNOWN_ERROR", "Ols.OlsDllStatus:");
-                    throw new ApplicationException("WinRing OLS_DLL_UNKNOWN_ERROR");
+                    throw new ApplicationException(message: "WinRing OLS_DLL_UNKNOWN_ERROR");
             }
 
         }
@@ -94,15 +94,15 @@ namespace Ryzen
                     break;
                 case (uint)Ols.Status.DLL_NOT_FOUND:
                     //MessageBox.Show("WinRing Status: DLL_NOT_FOUND", "Ols.Status:");
-                    throw new ApplicationException("WinRing DLL_NOT_FOUND");
+                    throw new ApplicationException(message: "WinRing DLL_NOT_FOUND");
                     break;
                 case (uint)Ols.Status.DLL_INCORRECT_VERSION:
                     //MessageBox.Show("WinRing Status: DLL_INCORRECT_VERSION", "Ols.Status:");
-                    throw new ApplicationException("WinRing DLL_INCORRECT_VERSION");
+                    throw new ApplicationException(message: "WinRing DLL_INCORRECT_VERSION");
                     break;
                 case (uint)Ols.Status.DLL_INITIALIZE_ERROR:
                     //MessageBox.Show("WinRing Status: DLL_INITIALIZE_ERROR", "Ols.Status:");
-                    throw new ApplicationException("WinRing DLL_INITIALIZE_ERROR");
+                    throw new ApplicationException(message: "WinRing DLL_INITIALIZE_ERROR");
                     break;
                 default:
                     break;
@@ -135,14 +135,14 @@ namespace Ryzen
 
         public Status SendMp1(uint message, ref uint[] arguments)
         {
-            var result = SendMsg(MP1_ADDR_MSG, MP1_ADDR_RSP, MP1_ADDR_ARG, message, ref arguments);
+            var result = SendMsg(SMU_ADDR_MSG: MP1_ADDR_MSG, SMU_ADDR_RSP: MP1_ADDR_RSP, SMU_ADDR_ARG: MP1_ADDR_ARG, msg: message, args: ref arguments);
             //Logger.WriteLine($"RyzenMP1:{message} {arguments[0]} {result}");
             return result;
         }
 
         public Status SendPsmu(uint message, ref uint[] arguments)
         {
-            var result =  SendMsg(PSMU_ADDR_MSG, PSMU_ADDR_RSP, PSMU_ADDR_ARG, message, ref arguments);
+            var result =  SendMsg(SMU_ADDR_MSG: PSMU_ADDR_MSG, SMU_ADDR_RSP: PSMU_ADDR_RSP, SMU_ADDR_ARG: PSMU_ADDR_ARG, msg: message, args: ref arguments);
             //Logger.WriteLine($"RyzenPSMU:{message} {arguments[0]} {result}");
             return result;
         }
@@ -161,43 +161,43 @@ namespace Ryzen
             for (int i = 0; i < argsLength; ++i)
                 cmdArgs[i] = args[i];
 
-            if (amdSmuMutex.WaitOne(5000))
+            if (amdSmuMutex.WaitOne(millisecondsTimeout: 5000))
             {
                 // Clear response register
                 bool temp;
                 do
-                    temp = SmuWriteReg(SMU_ADDR_RSP, 0);
+                    temp = SmuWriteReg(addr: SMU_ADDR_RSP, data: 0);
                 while (!temp && --timeout > 0);
 
                 if (timeout == 0)
                 {
                     amdSmuMutex.ReleaseMutex();
-                    SmuReadReg(SMU_ADDR_RSP, ref status);
+                    SmuReadReg(addr: SMU_ADDR_RSP, data: ref status);
                     return (Status)status;
                 }
 
                 // Write data
                 for (int i = 0; i < cmdArgs.Length; ++i)
-                    SmuWriteReg(SMU_ADDR_ARG + (uint)(i * 4), cmdArgs[i]);
+                    SmuWriteReg(addr: SMU_ADDR_ARG + (uint)(i * 4), data: cmdArgs[i]);
 
                 // Send message
-                SmuWriteReg(SMU_ADDR_MSG, msg);
+                SmuWriteReg(addr: SMU_ADDR_MSG, data: msg);
 
                 // Wait done
-                if (!SmuWaitDone(SMU_ADDR_RSP))
+                if (!SmuWaitDone(SMU_ADDR_RSP: SMU_ADDR_RSP))
                 {
                     amdSmuMutex.ReleaseMutex();
-                    SmuReadReg(SMU_ADDR_RSP, ref status);
+                    SmuReadReg(addr: SMU_ADDR_RSP, data: ref status);
                     return (Status)status;
                 }
 
                 // Read back args
                 for (int i = 0; i < args.Length; ++i)
-                    SmuReadReg(SMU_ADDR_ARG + (uint)(i * 4), ref args[i]);
+                    SmuReadReg(addr: SMU_ADDR_ARG + (uint)(i * 4), data: ref args[i]);
             }
 
             amdSmuMutex.ReleaseMutex();
-            SmuReadReg(SMU_ADDR_RSP, ref status);
+            SmuReadReg(addr: SMU_ADDR_RSP, data: ref status);
 
             return (Status)status;
         }
@@ -210,7 +210,7 @@ namespace Ryzen
             uint data = 0;
 
             do
-                res = SmuReadReg(SMU_ADDR_RSP, ref data);
+                res = SmuReadReg(addr: SMU_ADDR_RSP, data: ref data);
             while ((!res || data != 1) && --timeout > 0);
 
             if (timeout == 0 || data != 1) res = false;
@@ -221,18 +221,18 @@ namespace Ryzen
 
         private bool SmuWriteReg(uint addr, uint data)
         {
-            if (RyzenNbAccesss.WritePciConfigDwordEx(SMU_PCI_ADDR, SMU_OFFSET_ADDR, addr) == 1)
+            if (RyzenNbAccesss.WritePciConfigDwordEx(pciAddress: SMU_PCI_ADDR, regAddress: SMU_OFFSET_ADDR, value: addr) == 1)
             {
-                return RyzenNbAccesss.WritePciConfigDwordEx(SMU_PCI_ADDR, SMU_OFFSET_DATA, data) == 1;
+                return RyzenNbAccesss.WritePciConfigDwordEx(pciAddress: SMU_PCI_ADDR, regAddress: SMU_OFFSET_DATA, value: data) == 1;
             }
             return false;
         }
 
         private bool SmuReadReg(uint addr, ref uint data)
         {
-            if (RyzenNbAccesss.WritePciConfigDwordEx(SMU_PCI_ADDR, SMU_OFFSET_ADDR, addr) == 1)
+            if (RyzenNbAccesss.WritePciConfigDwordEx(pciAddress: SMU_PCI_ADDR, regAddress: SMU_OFFSET_ADDR, value: addr) == 1)
             {
-                return RyzenNbAccesss.ReadPciConfigDwordEx(SMU_PCI_ADDR, SMU_OFFSET_DATA, ref data) == 1;
+                return RyzenNbAccesss.ReadPciConfigDwordEx(pciAddress: SMU_PCI_ADDR, regAddress: SMU_OFFSET_DATA, value: ref data) == 1;
             }
             return false;
         }

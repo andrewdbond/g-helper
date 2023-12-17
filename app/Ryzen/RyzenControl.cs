@@ -11,13 +11,13 @@ namespace Ryzen
     internal class RyzenControl
     {
 
-        public static int MinCPUUV => AppConfig.Get("min_uv", -30);
+        public static int MinCPUUV => AppConfig.Get(name: "min_uv", empty: -30);
         public const int MaxCPUUV = 0;
 
         public const int MinIGPUUV = -20;
         public const int MaxIGPUUV = 0;
 
-        public static int MinTemp => AppConfig.Get("min_temp", 75);
+        public static int MinTemp => AppConfig.Get(name: "min_temp", empty: 75);
         public const int MaxTemp = 98;
 
         public static string[] FAM = { "RAVEN", "PICASSO", "DALI", "RENOIR/LUCIENNE", "MATISSE", "VANGOGH", "VERMEER", "CEZANNE/BARCELO", "REMBRANDT", "PHOENIX", "RAPHAEL/DRAGON RANGE" };
@@ -46,80 +46,80 @@ namespace Ryzen
 
             try
             {
-                ManagementObjectSearcher myProcessorObject = new ManagementObjectSearcher("select * from Win32_Processor");
+                ManagementObjectSearcher myProcessorObject = new ManagementObjectSearcher(queryString: "select * from Win32_Processor");
                 foreach (ManagementObject obj in myProcessorObject.Get())
                 {
-                    CPUName = obj["Name"].ToString();
-                    CPUModel = obj["Caption"].ToString();
+                    CPUName = obj[propertyName: "Name"].ToString();
+                    CPUModel = obj[propertyName: "Caption"].ToString();
                 }
             } catch (Exception ex)
             {
-                Logger.WriteLine(ex.Message);
+                Logger.WriteLine(logMessage: ex.Message);
             }
 
             FAMID = 99999;
 
-            if (CPUModel.Contains("Model " + Convert.ToString(1)) || CPUModel.Contains("Model " + Convert.ToString(8)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 1)) || CPUModel.Contains(value: "Model " + Convert.ToString(value: 8)))
             {
                 FAMID = -1; //Zen1/+ DT
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(17)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 17)))
             {
                 FAMID = 0; //RAVEN
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(24)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 24)))
             {
                 FAMID = 1; //PICASSO
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(32)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 32)))
             {
                 FAMID = 2; //DALI
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(33)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 33)))
             {
                 FAMID = 6; //VERMEER
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(96)) || CPUModel.Contains("Model " + Convert.ToString(104)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 96)) || CPUModel.Contains(value: "Model " + Convert.ToString(value: 104)))
             {
                 FAMID = 3; //RENOIR/LUCIENNE
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(144)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 144)))
             {
                 FAMID = 5; //VANGOGH
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(80)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 80)))
             {
                 FAMID = 7; //CEZANNE/BARCELO
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(64)) || CPUModel.Contains("Model " + Convert.ToString(68)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 64)) || CPUModel.Contains(value: "Model " + Convert.ToString(value: 68)))
             {
                 FAMID = 8; //REMBRANDT
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(116)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 116)))
             {
                 FAMID = 9; //PHEONIX 
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(97)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 97)))
             {
                 FAMID = 10; //RAPHAEL/DRAGON RANGE
             }
 
-            if (CPUModel.Contains("Model " + Convert.ToString(160)))
+            if (CPUModel.Contains(value: "Model " + Convert.ToString(value: 160)))
             {
                 FAMID = 11; //MENDOCINO 
             }
 
-            Logger.WriteLine($"CPU: {FAMID} - {CPUName} - {CPUModel}");
+            Logger.WriteLine(logMessage: $"CPU: {FAMID} - {CPUName} - {CPUModel}");
 
             SetAddresses();
         }
@@ -127,19 +127,19 @@ namespace Ryzen
         public static bool IsAMD()
         {
             if (CPUName.Length == 0) Init();
-            return CPUName.Contains("AMD") || CPUName.Contains("Ryzen") || CPUName.Contains("Athlon") || CPUName.Contains("Radeon") || CPUName.Contains("AMD Custom APU 0405");
+            return CPUName.Contains(value: "AMD") || CPUName.Contains(value: "Ryzen") || CPUName.Contains(value: "Athlon") || CPUName.Contains(value: "Radeon") || CPUName.Contains(value: "AMD Custom APU 0405");
         }
 
         public static bool IsSupportedUV()
         {
             if (CPUName.Length == 0) Init();
-            return CPUName.Contains("Ryzen 9") || CPUName.Contains("4900H") || CPUName.Contains("4800H") || CPUName.Contains("4600H");
+            return CPUName.Contains(value: "Ryzen 9") || CPUName.Contains(value: "4900H") || CPUName.Contains(value: "4800H") || CPUName.Contains(value: "4600H");
         }
 
         public static bool IsSupportedUViGPU()
         {
             if (CPUName.Length == 0) Init();
-            return CPUName.Contains("6900H") || CPUName.Contains("7945H") || CPUName.Contains("7845H");
+            return CPUName.Contains(value: "6900H") || CPUName.Contains(value: "7945H") || CPUName.Contains(value: "7845H");
         }
 
         public static void SetAddresses()

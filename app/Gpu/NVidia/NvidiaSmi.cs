@@ -11,19 +11,19 @@ public static class NvidiaSmi
 
         string commandOutput = RunNvidiaSmiCommand();
 
-        Logger.WriteLine(commandOutput);
+        Logger.WriteLine(logMessage: commandOutput);
 
         if (commandOutput.Length == 0) return false;
-        if (!commandOutput.Contains("RTX 40")) return false;
+        if (!commandOutput.Contains(value: "RTX 40")) return false;
 
         // Extract the "Display Active" status using regular expressions
         string displayActivePattern = @"Display Active\s+:\s+(\w+)";
 
-        Match match = Regex.Match(commandOutput, displayActivePattern, RegexOptions.IgnoreCase);
+        Match match = Regex.Match(input: commandOutput, pattern: displayActivePattern, options: RegexOptions.IgnoreCase);
 
         if (match.Success)
         {
-            string status = match.Groups[1].Value.ToLower().Trim(' ');
+            string status = match.Groups[groupnum: 1].Value.ToLower().Trim(trimChar: ' ');
             return status == "enabled";
         }
 
@@ -56,7 +56,7 @@ public static class NvidiaSmi
         catch (Exception ex)
         {
             //return File.ReadAllText(@"smi.txt");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine(message: ex.Message);
         }
 
         return "";

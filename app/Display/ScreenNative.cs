@@ -25,17 +25,17 @@ namespace GHelper.Display
     {
         public int Compare(object x, object y)
         {
-            int displayX = Int32.Parse(((Screen)x).DeviceName.Replace(@"\\.\DISPLAY", ""));
-            int displayY = Int32.Parse(((Screen)y).DeviceName.Replace(@"\\.\DISPLAY", ""));
-            return (new CaseInsensitiveComparer()).Compare(displayX, displayY);
+            int displayX = Int32.Parse(s: ((Screen)x).DeviceName.Replace(oldValue: @"\\.\DISPLAY", newValue: ""));
+            int displayY = Int32.Parse(s: ((Screen)y).DeviceName.Replace(oldValue: @"\\.\DISPLAY", newValue: ""));
+            return (new CaseInsensitiveComparer()).Compare(a: displayX, b: displayY);
         }
     }
     internal class ScreenNative
     {
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        [StructLayout(layoutKind: LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct DEVMODE
         {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 32)]
             public string dmDeviceName;
 
             public short dmSpecVersion;
@@ -53,7 +53,7 @@ namespace GHelper.Display
             public short dmTTOption;
             public short dmCollate;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            [MarshalAs(unmanagedType: UnmanagedType.ByValTStr, SizeConst = 32)]
             public string dmFormName;
 
             public short dmLogPixels;
@@ -85,14 +85,14 @@ namespace GHelper.Display
         }
 
         // PInvoke declaration for EnumDisplaySettings Win32 API
-        [DllImport("user32.dll")]
+        [DllImport(dllName: "user32.dll")]
         public static extern int EnumDisplaySettingsEx(
              string lpszDeviceName,
              int iModeNum,
              ref DEVMODE lpDevMode);
 
         // PInvoke declaration for ChangeDisplaySettings Win32 API
-        [DllImport("user32.dll")]
+        [DllImport(dllName: "user32.dll")]
         public static extern int ChangeDisplaySettingsEx(
                 string lpszDeviceName, ref DEVMODE lpDevMode, IntPtr hwnd,
                 DisplaySettingsFlags dwflags, IntPtr lParam);
@@ -100,9 +100,9 @@ namespace GHelper.Display
         public static DEVMODE CreateDevmode()
         {
             DEVMODE dm = new DEVMODE();
-            dm.dmDeviceName = new String(new char[32]);
-            dm.dmFormName = new String(new char[32]);
-            dm.dmSize = (short)Marshal.SizeOf(dm);
+            dm.dmDeviceName = new String(value: new char[32]);
+            dm.dmFormName = new String(value: new char[32]);
+            dm.dmSize = (short)Marshal.SizeOf(structure: dm);
             return dm;
         }
 
@@ -131,7 +131,7 @@ namespace GHelper.Display
             WCS_PROFILE_MANAGEMENT_SCOPE_CURRENT_USER
         }
 
-        [DllImport("mscms.dll", CharSet = CharSet.Unicode)]
+        [DllImport(dllName: "mscms.dll", CharSet = CharSet.Unicode)]
         public static extern bool WcsSetDefaultColorProfile(
             WCS_PROFILE_MANAGEMENT_SCOPE scope,
             string pDeviceName,
@@ -151,7 +151,7 @@ namespace GHelper.Display
             try
             {
                 var devices = GetAllDevices().ToArray();
-                string internalName = AppConfig.GetString("internal_display");
+                string internalName = AppConfig.GetString(name: "internal_display");
 
                 foreach (var device in devices)
                 {
@@ -159,10 +159,10 @@ namespace GHelper.Display
                         device.outputTechnology == DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY.DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED ||
                         device.monitorFriendlyDeviceName == internalName)
                     {
-                        if (log) Logger.WriteLine(device.monitorDevicePath + " " + device.outputTechnology);
+                        if (log) Logger.WriteLine(logMessage: device.monitorDevicePath + " " + device.outputTechnology);
 
-                        AppConfig.Set("internal_display", device.monitorFriendlyDeviceName);
-                        var names = device.monitorDevicePath.Split("#");
+                        AppConfig.Set(name: "internal_display", value: device.monitorFriendlyDeviceName);
+                        var names = device.monitorDevicePath.Split(separator: "#");
                         
                         if (names.Length > 1) return names[1];
                         else return "";
@@ -171,7 +171,7 @@ namespace GHelper.Display
             }
             catch (Exception ex)
             {
-                Logger.WriteLine(ex.ToString());
+                Logger.WriteLine(logMessage: ex.ToString());
             }
 
             return null;
@@ -179,11 +179,11 @@ namespace GHelper.Display
 
         static string ExtractDisplay(string input)
         {
-            int index = input.IndexOf('\\', 4); // Start searching from index 4 to skip ""
+            int index = input.IndexOf(value: '\\', startIndex: 4); // Start searching from index 4 to skip ""
 
             if (index != -1)
             {
-                string extracted = input.Substring(0, index);
+                string extracted = input.Substring(startIndex: 0, length: index);
                 return extracted;
             }
 
@@ -193,11 +193,11 @@ namespace GHelper.Display
         public static string? FindLaptopScreen(bool log = false)
         {
             string? laptopScreen = null;
-            string? internalName = FindInternalName(log);
+            string? internalName = FindInternalName(log: log);
 
             if (internalName == null)
             {
-                Logger.WriteLine("Internal screen off");
+                Logger.WriteLine(logMessage: "Internal screen off");
                 return null;
             }
 
@@ -206,22 +206,22 @@ namespace GHelper.Display
                 var displays = GetDisplayDevices().ToArray();
                 foreach (var display in displays)
                 {
-                    if (log) Logger.WriteLine(display.DeviceID + " " + display.DeviceName);
-                    if (display.DeviceID.Contains(internalName))
+                    if (log) Logger.WriteLine(logMessage: display.DeviceID + " " + display.DeviceName);
+                    if (display.DeviceID.Contains(value: internalName))
                     {
-                        laptopScreen = ExtractDisplay(display.DeviceName);
+                        laptopScreen = ExtractDisplay(input: display.DeviceName);
                         break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.WriteLine(ex.ToString());
+                Logger.WriteLine(logMessage: ex.ToString());
             }
 
             if (laptopScreen is null)
             {
-                Logger.WriteLine("Default internal screen");
+                Logger.WriteLine(logMessage: "Default internal screen");
                 laptopScreen = Screen.PrimaryScreen.DeviceName;
             }
 
@@ -238,14 +238,14 @@ namespace GHelper.Display
             int frequency = -1;
 
             int i = 0;
-            while (0 != EnumDisplaySettingsEx(laptopScreen, i, ref dm))
+            while (0 != EnumDisplaySettingsEx(lpszDeviceName: laptopScreen, iModeNum: i, lpDevMode: ref dm))
             {
                 if (dm.dmDisplayFrequency > frequency) frequency = dm.dmDisplayFrequency;
                 i++;
             }
 
-            if (frequency > 0) AppConfig.Set("screen_max", frequency);
-            else frequency = AppConfig.Get("screen_max");
+            if (frequency > 0) AppConfig.Set(name: "screen_max", value: frequency);
+            else frequency = AppConfig.Get(name: "screen_max");
 
             return frequency;
 
@@ -259,7 +259,7 @@ namespace GHelper.Display
             DEVMODE dm = CreateDevmode();
             int frequency = -1;
 
-            if (0 != EnumDisplaySettingsEx(laptopScreen, ENUM_CURRENT_SETTINGS, ref dm))
+            if (0 != EnumDisplaySettingsEx(lpszDeviceName: laptopScreen, iModeNum: ENUM_CURRENT_SETTINGS, lpDevMode: ref dm))
             {
                 frequency = dm.dmDisplayFrequency;
             }
@@ -271,11 +271,11 @@ namespace GHelper.Display
         {
             DEVMODE dm = CreateDevmode();
 
-            if (0 != EnumDisplaySettingsEx(laptopScreen, ENUM_CURRENT_SETTINGS, ref dm))
+            if (0 != EnumDisplaySettingsEx(lpszDeviceName: laptopScreen, iModeNum: ENUM_CURRENT_SETTINGS, lpDevMode: ref dm))
             {
                 dm.dmDisplayFrequency = frequency;
-                int iRet = ChangeDisplaySettingsEx(laptopScreen, ref dm, IntPtr.Zero, DisplaySettingsFlags.CDS_UPDATEREGISTRY, IntPtr.Zero);
-                Logger.WriteLine("Screen = " + frequency.ToString() + "Hz : " + (iRet == 0 ? "OK" : iRet));
+                int iRet = ChangeDisplaySettingsEx(lpszDeviceName: laptopScreen, lpDevMode: ref dm, hwnd: IntPtr.Zero, dwflags: DisplaySettingsFlags.CDS_UPDATEREGISTRY, lParam: IntPtr.Zero);
+                Logger.WriteLine(logMessage: "Screen = " + frequency.ToString() + "Hz : " + (iRet == 0 ? "OK" : iRet));
                 return iRet;
             }
 

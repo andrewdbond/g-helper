@@ -102,7 +102,7 @@ namespace GHelper.Peripherals.Mouse
             return obj is LightingSetting setting &&
                    LightingMode == setting.LightingMode &&
                    Brightness == setting.Brightness &&
-                   RGBColor.Equals(setting.RGBColor) &&
+                   RGBColor.Equals(other: setting.RGBColor) &&
                    RandomColor == setting.RandomColor &&
                    AnimationSpeed == setting.AnimationSpeed &&
                    AnimationDirection == setting.AnimationDirection;
@@ -110,7 +110,7 @@ namespace GHelper.Peripherals.Mouse
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(LightingMode, Brightness, RGBColor, RandomColor, AnimationSpeed, AnimationDirection);
+            return HashCode.Combine(value1: LightingMode, value2: Brightness, value3: RGBColor, value4: RandomColor, value5: AnimationSpeed, value6: AnimationDirection);
         }
 
         public override string? ToString()
@@ -164,7 +164,7 @@ namespace GHelper.Peripherals.Mouse
 
             if (MouseReadyChanged is not null && notify)
             {
-                MouseReadyChanged(this, EventArgs.Empty);
+                MouseReadyChanged(sender: this, e: EventArgs.Empty);
             }
         }
         public bool Wireless { get; protected set; }
@@ -185,7 +185,7 @@ namespace GHelper.Peripherals.Mouse
         public int Deceleration { get; protected set; }
 
 
-        public AsusMouse(ushort vendorId, ushort productId, string path, bool wireless) : base(vendorId, productId)
+        public AsusMouse(ushort vendorId, ushort productId, string path, bool wireless) : base(vendorId: vendorId, productId: productId)
         {
             this.path = path;
             this.Wireless = wireless;
@@ -201,7 +201,7 @@ namespace GHelper.Peripherals.Mouse
             this.reportId = 0x00;
         }
 
-        public AsusMouse(ushort vendorId, ushort productId, string path, bool wireless, byte reportId) : this(vendorId, productId, path, wireless)
+        public AsusMouse(ushort vendorId, ushort productId, string path, bool wireless, byte reportId) : this(vendorId: vendorId, productId: productId, path: path, wireless: wireless)
         {
             this.reportId = reportId;
         }
@@ -213,9 +213,9 @@ namespace GHelper.Peripherals.Mouse
                 return false;
             }
 
-            return this.VendorID().Equals(item.VendorID())
-                && this.ProductID().Equals(item.ProductID())
-                && this.path.Equals(item.path);
+            return this.VendorID().Equals(obj: item.VendorID())
+                && this.ProductID().Equals(obj: item.ProductID())
+                && this.path.Equals(value: item.path);
         }
 
         public override int GetHashCode()
@@ -235,7 +235,7 @@ namespace GHelper.Peripherals.Mouse
 
         public override void Dispose()
         {
-            Logger.WriteLine(GetDisplayName() + ": Disposing");
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Disposing");
             HidSharp.DeviceList.Local.Changed -= Device_Changed;
             base.Dispose();
         }
@@ -258,8 +258,8 @@ namespace GHelper.Peripherals.Mouse
         {
             try
             {
-                HidSharp.DeviceList.Local.GetHidDevices(VendorID(), ProductID())
-                    .First(x => x.DevicePath.Contains(path));
+                HidSharp.DeviceList.Local.GetHidDevices(vendorID: VendorID(), productID: ProductID())
+                    .First(predicate: x => x.DevicePath.Contains(value: path));
                 return true;
             }
             catch
@@ -280,15 +280,15 @@ namespace GHelper.Peripherals.Mouse
 
         public override void SetProvider()
         {
-            _usbProvider = new WindowsUsbProvider(_vendorId, _productId, path, USBTimeout());
+            _usbProvider = new WindowsUsbProvider(vendorId: _vendorId, productId: _productId, path: path, timeout: USBTimeout());
         }
 
         protected virtual void OnDisconnect()
         {
-            Logger.WriteLine(GetDisplayName() + ": OnDisconnect()");
+            Logger.WriteLine(logMessage: GetDisplayName() + ": OnDisconnect()");
             if (Disconnect is not null)
             {
-                Disconnect(this, EventArgs.Empty);
+                Disconnect(sender: this, e: EventArgs.Empty);
             }
         }
 
@@ -311,16 +311,16 @@ namespace GHelper.Peripherals.Mouse
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            ioFunc(param);
+            ioFunc(obj: param);
 
             watch.Stop();
             return watch.ElapsedMilliseconds;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        [MethodImpl(methodImplOptions: MethodImplOptions.Synchronized)]
         protected virtual byte[]? WriteForResponse(byte[] packet)
         {
-            Array.Resize(ref packet, USBPacketSize());
+            Array.Resize(array: ref packet, newSize: USBPacketSize());
 
 
             byte[] response = new byte[USBPacketSize()];
@@ -335,22 +335,22 @@ namespace GHelper.Peripherals.Mouse
                 try
                 {
                     if (IsPacketLoggerEnabled())
-                        Logger.WriteLine(GetDisplayName() + ": Sending packet: " + ByteArrayToString(packet)
-                            + " Try " + (retries - 2) + " of 3");
+                        Logger.WriteLine(logMessage: GetDisplayName() + ": Sending packet: " + ByteArrayToString(packet: packet)
+                                                     + " Try " + (retries - 2) + " of 3");
 
-                    long time = MeasuredIO(Write, packet);
-                    Logger.WriteLine(GetDisplayName() + ": Write took " + time + "ms");
+                    long time = MeasuredIO(ioFunc: Write, param: packet);
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Write took " + time + "ms");
 
-                    time = MeasuredIO(Read, response);
-                    Logger.WriteLine(GetDisplayName() + ": Read took " + time + "ms");
+                    time = MeasuredIO(ioFunc: Read, param: response);
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Read took " + time + "ms");
 
 
-                    if (IsMouseError(response))
+                    if (IsMouseError(packet: response))
                     {
                         if (IsPacketLoggerEnabled())
-                            Logger.WriteLine(GetDisplayName() + ": Read packet: " + ByteArrayToString(response));
+                            Logger.WriteLine(logMessage: GetDisplayName() + ": Read packet: " + ByteArrayToString(packet: response));
 
-                        Logger.WriteLine(GetDisplayName() + ": Mouse returned error (FF AA). Packet probably not supported by mouse firmware.");
+                        Logger.WriteLine(logMessage: GetDisplayName() + ": Mouse returned error (FF AA). Packet probably not supported by mouse firmware.");
                         //Error. Mouse could not understand or process the sent packet
                         return response;
                     }
@@ -358,8 +358,8 @@ namespace GHelper.Peripherals.Mouse
                     if (response[1] == 0 && response[2] == 0 && response[3] == 0)
                     {
                         if (IsPacketLoggerEnabled())
-                            Logger.WriteLine(GetDisplayName() + ": Read packet: " + ByteArrayToString(response));
-                        Logger.WriteLine(GetDisplayName() + ": Received empty packet. Stopping here.");
+                            Logger.WriteLine(logMessage: GetDisplayName() + ": Read packet: " + ByteArrayToString(packet: response));
+                        Logger.WriteLine(logMessage: GetDisplayName() + ": Received empty packet. Stopping here.");
                         //Empty packet
                         return null;
                     }
@@ -368,14 +368,14 @@ namespace GHelper.Peripherals.Mouse
                     while (response[0] != packet[0] || response[1] != packet[1] || response[2] != packet[2])
                     {
                         if (IsPacketLoggerEnabled())
-                            Logger.WriteLine(GetDisplayName() + ": Read wrong packet left in buffer: " + ByteArrayToString(response) + ". Retrying...");
+                            Logger.WriteLine(logMessage: GetDisplayName() + ": Read wrong packet left in buffer: " + ByteArrayToString(packet: response) + ". Retrying...");
                         //Read again
-                        time = MeasuredIO(Read, response);
-                        Logger.WriteLine(GetDisplayName() + ": Read took " + time + "ms");
+                        time = MeasuredIO(ioFunc: Read, param: response);
+                        Logger.WriteLine(logMessage: GetDisplayName() + ": Read took " + time + "ms");
                     }
 
                     if (IsPacketLoggerEnabled())
-                        Logger.WriteLine(GetDisplayName() + ": Read packet: " + ByteArrayToString(response));
+                        Logger.WriteLine(logMessage: GetDisplayName() + ": Read packet: " + ByteArrayToString(packet: response));
 
 
                     return response;
@@ -383,19 +383,19 @@ namespace GHelper.Peripherals.Mouse
                 }
                 catch (IOException e)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Failed to read packet " + e.Message);
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to read packet " + e.Message);
                     OnDisconnect();
                     return null;
                 }
                 catch (TimeoutException e)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Timeout reading packet " + e.Message + " Trying again.");
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Timeout reading packet " + e.Message + " Trying again.");
                     retries--;
                     continue;
                 }
                 catch (ObjectDisposedException)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Channel closed ");
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Channel closed ");
                     OnDisconnect();
                     return null;
                 }
@@ -417,10 +417,10 @@ namespace GHelper.Peripherals.Mouse
             {
                 //Likely only the dongle connected and the mouse is either sleeping or turned off.
                 //The mouse will not respond with proper data, but empty responses at this point
-                SetDeviceReady(false);
+                SetDeviceReady(ready: false);
                 return;
             }
-            SetDeviceReady(true);
+            SetDeviceReady(ready: true);
 
             ReadProfile();
             ReadDPI();
@@ -514,10 +514,10 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            WriteForResponse(GetUpdateEnergySettingsPacket(lowBatteryWarning, powerOff));
+            WriteForResponse(packet: GetUpdateEnergySettingsPacket(lowBatteryWarning: lowBatteryWarning, powerOff: powerOff));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Got Auto Power Off: " + powerOff + " - Low Battery Warnning at: " + lowBatteryWarning + "%");
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Got Auto Power Off: " + powerOff + " - Low Battery Warnning at: " + lowBatteryWarning + "%");
             this.PowerOffSetting = powerOff;
             this.LowBatteryWarning = lowBatteryWarning;
         }
@@ -529,46 +529,46 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            byte[]? response = WriteForResponse(GetBatteryReportPacket());
+            byte[]? response = WriteForResponse(packet: GetBatteryReportPacket());
             if (response is null) return;
 
             if (HasBattery())
             {
-                Battery = ParseBattery(response);
-                Charging = ParseChargingState(response);
+                Battery = ParseBattery(packet: response);
+                Charging = ParseChargingState(packet: response);
 
                 //If the device goes to standby it will not report battery state anymore.
-                SetDeviceReady(Battery > 0);
+                SetDeviceReady(ready: Battery > 0);
 
                 if (!IsDeviceReady)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Device gone");
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Device gone");
                     return;
                 }
 
-                Logger.WriteLine(GetDisplayName() + ": Got Battery Percentage " + Battery + "% - Charging:" + Charging);
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Got Battery Percentage " + Battery + "% - Charging:" + Charging);
 
                 if (BatteryUpdated is not null)
                 {
-                    BatteryUpdated(this, EventArgs.Empty);
+                    BatteryUpdated(sender: this, e: EventArgs.Empty);
                 }
             }
 
             if (HasAutoPowerOff())
             {
-                PowerOffSetting = ParsePowerOffSetting(response);
+                PowerOffSetting = ParsePowerOffSetting(packet: response);
             }
 
             if (HasLowBatteryWarning())
             {
-                LowBatteryWarning = ParseLowBatteryWarning(response);
+                LowBatteryWarning = ParseLowBatteryWarning(packet: response);
             }
 
             if (HasLowBatteryWarning() || HasAutoPowerOff())
             {
                 string pos = HasAutoPowerOff() ? PowerOffSetting.ToString() : "Not Supported";
                 string lbw = HasLowBatteryWarning() ? LowBatteryWarning.ToString() : "Not Supported";
-                Logger.WriteLine(GetDisplayName() + ": Got Auto Power Off: " + pos + " - Low Battery Warnning at: " + lbw + "%");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Got Auto Power Off: " + pos + " - Low Battery Warnning at: " + lbw + "%");
             }
 
         }
@@ -589,7 +589,7 @@ namespace GHelper.Peripherals.Mouse
             {
                 return packet[11];
             }
-            Logger.WriteLine(GetDisplayName() + ": Failed to decode active profile");
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to decode active profile");
             return 0;
         }
 
@@ -599,7 +599,7 @@ namespace GHelper.Peripherals.Mouse
             {
                 return packet[12];
             }
-            Logger.WriteLine(GetDisplayName() + ": Failed to decode active profile");
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to decode active profile");
             return 1;
         }
 
@@ -620,17 +620,17 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            byte[]? response = WriteForResponse(GetReadProfilePacket());
+            byte[]? response = WriteForResponse(packet: GetReadProfilePacket());
             if (response is null) return;
 
-            Profile = ParseProfile(response);
+            Profile = ParseProfile(packet: response);
             if (DPIProfileCount() > 1)
             {
 
-                DpiProfile = ParseDPIProfile(response);
+                DpiProfile = ParseDPIProfile(packet: response);
             }
-            Logger.WriteLine(GetDisplayName() + ": Active Profile " + (Profile + 1)
-                + ((DPIProfileCount() > 1 ? ", Active DPI Profile: " + DpiProfile : "")));
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Active Profile " + (Profile + 1)
+                                         + ((DPIProfileCount() > 1 ? ", Active DPI Profile: " + DpiProfile : "")));
         }
 
         public void SetProfile(int profile)
@@ -642,14 +642,14 @@ namespace GHelper.Peripherals.Mouse
 
             if (profile > ProfileCount() || profile < 0)
             {
-                Logger.WriteLine(GetDisplayName() + ": Profile:" + profile + " is invalid.");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Profile:" + profile + " is invalid.");
                 return;
             }
 
-            WriteForResponse(GetUpdateProfilePacket(profile));
+            WriteForResponse(packet: GetUpdateProfilePacket(profile: profile));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Profile set to " + profile);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Profile set to " + profile);
             this.Profile = profile;
         }
 
@@ -707,7 +707,7 @@ namespace GHelper.Peripherals.Mouse
 
         public virtual bool IsPollingRateSupported(PollingRate pollingRate)
         {
-            return SupportedPollingrates().Contains(pollingRate);
+            return SupportedPollingrates().Contains(value: pollingRate);
         }
 
         public abstract PollingRate[] SupportedPollingrates();
@@ -772,19 +772,19 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            byte[]? response = WriteForResponse(GetReadPollingRatePacket());
+            byte[]? response = WriteForResponse(packet: GetReadPollingRatePacket());
             if (response is null) return;
 
-            PollingRate = ParsePollingRate(response);
-            Logger.WriteLine(GetDisplayName() + ": Pollingrate: " + PollingRateDisplayString(PollingRate) + " (" + PollingRate + ")");
+            PollingRate = ParsePollingRate(packet: response);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Pollingrate: " + PollingRateDisplayString(pollingRate: PollingRate) + " (" + PollingRate + ")");
 
             if (HasAngleSnapping())
             {
-                AngleSnapping = ParseAngleSnapping(response);
+                AngleSnapping = ParseAngleSnapping(packet: response);
                 if (HasAngleTuning())
-                    AngleAdjustmentDegrees = ParseAngleAdjustment(response);
+                    AngleAdjustmentDegrees = ParseAngleAdjustment(packet: response);
 
-                Logger.WriteLine(GetDisplayName() + ": Angle Snapping enabled: " + AngleSnapping + ", Angle Adjustment: " + AngleAdjustmentDegrees + "°");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Angle Snapping enabled: " + AngleSnapping + ", Angle Adjustment: " + AngleAdjustmentDegrees + "°");
             }
         }
 
@@ -795,16 +795,16 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            if (!IsPollingRateSupported(pollingRate))
+            if (!IsPollingRateSupported(pollingRate: pollingRate))
             {
-                Logger.WriteLine(GetDisplayName() + ": Pollingrate:" + pollingRate + " is not supported by this mouse.");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Pollingrate:" + pollingRate + " is not supported by this mouse.");
                 return;
             }
 
-            WriteForResponse(GetUpdatePollingRatePacket(pollingRate));
+            WriteForResponse(packet: GetUpdatePollingRatePacket(pollingRate: pollingRate));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Pollingrate set to " + PollingRateDisplayString(pollingRate));
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Pollingrate set to " + PollingRateDisplayString(pollingRate: pollingRate));
             this.PollingRate = pollingRate;
         }
 
@@ -815,10 +815,10 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            WriteForResponse(GetUpdateAngleSnappingPacket(angleSnapping));
+            WriteForResponse(packet: GetUpdateAngleSnappingPacket(angleSnapping: angleSnapping));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Angle Snapping set to " + angleSnapping);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Angle Snapping set to " + angleSnapping);
             this.AngleSnapping = angleSnapping;
         }
 
@@ -831,15 +831,15 @@ namespace GHelper.Peripherals.Mouse
 
             if (angleAdjustment < AngleTuningMin() || angleAdjustment > AngleTuningMax())
             {
-                Logger.WriteLine(GetDisplayName() + ": Angle Adjustment:" + angleAdjustment
-                    + " is outside of range [" + AngleTuningMin() + "; " + AngleTuningMax() + "].");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Angle Adjustment:" + angleAdjustment
+                                             + " is outside of range [" + AngleTuningMin() + "; " + AngleTuningMax() + "].");
                 return;
             }
 
-            WriteForResponse(GetUpdateAngleAdjustmentPacket(angleAdjustment));
+            WriteForResponse(packet: GetUpdateAngleAdjustmentPacket(angleAdjustment: angleAdjustment));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Angle Adjustment set to " + angleAdjustment);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Angle Adjustment set to " + angleAdjustment);
             this.AngleAdjustmentDegrees = angleAdjustment;
         }
 
@@ -884,14 +884,14 @@ namespace GHelper.Peripherals.Mouse
 
             if (acceleration > MaxAcceleration() || acceleration < 0)
             {
-                Logger.WriteLine(GetDisplayName() + ": Acceleration " + acceleration + " is invalid.");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Acceleration " + acceleration + " is invalid.");
                 return;
             }
 
-            WriteForResponse(GetChangeAccelerationPacket(acceleration));
+            WriteForResponse(packet: GetChangeAccelerationPacket(acceleration: acceleration));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Acceleration set to " + acceleration);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Acceleration set to " + acceleration);
             this.Acceleration = acceleration;
         }
 
@@ -904,14 +904,14 @@ namespace GHelper.Peripherals.Mouse
 
             if (deceleration > MaxDeceleration() || deceleration < 0)
             {
-                Logger.WriteLine(GetDisplayName() + ": Deceleration " + deceleration + " is invalid.");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Deceleration " + deceleration + " is invalid.");
                 return;
             }
 
-            WriteForResponse(GetChangeDecelerationPacket(deceleration));
+            WriteForResponse(packet: GetChangeDecelerationPacket(deceleration: deceleration));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Deceleration set to " + deceleration);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Deceleration set to " + deceleration);
             this.Deceleration = deceleration;
         }
 
@@ -947,19 +947,19 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            byte[]? response = WriteForResponse(GetReadAccelerationPacket());
+            byte[]? response = WriteForResponse(packet: GetReadAccelerationPacket());
             if (response is null) return;
 
             if (HasAcceleration())
             {
-                Acceleration = ParseAcceleration(response);
-                Logger.WriteLine(GetDisplayName() + ": Read Acceleration: " + Acceleration);
+                Acceleration = ParseAcceleration(packet: response);
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read Acceleration: " + Acceleration);
             }
 
             if (HasDeceleration())
             {
-                Deceleration = ParseDeceleration(response);
-                Logger.WriteLine(GetDisplayName() + ": Read Deceleration: " + Deceleration);
+                Deceleration = ParseDeceleration(packet: response);
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read Deceleration: " + Deceleration);
             }
         }
 
@@ -1017,17 +1017,17 @@ namespace GHelper.Peripherals.Mouse
 
             if (profile > DPIProfileCount() || profile < 1)
             {
-                Logger.WriteLine(GetDisplayName() + ": DPI Profile:" + profile + " is invalid.");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": DPI Profile:" + profile + " is invalid.");
                 return;
             }
 
             //The first DPI profile is 1
-            WriteForResponse(GetChangeDPIProfilePacket(profile));
+            WriteForResponse(packet: GetChangeDPIProfilePacket(profile: profile));
             //For whatever reason that is required or the mouse will not store the change and reverts once you power it off.
-            WriteForResponse(GetChangeDPIProfilePacket2(profile));
+            WriteForResponse(packet: GetChangeDPIProfilePacket2(profile: profile));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": DPI Profile set to " + profile);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": DPI Profile set to " + profile);
             this.DpiProfile = profile;
         }
 
@@ -1109,26 +1109,26 @@ namespace GHelper.Peripherals.Mouse
 
                 int offset = 5 + (i * 3);
 
-                DpiSettings[i].Color = Color.FromArgb(packet[offset], packet[offset + 1], packet[offset + 2]);
+                DpiSettings[i].Color = Color.FromArgb(red: packet[offset], green: packet[offset + 1], blue: packet[offset + 2]);
             }
         }
 
         public void ReadDPI()
         {
-            byte[]? response = WriteForResponse(GetReadDPIPacket());
+            byte[]? response = WriteForResponse(packet: GetReadDPIPacket());
             if (response is null) return;
-            ParseDPI(response);
+            ParseDPI(packet: response);
 
             if (HasDPIColors())
             {
-                response = WriteForResponse(GetReadDPIColorsPacket());
+                response = WriteForResponse(packet: GetReadDPIColorsPacket());
                 if (response is null) return;
-                ParseDPIColors(response);
+                ParseDPIColors(packet: response);
             }
 
             for (int i = 0; i < DPIProfileCount(); ++i)
             {
-                Logger.WriteLine(GetDisplayName() + ": Read DPI Setting " + (i + 1) + ": " + DpiSettings[i].ToString());
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read DPI Setting " + (i + 1) + ": " + DpiSettings[i].ToString());
             }
 
         }
@@ -1137,20 +1137,20 @@ namespace GHelper.Peripherals.Mouse
         {
             if (profile > DPIProfileCount() || profile < 1)
             {
-                Logger.WriteLine(GetDisplayName() + ": DPI Profile:" + profile + " is invalid.");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": DPI Profile:" + profile + " is invalid.");
                 return;
             }
 
-            byte[]? packet = GetUpdateDPIPacket(dpi, profile);
+            byte[]? packet = GetUpdateDPIPacket(dpi: dpi, profile: profile);
             if (packet == null)
             {
-                Logger.WriteLine(GetDisplayName() + ": DPI setting for profile " + profile + " does not exist or is invalid.");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": DPI setting for profile " + profile + " does not exist or is invalid.");
                 return;
             }
-            WriteForResponse(packet);
+            WriteForResponse(packet: packet);
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": DPI for profile " + profile + " set to " + DpiSettings[profile - 1].DPI);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": DPI for profile " + profile + " set to " + DpiSettings[profile - 1].DPI);
             //this.DpiProfile = profile;
             this.DpiSettings[profile - 1] = dpi;
         }
@@ -1193,13 +1193,13 @@ namespace GHelper.Peripherals.Mouse
             {
                 return;
             }
-            byte[]? response = WriteForResponse(GetReadLiftOffDistancePacket());
+            byte[]? response = WriteForResponse(packet: GetReadLiftOffDistancePacket());
             if (response is null) return;
 
-            LiftOffDistance = ParseLiftOffDistance(response);
+            LiftOffDistance = ParseLiftOffDistance(packet: response);
 
 
-            Logger.WriteLine(GetDisplayName() + ": Read Lift Off Setting: " + LiftOffDistance);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Read Lift Off Setting: " + LiftOffDistance);
         }
 
         public void SetLiftOffDistance(LiftOffDistance liftOffDistance)
@@ -1209,10 +1209,10 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            WriteForResponse(GetUpdateLiftOffDistancePacket(liftOffDistance));
+            WriteForResponse(packet: GetUpdateLiftOffDistancePacket(liftOffDistance: liftOffDistance));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Set Liftoff Distance to " + liftOffDistance);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Set Liftoff Distance to " + liftOffDistance);
             this.LiftOffDistance = liftOffDistance;
         }
 
@@ -1278,13 +1278,13 @@ namespace GHelper.Peripherals.Mouse
             {
                 return;
             }
-            byte[]? response = WriteForResponse(GetReadDebouncePacket());
+            byte[]? response = WriteForResponse(packet: GetReadDebouncePacket());
             if (response is null) return;
 
-            Debounce = ParseDebounce(response);
+            Debounce = ParseDebounce(packet: response);
 
 
-            Logger.WriteLine(GetDisplayName() + ": Read Debouce Setting: " + Debounce);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Read Debouce Setting: " + Debounce);
         }
 
         public void SetDebounce(DebounceTime debounce)
@@ -1294,10 +1294,10 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            WriteForResponse(GetUpdateDebouncePacket(debounce));
+            WriteForResponse(packet: GetUpdateDebouncePacket(debounce: debounce));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Set Debouce to " + debounce);
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Set Debouce to " + debounce);
             this.Debounce = debounce;
         }
 
@@ -1392,7 +1392,7 @@ namespace GHelper.Peripherals.Mouse
             {
                 if (LightingSetting[i] is null
                    || LightingSetting[i - 1] is null
-                   || !LightingSetting[i].Equals(LightingSetting[i - 1]))
+                   || !LightingSetting[i].Equals(obj: LightingSetting[i - 1]))
                 {
                     return true;
                 }
@@ -1421,7 +1421,7 @@ namespace GHelper.Peripherals.Mouse
                 return LightingSetting[0];
             }
 
-            return LightingSetting[IndexForZone(zone)];
+            return LightingSetting[IndexForZone(zone: zone)];
         }
 
         protected virtual byte[] GetReadLightingModePacket(LightingZone zone)
@@ -1430,7 +1430,7 @@ namespace GHelper.Peripherals.Mouse
 
             if (zone != LightingZone.All)
             {
-                idx = IndexForZone(zone);
+                idx = IndexForZone(zone: zone);
             }
 
             return new byte[] { reportId, 0x12, 0x03, (byte)idx };
@@ -1440,24 +1440,24 @@ namespace GHelper.Peripherals.Mouse
         {
             if (lightingSetting.Brightness < 0 || lightingSetting.Brightness > MaxBrightness())
             {
-                Logger.WriteLine(GetDisplayName() + ": Brightness " + lightingSetting.Brightness
-                    + " is out of range [0;" + MaxBrightness() + "]. Setting to " + (MaxBrightness() / 4) + " .");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Brightness " + lightingSetting.Brightness
+                                             + " is out of range [0;" + MaxBrightness() + "]. Setting to " + (MaxBrightness() / 4) + " .");
 
                 lightingSetting.Brightness = MaxBrightness() / 4; // set t0 25% of max brightness
             }
-            if (!IsLightingModeSupported(lightingSetting.LightingMode))
+            if (!IsLightingModeSupported(lightingMode: lightingSetting.LightingMode))
             {
-                Logger.WriteLine(GetDisplayName() + ": Lighting Mode " + lightingSetting.LightingMode + " is not supported. Setting to Color Cycle ;)");
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Lighting Mode " + lightingSetting.LightingMode + " is not supported. Setting to Color Cycle ;)");
                 lightingSetting.LightingMode = LightingMode.ColorCycle;
             }
 
             return new byte[] { reportId, 0x51, 0x28, (byte)zone, 0x00,
-                IndexForLightingMode(lightingSetting.LightingMode),
+                IndexForLightingMode(lightingMode: lightingSetting.LightingMode),
                 (byte)lightingSetting.Brightness,
                 lightingSetting.RGBColor.R, lightingSetting.RGBColor.G, lightingSetting.RGBColor.B,
-                (byte)(SupportsAnimationDirection(lightingSetting.LightingMode) ? lightingSetting.AnimationDirection : 0x00),
-                (byte)((lightingSetting.RandomColor && SupportsRandomColor(lightingSetting.LightingMode)) ? 0x01: 0x00),
-                (byte)(SupportsAnimationSpeed(lightingSetting.LightingMode) ? lightingSetting.AnimationSpeed : 0x00)
+                (byte)(SupportsAnimationDirection(lightingMode: lightingSetting.LightingMode) ? lightingSetting.AnimationDirection : 0x00),
+                (byte)((lightingSetting.RandomColor && SupportsRandomColor(lightingMode: lightingSetting.LightingMode)) ? 0x01: 0x00),
+                (byte)(SupportsAnimationSpeed(lightingMode: lightingSetting.LightingMode) ? lightingSetting.AnimationSpeed : 0x00)
             };
         }
 
@@ -1470,18 +1470,18 @@ namespace GHelper.Peripherals.Mouse
 
             LightingSetting setting = new LightingSetting();
 
-            setting.LightingMode = LightingModeForIndex(packet[5]);
+            setting.LightingMode = LightingModeForIndex(lightingMode: packet[5]);
             setting.Brightness = packet[6];
 
-            setting.RGBColor = Color.FromArgb(packet[7], packet[8], packet[9]);
+            setting.RGBColor = Color.FromArgb(red: packet[7], green: packet[8], blue: packet[9]);
 
 
-            setting.AnimationDirection = SupportsAnimationDirection(setting.LightingMode)
+            setting.AnimationDirection = SupportsAnimationDirection(lightingMode: setting.LightingMode)
                 ? (AnimationDirection)packet[11]
                 : AnimationDirection.Clockwise;
 
-            setting.RandomColor = SupportsRandomColor(setting.LightingMode) && packet[12] == 0x01;
-            setting.AnimationSpeed = SupportsAnimationSpeed(setting.LightingMode)
+            setting.RandomColor = SupportsRandomColor(lightingMode: setting.LightingMode) && packet[12] == 0x01;
+            setting.AnimationSpeed = SupportsAnimationSpeed(lightingMode: setting.LightingMode)
                 ? (AnimationSpeed)packet[13]
                 : AnimationSpeed.Medium;
 
@@ -1506,17 +1506,17 @@ namespace GHelper.Peripherals.Mouse
             LightingZone[] lz = SupportedLightingZones();
             for (int i = 0; i < lz.Length; ++i)
             {
-                byte[]? response = WriteForResponse(GetReadLightingModePacket(lz[i]));
+                byte[]? response = WriteForResponse(packet: GetReadLightingModePacket(zone: lz[i]));
                 if (response is null) return;
 
-                LightingSetting? ls = ParseLightingSetting(response);
+                LightingSetting? ls = ParseLightingSetting(packet: response);
                 if (ls is null)
                 {
-                    Logger.WriteLine(GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
+                    Logger.WriteLine(logMessage: GetDisplayName() + ": Failed to read RGB Setting for Zone " + lz[i].ToString());
                     continue;
                 }
 
-                Logger.WriteLine(GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
+                Logger.WriteLine(logMessage: GetDisplayName() + ": Read RGB Setting for Zone " + lz[i].ToString() + ": " + ls.ToString());
                 LightingSetting[i] = ls;
             }
         }
@@ -1528,10 +1528,10 @@ namespace GHelper.Peripherals.Mouse
                 return;
             }
 
-            WriteForResponse(GetUpdateLightingModePacket(lightingSetting, zone));
+            WriteForResponse(packet: GetUpdateLightingModePacket(lightingSetting: lightingSetting, zone: zone));
             FlushSettings();
 
-            Logger.WriteLine(GetDisplayName() + ": Set RGB Setting for zone " + zone.ToString() + ": " + lightingSetting.ToString());
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Set RGB Setting for zone " + zone.ToString() + ": " + lightingSetting.ToString());
             if (zone == LightingZone.All)
             {
                 for (int i = 0; i < this.LightingSetting.Length; ++i)
@@ -1541,7 +1541,7 @@ namespace GHelper.Peripherals.Mouse
             }
             else
             {
-                this.LightingSetting[IndexForZone(zone)] = lightingSetting;
+                this.LightingSetting[IndexForZone(zone: zone)] = lightingSetting;
             }
         }
 
@@ -1552,9 +1552,9 @@ namespace GHelper.Peripherals.Mouse
 
         public void FlushSettings()
         {
-            WriteForResponse(GetSaveProfilePacket());
+            WriteForResponse(packet: GetSaveProfilePacket());
 
-            Logger.WriteLine(GetDisplayName() + ": Settings Flushed ");
+            Logger.WriteLine(logMessage: GetDisplayName() + ": Settings Flushed ");
         }
 
         public override string? ToString()
@@ -1566,9 +1566,9 @@ namespace GHelper.Peripherals.Mouse
 
         public static string ByteArrayToString(byte[] packet)
         {
-            StringBuilder hex = new StringBuilder(packet.Length * 2);
+            StringBuilder hex = new StringBuilder(capacity: packet.Length * 2);
             foreach (byte b in packet)
-                hex.AppendFormat("{0:x2} ", b);
+                hex.AppendFormat(format: "{0:x2} ", arg0: b);
             return hex.ToString();
         }
     }

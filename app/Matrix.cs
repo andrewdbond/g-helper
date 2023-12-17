@@ -23,7 +23,7 @@ namespace GHelper
         public Matrix()
         {
             InitializeComponent();
-            InitTheme(true);
+            InitTheme(setDPI: true);
 
             Shown += Matrix_Shown;
             FormClosing += Matrix_FormClosed;
@@ -37,20 +37,20 @@ namespace GHelper
 
             trackZoom.MouseUp += TrackZoom_MouseUp;
             trackZoom.ValueChanged += TrackZoom_Changed;
-            trackZoom.Value = Math.Min(trackZoom.Maximum, AppConfig.Get("matrix_zoom", 100));
+            trackZoom.Value = Math.Min(val1: trackZoom.Maximum, val2: AppConfig.Get(name: "matrix_zoom", empty: 100));
 
             trackContrast.MouseUp += TrackContrast_MouseUp; ;
             trackContrast.ValueChanged += TrackContrast_ValueChanged; ;
-            trackContrast.Value = Math.Min(trackContrast.Maximum, AppConfig.Get("matrix_contrast", 100));
+            trackContrast.Value = Math.Min(val1: trackContrast.Maximum, val2: AppConfig.Get(name: "matrix_contrast", empty: 100));
 
             VisualiseMatrix();
 
             comboScaling.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboScaling.SelectedIndex = AppConfig.Get("matrix_quality", 0);
+            comboScaling.SelectedIndex = AppConfig.Get(name: "matrix_quality", empty: 0);
             comboScaling.SelectedValueChanged += ComboScaling_SelectedValueChanged;
 
             comboRotation.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboRotation.SelectedIndex = AppConfig.Get("matrix_rotation", 0);
+            comboRotation.SelectedIndex = AppConfig.Get(name: "matrix_rotation", empty: 0);
             comboRotation.SelectedValueChanged += ComboRotation_SelectedValueChanged; ;
 
 
@@ -66,20 +66,20 @@ namespace GHelper
 
         private void TrackContrast_MouseUp(object? sender, MouseEventArgs e)
         {
-            AppConfig.Set("matrix_contrast", trackContrast.Value);
+            AppConfig.Set(name: "matrix_contrast", value: trackContrast.Value);
             SetMatrixPicture();
         }
 
         private void ComboRotation_SelectedValueChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("matrix_rotation", comboRotation.SelectedIndex);
-            SetMatrixPicture(false);
+            AppConfig.Set(name: "matrix_rotation", value: comboRotation.SelectedIndex);
+            SetMatrixPicture(visualise: false);
         }
 
         private void ComboScaling_SelectedValueChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("matrix_quality", comboScaling.SelectedIndex);
-            SetMatrixPicture(false);
+            AppConfig.Set(name: "matrix_quality", value: comboScaling.SelectedIndex);
+            SetMatrixPicture(visualise: false);
         }
 
         private void Matrix_FormClosed(object? sender, FormClosingEventArgs e)
@@ -89,7 +89,7 @@ namespace GHelper
 
             pictureMatrix.Dispose();
 
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+            GC.Collect(generation: GC.MaxGeneration, mode: GCCollectionMode.Forced);
         }
 
         private void VisualiseMatrix()
@@ -100,10 +100,10 @@ namespace GHelper
 
         private void ButtonReset_Click(object? sender, EventArgs e)
         {
-            AppConfig.Set("matrix_contrast", 100);
-            AppConfig.Set("matrix_zoom", 100);
-            AppConfig.Set("matrix_x", 0);
-            AppConfig.Set("matrix_y", 0);
+            AppConfig.Set(name: "matrix_contrast", value: 100);
+            AppConfig.Set(name: "matrix_zoom", value: 100);
+            AppConfig.Set(name: "matrix_x", value: 0);
+            AppConfig.Set(name: "matrix_y", value: 0);
 
             trackZoom.Value = 100;
             trackContrast.Value = 100;
@@ -114,7 +114,7 @@ namespace GHelper
 
         private void TrackZoom_MouseUp(object? sender, EventArgs e)
         {
-            AppConfig.Set("matrix_zoom", trackZoom.Value);
+            AppConfig.Set(name: "matrix_zoom", value: trackZoom.Value);
             SetMatrixPicture();
         }
 
@@ -154,10 +154,10 @@ namespace GHelper
             int matrixX = (int)((baseX - c.Left) / uiScale);
             int matrixY = (int)((baseY - c.Top) / uiScale);
 
-            AppConfig.Set("matrix_x", matrixX);
-            AppConfig.Set("matrix_y", matrixY);
+            AppConfig.Set(name: "matrix_x", value: matrixX);
+            AppConfig.Set(name: "matrix_y", value: matrixY);
 
-            SetMatrixPicture(false);
+            SetMatrixPicture(visualise: false);
         }
 
         private void Matrix_Shown(object? sender, EventArgs e)
@@ -168,7 +168,7 @@ namespace GHelper
 
         private void SetMatrixPicture(bool visualise = true)
         {
-            matrixControl.SetMatrixPicture(AppConfig.GetString("matrix_picture"), visualise);
+            matrixControl.SetMatrixPicture(fileName: AppConfig.GetString(name: "matrix_picture"), visualise: visualise);
         }
 
         private void ButtonPicture_Click(object? sender, EventArgs e)
@@ -196,24 +196,24 @@ namespace GHelper
 
             if (picture is not null) picture.Dispose();
 
-            using (var fs = new FileStream(fileName, FileMode.Open))
+            using (var fs = new FileStream(path: fileName, mode: FileMode.Open))
             {
 
-                ms.SetLength(0);
-                fs.CopyTo(ms);
+                ms.SetLength(value: 0);
+                fs.CopyTo(destination: ms);
                 ms.Position = 0;
                 fs.Close();
 
-                picture = Image.FromStream(ms);
+                picture = Image.FromStream(stream: ms);
 
                 int width = picture.Width;
                 int height = picture.Height;
 
-                int matrixX = AppConfig.Get("matrix_x", 0);
-                int matrixY = AppConfig.Get("matrix_y", 0);
-                int matrixZoom = AppConfig.Get("matrix_zoom", 100);
+                int matrixX = AppConfig.Get(name: "matrix_x", empty: 0);
+                int matrixY = AppConfig.Get(name: "matrix_y", empty: 0);
+                int matrixZoom = AppConfig.Get(name: "matrix_zoom", empty: 100);
 
-                float scale = Math.Min((float)panelPicture.Width / (float)width, (float)panelPicture.Height / (float)height) * matrixZoom / 100;
+                float scale = Math.Min(val1: (float)panelPicture.Width / (float)width, val2: (float)panelPicture.Height / (float)height) * matrixZoom / 100;
 
                 pictureMatrix.Width = (int)(width * scale);
                 pictureMatrix.Height = (int)(height * scale);

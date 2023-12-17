@@ -41,50 +41,50 @@ namespace GHelper
 
             if (AppConfig.IsDUO())
             {
-                customActions.Add("screenpad_down", Properties.Strings.ScreenPadDown);
-                customActions.Add("screenpad_up", Properties.Strings.ScreenPadUp);
+                customActions.Add(key: "screenpad_down", value: Properties.Strings.ScreenPadDown);
+                customActions.Add(key: "screenpad_up", value: Properties.Strings.ScreenPadUp);
             }
 
             switch (name)
             {
                 case "m1":
-                    customActions[""] = Properties.Strings.VolumeDown;
+                    customActions[key: ""] = Properties.Strings.VolumeDown;
                     break;
                 case "m2":
-                    customActions[""] = Properties.Strings.VolumeUp;
+                    customActions[key: ""] = Properties.Strings.VolumeUp;
                     break;
                 case "m3":
-                    customActions[""] = Properties.Strings.MuteMic;
+                    customActions[key: ""] = Properties.Strings.MuteMic;
                     break;
                 case "m4":
-                    customActions[""] = Properties.Strings.OpenGHelper;
-                    customActions.Remove("ghelper");
+                    customActions[key: ""] = Properties.Strings.OpenGHelper;
+                    customActions.Remove(key: "ghelper");
                     break;
                 case "fnf4":
-                    customActions[""] = Properties.Strings.ToggleAura;
-                    customActions.Remove("aura");
+                    customActions[key: ""] = Properties.Strings.ToggleAura;
+                    customActions.Remove(key: "aura");
                     break;
                 case "fnc":
-                    customActions[""] = Properties.Strings.ToggleFnLock;
-                    customActions.Remove("fnlock");
+                    customActions[key: ""] = Properties.Strings.ToggleFnLock;
+                    customActions.Remove(key: "fnlock");
                     break;
                 case "fne":
-                    customActions[""] = "Calculator";
+                    customActions[key: ""] = "Calculator";
                     break;
                 case "paddle":
-                    customActions[""] = EMPTY;
+                    customActions[key: ""] = EMPTY;
                     break;
                 case "cc":
-                    customActions[""] = EMPTY;
+                    customActions[key: ""] = EMPTY;
                     break;
             }
 
             combo.DropDownStyle = ComboBoxStyle.DropDownList;
-            combo.DataSource = new BindingSource(customActions, null);
+            combo.DataSource = new BindingSource(dataSource: customActions, dataMember: null);
             combo.DisplayMember = "Value";
             combo.ValueMember = "Key";
 
-            string action = AppConfig.GetString(name);
+            string action = AppConfig.GetString(name: name);
 
             combo.SelectedValue = (action is not null) ? action : "";
             if (combo.SelectedValue is null) combo.SelectedValue = "";
@@ -92,17 +92,17 @@ namespace GHelper
             combo.SelectedValueChanged += delegate
             {
                 if (combo.SelectedValue is not null)
-                    AppConfig.Set(name, combo.SelectedValue.ToString());
+                    AppConfig.Set(name: name, value: combo.SelectedValue.ToString());
 
                 if (name == "m1" || name == "m2")
                     Program.inputDispatcher.RegisterKeys();
 
             };
 
-            txbox.Text = AppConfig.GetString(name + "_custom");
+            txbox.Text = AppConfig.GetString(name: name + "_custom");
             txbox.TextChanged += delegate
             {
-                AppConfig.Set(name + "_custom", txbox.Text);
+                AppConfig.Set(name: name + "_custom", value: txbox.Text);
             };
         }
 
@@ -171,7 +171,7 @@ namespace GHelper
                 labelFNE.Visible = comboFNE.Visible = textFNE.Visible = false;
             }
 
-            if (Program.acpi.DeviceGet(AsusACPI.GPUEco) < 0)
+            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUEco) < 0)
             {
                 checkGpuApps.Visible = false;
                 checkUSBC.Visible = false;
@@ -194,9 +194,9 @@ namespace GHelper
                 comboFNC.Visible = false;
                 textFNC.Visible = false;
 
-                SetKeyCombo(comboM3, textM3, "cc");
-                SetKeyCombo(comboM4, textM4, "m4");
-                SetKeyCombo(comboFNF4, textFNF4, "paddle");
+                SetKeyCombo(combo: comboM3, txbox: textM3, name: "cc");
+                SetKeyCombo(combo: comboM4, txbox: textM4, name: "m4");
+                SetKeyCombo(combo: comboFNF4, txbox: textFNF4, name: "paddle");
 
 
                 int apuMem = Program.acpi.GetAPUMem();
@@ -212,15 +212,15 @@ namespace GHelper
             }
             else
             {
-                SetKeyCombo(comboM1, textM1, "m1");
-                SetKeyCombo(comboM2, textM2, "m2");
+                SetKeyCombo(combo: comboM1, txbox: textM1, name: "m1");
+                SetKeyCombo(combo: comboM2, txbox: textM2, name: "m2");
 
-                SetKeyCombo(comboM3, textM3, "m3");
-                SetKeyCombo(comboM4, textM4, "m4");
-                SetKeyCombo(comboFNF4, textFNF4, "fnf4");
+                SetKeyCombo(combo: comboM3, txbox: textM3, name: "m3");
+                SetKeyCombo(combo: comboM4, txbox: textM4, name: "m4");
+                SetKeyCombo(combo: comboFNF4, txbox: textFNF4, name: "fnf4");
 
-                SetKeyCombo(comboFNC, textFNC, "fnc");
-                SetKeyCombo(comboFNE, textFNE, "fne");
+                SetKeyCombo(combo: comboFNC, txbox: textFNC, name: "fnc");
+                SetKeyCombo(combo: comboFNE, txbox: textFNE, name: "fne");
             }
 
             if (AppConfig.IsStrix())
@@ -233,35 +233,35 @@ namespace GHelper
             Shown += Keyboard_Shown;
 
             comboKeyboardSpeed.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboKeyboardSpeed.DataSource = new BindingSource(Aura.GetSpeeds(), null);
+            comboKeyboardSpeed.DataSource = new BindingSource(dataSource: Aura.GetSpeeds(), dataMember: null);
             comboKeyboardSpeed.DisplayMember = "Value";
             comboKeyboardSpeed.ValueMember = "Key";
             comboKeyboardSpeed.SelectedValue = Aura.Speed;
             comboKeyboardSpeed.SelectedValueChanged += ComboKeyboardSpeed_SelectedValueChanged;
 
             // Keyboard
-            checkAwake.Checked = AppConfig.IsNotFalse("keyboard_awake");
-            checkBoot.Checked = AppConfig.IsNotFalse("keyboard_boot");
-            checkSleep.Checked = AppConfig.IsNotFalse("keyboard_sleep");
-            checkShutdown.Checked = AppConfig.IsNotFalse("keyboard_shutdown");
+            checkAwake.Checked = AppConfig.IsNotFalse(name: "keyboard_awake");
+            checkBoot.Checked = AppConfig.IsNotFalse(name: "keyboard_boot");
+            checkSleep.Checked = AppConfig.IsNotFalse(name: "keyboard_sleep");
+            checkShutdown.Checked = AppConfig.IsNotFalse(name: "keyboard_shutdown");
 
             // Lightbar
-            checkAwakeBar.Checked = AppConfig.IsNotFalse("keyboard_awake_bar");
-            checkBootBar.Checked = AppConfig.IsNotFalse("keyboard_boot_bar");
-            checkSleepBar.Checked = AppConfig.IsNotFalse("keyboard_sleep_bar");
-            checkShutdownBar.Checked = AppConfig.IsNotFalse("keyboard_shutdown_bar");
+            checkAwakeBar.Checked = AppConfig.IsNotFalse(name: "keyboard_awake_bar");
+            checkBootBar.Checked = AppConfig.IsNotFalse(name: "keyboard_boot_bar");
+            checkSleepBar.Checked = AppConfig.IsNotFalse(name: "keyboard_sleep_bar");
+            checkShutdownBar.Checked = AppConfig.IsNotFalse(name: "keyboard_shutdown_bar");
 
             // Lid
-            checkAwakeLid.Checked = AppConfig.IsNotFalse("keyboard_awake_lid");
-            checkBootLid.Checked = AppConfig.IsNotFalse("keyboard_boot_lid");
-            checkSleepLid.Checked = AppConfig.IsNotFalse("keyboard_sleep_lid");
-            checkShutdownLid.Checked = AppConfig.IsNotFalse("keyboard_shutdown_lid");
+            checkAwakeLid.Checked = AppConfig.IsNotFalse(name: "keyboard_awake_lid");
+            checkBootLid.Checked = AppConfig.IsNotFalse(name: "keyboard_boot_lid");
+            checkSleepLid.Checked = AppConfig.IsNotFalse(name: "keyboard_sleep_lid");
+            checkShutdownLid.Checked = AppConfig.IsNotFalse(name: "keyboard_shutdown_lid");
 
             // Logo
-            checkAwakeLogo.Checked = AppConfig.IsNotFalse("keyboard_awake_logo");
-            checkBootLogo.Checked = AppConfig.IsNotFalse("keyboard_boot_logo");
-            checkSleepLogo.Checked = AppConfig.IsNotFalse("keyboard_sleep_logo");
-            checkShutdownLogo.Checked = AppConfig.IsNotFalse("keyboard_shutdown_logo");
+            checkAwakeLogo.Checked = AppConfig.IsNotFalse(name: "keyboard_awake_logo");
+            checkBootLogo.Checked = AppConfig.IsNotFalse(name: "keyboard_boot_logo");
+            checkSleepLogo.Checked = AppConfig.IsNotFalse(name: "keyboard_sleep_logo");
+            checkShutdownLogo.Checked = AppConfig.IsNotFalse(name: "keyboard_shutdown_logo");
 
             checkAwake.CheckedChanged += CheckPower_CheckedChanged;
             checkBoot.CheckedChanged += CheckPower_CheckedChanged;
@@ -315,35 +315,35 @@ namespace GHelper
             }
 
             //checkAutoToggleClamshellMode.Visible = clamshellControl.IsExternalDisplayConnected();
-            checkAutoToggleClamshellMode.Checked = AppConfig.Is("toggle_clamshell_mode");
+            checkAutoToggleClamshellMode.Checked = AppConfig.Is(name: "toggle_clamshell_mode");
             checkAutoToggleClamshellMode.CheckedChanged += checkAutoToggleClamshellMode_CheckedChanged;
 
-            checkTopmost.Checked = AppConfig.Is("topmost");
+            checkTopmost.Checked = AppConfig.Is(name: "topmost");
             checkTopmost.CheckedChanged += CheckTopmost_CheckedChanged; ;
 
-            checkNoOverdrive.Checked = AppConfig.Is("no_overdrive");
+            checkNoOverdrive.Checked = AppConfig.Is(name: "no_overdrive");
             checkNoOverdrive.CheckedChanged += CheckNoOverdrive_CheckedChanged;
 
-            checkUSBC.Checked = AppConfig.Is("optimized_usbc");
+            checkUSBC.Checked = AppConfig.Is(name: "optimized_usbc");
             checkUSBC.CheckedChanged += CheckUSBC_CheckedChanged;
 
             sliderBrightness.Value = InputDispatcher.GetBacklight();
             sliderBrightness.ValueChanged += SliderBrightness_ValueChanged;
 
-            panelXMG.Visible = (Program.acpi.DeviceGet(AsusACPI.GPUXGConnected) == 1);
-            checkXMG.Checked = !(AppConfig.Get("xmg_light") == 0);
+            panelXMG.Visible = (Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUXGConnected) == 1);
+            checkXMG.Checked = !(AppConfig.Get(name: "xmg_light") == 0);
             checkXMG.CheckedChanged += CheckXMG_CheckedChanged;
 
-            numericBacklightTime.Value = AppConfig.Get("keyboard_timeout", 60);
-            numericBacklightPluggedTime.Value = AppConfig.Get("keyboard_ac_timeout", 0);
+            numericBacklightTime.Value = AppConfig.Get(name: "keyboard_timeout", empty: 60);
+            numericBacklightPluggedTime.Value = AppConfig.Get(name: "keyboard_ac_timeout", empty: 0);
 
             numericBacklightTime.ValueChanged += NumericBacklightTime_ValueChanged;
             numericBacklightPluggedTime.ValueChanged += NumericBacklightTime_ValueChanged;
 
-            checkGpuApps.Checked = AppConfig.Is("kill_gpu_apps");
+            checkGpuApps.Checked = AppConfig.Is(name: "kill_gpu_apps");
             checkGpuApps.CheckedChanged += CheckGpuApps_CheckedChanged;
 
-            checkBootSound.Checked = (Program.acpi.DeviceGet(AsusACPI.BootSound) == 1);
+            checkBootSound.Checked = (Program.acpi.DeviceGet(DeviceID: AsusACPI.BootSound) == 1);
             checkBootSound.CheckedChanged += CheckBootSound_CheckedChanged;
 
             pictureHelp.Click += PictureHelp_Click;
@@ -355,7 +355,7 @@ namespace GHelper
             checkGPUFix.Checked = AppConfig.IsGPUFix();
             checkGPUFix.CheckedChanged += CheckGPUFix_CheckedChanged;
 
-            toolTip.SetToolTip(checkAutoToggleClamshellMode, "Disable sleep on lid close when plugged in and external monitor is connected");
+            toolTip.SetToolTip(control: checkAutoToggleClamshellMode, caption: "Disable sleep on lid close when plugged in and external monitor is connected");
 
             InitVariBright();
             InitServices();
@@ -365,24 +365,24 @@ namespace GHelper
         private void ComboAPU_SelectedIndexChanged(object? sender, EventArgs e)
         {
             int mem = comboAPU.SelectedIndex;
-            Program.acpi.SetAPUMem(mem);
+            Program.acpi.SetAPUMem(memory: mem);
 
-            DialogResult dialogResult = MessageBox.Show(Properties.Strings.AlertAPUMemoryRestart, Properties.Strings.AlertAPUMemoryRestartTitle, MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show(text: Properties.Strings.AlertAPUMemoryRestart, caption: Properties.Strings.AlertAPUMemoryRestartTitle, buttons: MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                Process.Start("shutdown", "/r /t 1");
+                Process.Start(fileName: "shutdown", arguments: "/r /t 1");
             }
 
         }
 
         private void CheckBootSound_CheckedChanged(object? sender, EventArgs e)
         {
-            Program.acpi.DeviceSet(AsusACPI.BootSound, (checkBootSound.Checked ? 1 : 0), "BootSound");
+            Program.acpi.DeviceSet(DeviceID: AsusACPI.BootSound, Status: (checkBootSound.Checked ? 1 : 0), logName: "BootSound");
         }
 
         private void CheckGPUFix_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("gpu_fix", (checkGPUFix.Checked ? 1 : 0));
+            AppConfig.Set(name: "gpu_fix", value: (checkGPUFix.Checked ? 1 : 0));
         }
 
         private void InitHibernate()
@@ -398,21 +398,21 @@ namespace GHelper
             catch (Exception ex)
             {
                 panelPower.Visible = false;
-                Logger.WriteLine(ex.ToString());
+                Logger.WriteLine(logMessage: ex.ToString());
             }
 
         }
 
         private void NumericHibernateAfter_ValueChanged(object? sender, EventArgs e)
         {
-            PowerNative.SetHibernateAfter((int)numericHibernateAfter.Value);
+            PowerNative.SetHibernateAfter(minutes: (int)numericHibernateAfter.Value);
         }
 
         private void PictureLog_Click(object? sender, EventArgs e)
         {
             new Process
             {
-                StartInfo = new ProcessStartInfo(Logger.logFile)
+                StartInfo = new ProcessStartInfo(fileName: Logger.logFile)
                 {
                     UseShellExecute = true
                 }
@@ -424,11 +424,11 @@ namespace GHelper
             bool onBattery = SystemInformation.PowerStatus.PowerLineStatus != PowerLineStatus.Online;
 
             if (onBattery)
-                AppConfig.Set("keyboard_brightness_ac", sliderBrightness.Value);
+                AppConfig.Set(name: "keyboard_brightness_ac", value: sliderBrightness.Value);
             else
-                AppConfig.Set("keyboard_brightness", sliderBrightness.Value);
+                AppConfig.Set(name: "keyboard_brightness", value: sliderBrightness.Value);
 
-            Aura.ApplyBrightness(sliderBrightness.Value, "Slider");
+            Aura.ApplyBrightness(brightness: sliderBrightness.Value, log: "Slider");
         }
 
         private void InitServices()
@@ -459,10 +459,10 @@ namespace GHelper
             if (OptimizationService.GetRunningCount() > 0)
             {
                 labelServices.Text = Properties.Strings.StoppingServices + " ...";
-                Task.Run(() =>
+                Task.Run(action: () =>
                 {
                     OptimizationService.StopAsusServices();
-                    BeginInvoke(delegate
+                    BeginInvoke(method: delegate
                     {
                         InitServices();
                     });
@@ -472,10 +472,10 @@ namespace GHelper
             else
             {
                 labelServices.Text = Properties.Strings.StartingServices + " ...";
-                Task.Run(() =>
+                Task.Run(action: () =>
                 {
                     OptimizationService.StartAsusServices();
-                    BeginInvoke(delegate
+                    BeginInvoke(method: delegate
                     {
                         InitServices();
                     });
@@ -488,7 +488,7 @@ namespace GHelper
             if (ProcessHelper.IsUserAdministrator())
                 ServiesToggle();
             else
-                ProcessHelper.RunAsAdmin("services");
+                ProcessHelper.RunAsAdmin(param: "services");
         }
 
         private void InitVariBright()
@@ -499,9 +499,9 @@ namespace GHelper
                 using (var amdControl = new AmdGpuControl())
                 {
                     int variBrightSupported = 0, VariBrightEnabled;
-                    if (amdControl.GetVariBright(out variBrightSupported, out VariBrightEnabled))
+                    if (amdControl.GetVariBright(supported: out variBrightSupported, enabled: out VariBrightEnabled))
                     {
-                        Logger.WriteLine("Varibright: " + variBrightSupported + "," + VariBrightEnabled);
+                        Logger.WriteLine(logMessage: "Varibright: " + variBrightSupported + "," + VariBrightEnabled);
                         checkVariBright.Checked = (VariBrightEnabled == 3);
                     }
 
@@ -512,7 +512,7 @@ namespace GHelper
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(message: ex.ToString());
                 checkVariBright.Visible = false;
             }
 
@@ -523,73 +523,73 @@ namespace GHelper
         {
             using (var amdControl = new AmdGpuControl())
             {
-                amdControl.SetVariBright(checkVariBright.Checked ? 1 : 0);
-                ProcessHelper.KillByName("RadeonSoftware");
+                amdControl.SetVariBright(enabled: checkVariBright.Checked ? 1 : 0);
+                ProcessHelper.KillByName(name: "RadeonSoftware");
             }
         }
 
         private void CheckGpuApps_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("kill_gpu_apps", (checkGpuApps.Checked ? 1 : 0));
+            AppConfig.Set(name: "kill_gpu_apps", value: (checkGpuApps.Checked ? 1 : 0));
         }
 
         private void NumericBacklightTime_ValueChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("keyboard_timeout", (int)numericBacklightTime.Value);
-            AppConfig.Set("keyboard_ac_timeout", (int)numericBacklightPluggedTime.Value);
+            AppConfig.Set(name: "keyboard_timeout", value: (int)numericBacklightTime.Value);
+            AppConfig.Set(name: "keyboard_ac_timeout", value: (int)numericBacklightPluggedTime.Value);
             Program.inputDispatcher.InitBacklightTimer();
         }
 
         private void CheckXMG_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("xmg_light", (checkXMG.Checked ? 1 : 0));
-            XGM.Light(checkXMG.Checked);
+            AppConfig.Set(name: "xmg_light", value: (checkXMG.Checked ? 1 : 0));
+            XGM.Light(status: checkXMG.Checked);
         }
 
         private void CheckUSBC_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("optimized_usbc", (checkUSBC.Checked ? 1 : 0));
+            AppConfig.Set(name: "optimized_usbc", value: (checkUSBC.Checked ? 1 : 0));
         }
 
         private void PictureHelp_Click(object? sender, EventArgs e)
         {
-            Process.Start(new ProcessStartInfo("https://github.com/seerge/g-helper#custom-hotkey-actions") { UseShellExecute = true });
+            Process.Start(startInfo: new ProcessStartInfo(fileName: "https://github.com/seerge/g-helper#custom-hotkey-actions") { UseShellExecute = true });
         }
 
         private void CheckNoOverdrive_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("no_overdrive", (checkNoOverdrive.Checked ? 1 : 0));
-            screenControl.AutoScreen(true);
+            AppConfig.Set(name: "no_overdrive", value: (checkNoOverdrive.Checked ? 1 : 0));
+            screenControl.AutoScreen(force: true);
         }
 
 
         private void CheckTopmost_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("topmost", (checkTopmost.Checked ? 1 : 0));
+            AppConfig.Set(name: "topmost", value: (checkTopmost.Checked ? 1 : 0));
             Program.settingsForm.TopMost = checkTopmost.Checked;
         }
 
         private void CheckPower_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("keyboard_awake", (checkAwake.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_boot", (checkBoot.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_sleep", (checkSleep.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_shutdown", (checkShutdown.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_awake", value: (checkAwake.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_boot", value: (checkBoot.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_sleep", value: (checkSleep.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_shutdown", value: (checkShutdown.Checked ? 1 : 0));
 
-            AppConfig.Set("keyboard_awake_bar", (checkAwakeBar.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_boot_bar", (checkBootBar.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_sleep_bar", (checkSleepBar.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_shutdown_bar", (checkShutdownBar.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_awake_bar", value: (checkAwakeBar.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_boot_bar", value: (checkBootBar.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_sleep_bar", value: (checkSleepBar.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_shutdown_bar", value: (checkShutdownBar.Checked ? 1 : 0));
 
-            AppConfig.Set("keyboard_awake_lid", (checkAwakeLid.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_boot_lid", (checkBootLid.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_sleep_lid", (checkSleepLid.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_shutdown_lid", (checkShutdownLid.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_awake_lid", value: (checkAwakeLid.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_boot_lid", value: (checkBootLid.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_sleep_lid", value: (checkSleepLid.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_shutdown_lid", value: (checkShutdownLid.Checked ? 1 : 0));
 
-            AppConfig.Set("keyboard_awake_logo", (checkAwakeLogo.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_boot_logo", (checkBootLogo.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_sleep_logo", (checkSleepLogo.Checked ? 1 : 0));
-            AppConfig.Set("keyboard_shutdown_logo", (checkShutdownLogo.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_awake_logo", value: (checkAwakeLogo.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_boot_logo", value: (checkBootLogo.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_sleep_logo", value: (checkSleepLogo.Checked ? 1 : 0));
+            AppConfig.Set(name: "keyboard_shutdown_logo", value: (checkShutdownLogo.Checked ? 1 : 0));
 
             Aura.ApplyPower();
 
@@ -597,7 +597,7 @@ namespace GHelper
 
         private void ComboKeyboardSpeed_SelectedValueChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("aura_speed", (int)comboKeyboardSpeed.SelectedValue);
+            AppConfig.Set(name: "aura_speed", value: (int)comboKeyboardSpeed.SelectedValue);
             Aura.ApplyAura();
         }
 
@@ -619,7 +619,7 @@ namespace GHelper
 
         private void checkAutoToggleClamshellMode_CheckedChanged(object? sender, EventArgs e)
         {
-            AppConfig.Set("toggle_clamshell_mode", checkAutoToggleClamshellMode.Checked ? 1 : 0);
+            AppConfig.Set(name: "toggle_clamshell_mode", value: checkAutoToggleClamshellMode.Checked ? 1 : 0);
 
             if (checkAutoToggleClamshellMode.Checked)
             {

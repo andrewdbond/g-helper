@@ -20,26 +20,26 @@ namespace GHelper.Mode
 
         public ModeControl()
         {
-            reapplyTimer = new System.Timers.Timer(AppConfig.GetMode("reapply_time", 30) * 1000);
+            reapplyTimer = new System.Timers.Timer(interval: AppConfig.GetMode(name: "reapply_time", empty: 30) * 1000);
             reapplyTimer.Elapsed += ReapplyTimer_Elapsed;
             reapplyTimer.Enabled = false;
         }
 
         private void ReapplyTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            SetCPUTemp(AppConfig.GetMode("cpu_temp"), false);
+            SetCPUTemp(cpuTemp: AppConfig.GetMode(name: "cpu_temp"), log: false);
         }
 
         public void AutoPerformance(bool powerChanged = false)
         {
             var Plugged = SystemInformation.PowerStatus.PowerLineStatus;
 
-            int mode = AppConfig.Get("performance_" + (int)Plugged);
+            int mode = AppConfig.Get(name: "performance_" + (int)Plugged);
 
             if (mode != -1)
-                SetPerformanceMode(mode, powerChanged);
+                SetPerformanceMode(mode: mode, notify: powerChanged);
             else
-                SetPerformanceMode(Modes.GetCurrent());
+                SetPerformanceMode(mode: Modes.GetCurrent());
         }
 
 
@@ -47,11 +47,11 @@ namespace GHelper.Mode
         {
             ResetRyzen();
 
-            Program.acpi.DeviceSet(AsusACPI.PerformanceMode, Modes.GetCurrentBase(), "Mode");
+            Program.acpi.DeviceSet(DeviceID: AsusACPI.PerformanceMode, Status: Modes.GetCurrentBase(), logName: "Mode");
 
             // Default power mode
-            AppConfig.RemoveMode("powermode");
-            PowerNative.SetPowerMode(Modes.GetCurrentBase());
+            AppConfig.RemoveMode(name: "powermode");
+            PowerNative.SetPowerMode(mode: Modes.GetCurrentBase());
         }
 
         public void SetPerformanceMode(int mode = -1, bool notify = false)
@@ -60,51 +60,51 @@ namespace GHelper.Mode
             int oldMode = Modes.GetCurrent();
             if (mode < 0) mode = oldMode;
 
-            if (!Modes.Exists(mode)) mode = 0;
+            if (!Modes.Exists(mode: mode)) mode = 0;
 
             customFans = false;
             customPower = 0;
 
-            settings.ShowMode(mode);
+            settings.ShowMode(mode: mode);
             SetModeLabel();
 
-            Modes.SetCurrent(mode);
+            Modes.SetCurrent(mode: mode);
 
-            int status = Program.acpi.DeviceSet(AsusACPI.PerformanceMode, AppConfig.IsManualModeRequired() ? AsusACPI.PerformanceManual : Modes.GetBase(mode), "Mode");
+            int status = Program.acpi.DeviceSet(DeviceID: AsusACPI.PerformanceMode, Status: AppConfig.IsManualModeRequired() ? AsusACPI.PerformanceManual : Modes.GetBase(mode: mode), logName: "Mode");
 
             // Vivobook fallback
             if (status != 1)
             {
-                int vivoMode = Modes.GetBase(mode);
+                int vivoMode = Modes.GetBase(mode: mode);
                 if (vivoMode == 1) vivoMode = 2;
                 else if (vivoMode == 2) vivoMode = 1;
-                Program.acpi.DeviceSet(AsusACPI.VivoBookMode, vivoMode, "VivoMode");
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.VivoBookMode, Status: vivoMode, logName: "VivoMode");
             }
 
-            if (AppConfig.Is("xgm_fan") && Program.acpi.IsXGConnected()) XGM.Reset();
+            if (AppConfig.Is(name: "xgm_fan") && Program.acpi.IsXGConnected()) XGM.Reset();
 
             if (notify)
-                Program.toast.RunToast(Modes.GetCurrentName(), SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online ? ToastIcon.Charger : ToastIcon.Battery);
+                Program.toast.RunToast(text: Modes.GetCurrentName(), icon: SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online ? ToastIcon.Charger : ToastIcon.Battery);
 
             SetGPUClocks();
             AutoFans();
-            AutoPower(1000);
+            AutoPower(delay: 1000);
 
             // Power plan from config or defaulting to balanced
-            if (AppConfig.GetModeString("scheme") is not null)
-                PowerNative.SetPowerPlan(AppConfig.GetModeString("scheme"));
+            if (AppConfig.GetModeString(name: "scheme") is not null)
+                PowerNative.SetPowerPlan(scheme: AppConfig.GetModeString(name: "scheme"));
             else
                 PowerNative.SetBalancedPowerPlan();
 
             // Windows power mode
-            if (AppConfig.GetModeString("powermode") is not null)
-                PowerNative.SetPowerMode(AppConfig.GetModeString("powermode"));
+            if (AppConfig.GetModeString(name: "powermode") is not null)
+                PowerNative.SetPowerMode(scheme: AppConfig.GetModeString(name: "powermode"));
             else
-                PowerNative.SetPowerMode(Modes.GetBase(mode));
+                PowerNative.SetPowerMode(mode: Modes.GetBase(mode: mode));
 
             // CPU Boost setting override
-            if (AppConfig.GetMode("auto_boost") != -1)
-                PowerNative.SetCPUBoost(AppConfig.GetMode("auto_boost"));
+            if (AppConfig.GetMode(name: "auto_boost") != -1)
+                PowerNative.SetCPUBoost(boost: AppConfig.GetMode(name: "auto_boost"));
 
             //BatteryControl.SetBatteryChargeLimit();
 
@@ -121,58 +121,58 @@ namespace GHelper.Mode
 
         public void CyclePerformanceMode(bool back = false)
         {
-            SetPerformanceMode(Modes.GetNext(back), true);
+            SetPerformanceMode(mode: Modes.GetNext(back: back), notify: true);
         }
 
         public void AutoFans(bool force = false)
         {
             customFans = false;
 
-            if (AppConfig.IsMode("auto_apply") || force)
+            if (AppConfig.IsMode(name: "auto_apply") || force)
             {
 
                 bool xgmFan = false;
-                if (AppConfig.Is("xgm_fan") && Program.acpi.IsXGConnected())
+                if (AppConfig.Is(name: "xgm_fan") && Program.acpi.IsXGConnected())
                 {
-                    XGM.SetFan(AppConfig.GetFanConfig(AsusFan.XGM));
+                    XGM.SetFan(curve: AppConfig.GetFanConfig(device: AsusFan.XGM));
                     xgmFan = true;
                 }
 
-                int cpuResult = Program.acpi.SetFanCurve(AsusFan.CPU, AppConfig.GetFanConfig(AsusFan.CPU));
-                int gpuResult = Program.acpi.SetFanCurve(AsusFan.GPU, AppConfig.GetFanConfig(AsusFan.GPU));
+                int cpuResult = Program.acpi.SetFanCurve(device: AsusFan.CPU, curve: AppConfig.GetFanConfig(device: AsusFan.CPU));
+                int gpuResult = Program.acpi.SetFanCurve(device: AsusFan.GPU, curve: AppConfig.GetFanConfig(device: AsusFan.GPU));
 
-                if (AppConfig.Is("mid_fan"))
-                    Program.acpi.SetFanCurve(AsusFan.Mid, AppConfig.GetFanConfig(AsusFan.Mid));
+                if (AppConfig.Is(name: "mid_fan"))
+                    Program.acpi.SetFanCurve(device: AsusFan.Mid, curve: AppConfig.GetFanConfig(device: AsusFan.Mid));
 
 
                 // something went wrong, resetting to default profile
                 if (cpuResult != 1 || gpuResult != 1)
                 {
-                    cpuResult = Program.acpi.SetFanRange(AsusFan.CPU, AppConfig.GetFanConfig(AsusFan.CPU));
-                    gpuResult = Program.acpi.SetFanRange(AsusFan.GPU, AppConfig.GetFanConfig(AsusFan.GPU));
+                    cpuResult = Program.acpi.SetFanRange(device: AsusFan.CPU, curve: AppConfig.GetFanConfig(device: AsusFan.CPU));
+                    gpuResult = Program.acpi.SetFanRange(device: AsusFan.GPU, curve: AppConfig.GetFanConfig(device: AsusFan.GPU));
 
                     if (cpuResult != 1 || gpuResult != 1)
                     {
                         int mode = Modes.GetCurrentBase();
-                        Logger.WriteLine("ASUS BIOS rejected fan curve, resetting mode to " + mode);
-                        Program.acpi.DeviceSet(AsusACPI.PerformanceMode, mode, "Reset Mode");
-                        settings.LabelFansResult("ASUS BIOS rejected fan curve");
+                        Logger.WriteLine(logMessage: "ASUS BIOS rejected fan curve, resetting mode to " + mode);
+                        Program.acpi.DeviceSet(DeviceID: AsusACPI.PerformanceMode, Status: mode, logName: "Reset Mode");
+                        settings.LabelFansResult(text: "ASUS BIOS rejected fan curve");
                     }
                 }
                 else
                 {
-                    settings.LabelFansResult("");
+                    settings.LabelFansResult(text: "");
                     customFans = true;
                 }
 
                 // force set PPTs for missbehaving bios on FX507/517 series
-                if ((AppConfig.IsPowerRequired() || xgmFan) && !AppConfig.IsMode("auto_apply_power"))
+                if ((AppConfig.IsPowerRequired() || xgmFan) && !AppConfig.IsMode(name: "auto_apply_power"))
                 {
-                    Task.Run(async () =>
+                    Task.Run(function: async () =>
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(1));
-                        Program.acpi.DeviceSet(AsusACPI.PPT_TotalA0, 80, "PowerLimit Fix A0");
-                        Program.acpi.DeviceSet(AsusACPI.PPT_APUA3, 80, "PowerLimit Fix A3");
+                        await Task.Delay(delay: TimeSpan.FromSeconds(value: 1));
+                        Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_TotalA0, Status: 80, logName: "PowerLimit Fix A0");
+                        Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_APUA3, Status: 80, logName: "PowerLimit Fix A3");
                     });
                 }
 
@@ -187,8 +187,8 @@ namespace GHelper.Mode
 
             customPower = 0;
 
-            bool applyPower = AppConfig.IsMode("auto_apply_power");
-            bool applyFans = AppConfig.IsMode("auto_apply");
+            bool applyPower = AppConfig.IsMode(name: "auto_apply_power");
+            bool applyFans = AppConfig.IsMode(name: "auto_apply");
             //bool applyGPU = true;
 
             if (applyPower && !applyFans)
@@ -197,26 +197,26 @@ namespace GHelper.Mode
                 if (AppConfig.IsFanRequired())
                 {
                     delay = 500;
-                    AutoFans(true);
+                    AutoFans(force: true);
                 }
 
                 // Fix for models that don't support PPT settings in all modes, setting a "manual" mode for them
                 if (AppConfig.IsManualModeRequired())
                 {
-                    AutoFans(true);
+                    AutoFans(force: true);
                 }
             }
 
             if (delay > 0)
             {
-                var timer = new System.Timers.Timer(delay);
+                var timer = new System.Timers.Timer(interval: delay);
                 timer.Elapsed += delegate
                 {
                     timer.Stop();
                     timer.Dispose();
 
                     if (applyPower) SetPower();
-                    Thread.Sleep(500);
+                    Thread.Sleep(millisecondsTimeout: 500);
                     SetGPUPower();
                     AutoRyzen();
                 };
@@ -224,7 +224,7 @@ namespace GHelper.Mode
             }
             else
             {
-                if (applyPower) SetPower(true);
+                if (applyPower) SetPower(launchAsAdmin: true);
                 SetGPUPower();
                 AutoRyzen();
             }
@@ -233,7 +233,7 @@ namespace GHelper.Mode
 
         public void SetModeLabel()
         {
-            settings.SetModeLabel(Properties.Strings.PerformanceMode + ": " + Modes.GetCurrentName() + (customFans ? "+" : "") + ((customPower > 0) ? " " + customPower + "W" : ""));
+            settings.SetModeLabel(modeText: Properties.Strings.PerformanceMode + ": " + Modes.GetCurrentName() + (customFans ? "+" : "") + ((customPower > 0) ? " " + customPower + "W" : ""));
         }
 
         public void SetPower(bool launchAsAdmin = false)
@@ -241,10 +241,10 @@ namespace GHelper.Mode
 
             bool allAMD = Program.acpi.IsAllAmdPPT();
 
-            int limit_total = AppConfig.GetMode("limit_total");
-            int limit_cpu = AppConfig.GetMode("limit_cpu");
-            int limit_slow = AppConfig.GetMode("limit_slow");
-            int limit_fast = AppConfig.GetMode("limit_fast");
+            int limit_total = AppConfig.GetMode(name: "limit_total");
+            int limit_cpu = AppConfig.GetMode(name: "limit_cpu");
+            int limit_slow = AppConfig.GetMode(name: "limit_slow");
+            int limit_fast = AppConfig.GetMode(name: "limit_fast");
 
             if (limit_slow < 0 || allAMD) limit_slow = limit_total;
 
@@ -260,11 +260,11 @@ namespace GHelper.Mode
             if (limit_slow > AsusACPI.MaxTotal) return;
             if (limit_slow < AsusACPI.MinTotal) return;
 
-            // SPL and SPPT 
-            if (Program.acpi.DeviceGet(AsusACPI.PPT_TotalA0) >= 0)
+            // SPL and SPPT
+            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_TotalA0) >= 0)
             {
-                Program.acpi.DeviceSet(AsusACPI.PPT_TotalA0, limit_total, "PowerLimit A0");
-                Program.acpi.DeviceSet(AsusACPI.PPT_APUA3, limit_slow, "PowerLimit A3");
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_TotalA0, Status: limit_total, logName: "PowerLimit A0");
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_APUA3, Status: limit_slow, logName: "PowerLimit A3");
                 customPower = limit_total;
             }
             else if (RyzenControl.IsAMD())
@@ -272,35 +272,35 @@ namespace GHelper.Mode
 
                 if (ProcessHelper.IsUserAdministrator())
                 {
-                    var stapmResult = SendCommand.set_stapm_limit((uint)limit_total * 1000);
-                    Logger.WriteLine($"STAPM: {limit_total} {stapmResult}");
+                    var stapmResult = SendCommand.set_stapm_limit(value: (uint)limit_total * 1000);
+                    Logger.WriteLine(logMessage: $"STAPM: {limit_total} {stapmResult}");
 
-                    var stapmResult2 = SendCommand.set_stapm2_limit((uint)limit_total * 1000);
-                    Logger.WriteLine($"STAPM2: {limit_total} {stapmResult2}");
+                    var stapmResult2 = SendCommand.set_stapm2_limit(value: (uint)limit_total * 1000);
+                    Logger.WriteLine(logMessage: $"STAPM2: {limit_total} {stapmResult2}");
 
-                    var slowResult = SendCommand.set_slow_limit((uint)limit_total * 1000);
-                    Logger.WriteLine($"SLOW: {limit_total} {slowResult}");
+                    var slowResult = SendCommand.set_slow_limit(value: (uint)limit_total * 1000);
+                    Logger.WriteLine(logMessage: $"SLOW: {limit_total} {slowResult}");
 
-                    var fastResult = SendCommand.set_fast_limit((uint)limit_total * 1000);
-                    Logger.WriteLine($"FAST: {limit_total} {fastResult}");
+                    var fastResult = SendCommand.set_fast_limit(value: (uint)limit_total * 1000);
+                    Logger.WriteLine(logMessage: $"FAST: {limit_total} {fastResult}");
 
                     customPower = limit_total;
                 }
                 else if (launchAsAdmin)
                 {
-                    ProcessHelper.RunAsAdmin("cpu");
+                    ProcessHelper.RunAsAdmin(param: "cpu");
                     return;
                 }
             }
 
             if (Program.acpi.IsAllAmdPPT()) // CPU limit all amd models
             {
-                Program.acpi.DeviceSet(AsusACPI.PPT_CPUB0, limit_cpu, "PowerLimit B0");
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_CPUB0, Status: limit_cpu, logName: "PowerLimit B0");
                 customPower = limit_cpu;
             }
-            else if (Program.acpi.DeviceGet(AsusACPI.PPT_APUC1) >= 0) // FPPT boost for non all-amd models
+            else if (Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_APUC1) >= 0) // FPPT boost for non all-amd models
             {
-                Program.acpi.DeviceSet(AsusACPI.PPT_APUC1, limit_fast, "PowerLimit C1");
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_APUC1, Status: limit_fast, logName: "PowerLimit C1");
                 customPower = limit_fast;
             }
 
@@ -311,31 +311,31 @@ namespace GHelper.Mode
 
         public void SetGPUClocks(bool launchAsAdmin = true)
         {
-            Task.Run(() =>
+            Task.Run(action: () =>
             {
 
-                int core = AppConfig.GetMode("gpu_core");
-                int memory = AppConfig.GetMode("gpu_memory");
-                int clock_limit = AppConfig.GetMode("gpu_clock_limit");
+                int core = AppConfig.GetMode(name: "gpu_core");
+                int memory = AppConfig.GetMode(name: "gpu_memory");
+                int clock_limit = AppConfig.GetMode(name: "gpu_clock_limit");
 
                 if (core == -1 && memory == -1 && clock_limit == -1) return;
 
                 //if ((gpu_core > -5 && gpu_core < 5) && (gpu_memory > -5 && gpu_memory < 5)) launchAsAdmin = false;
 
-                if (Program.acpi.DeviceGet(AsusACPI.GPUEco) == 1) { Logger.WriteLine("Clocks: Eco"); return; }
-                if (HardwareControl.GpuControl is null) { Logger.WriteLine("Clocks: NoGPUControl"); return; }
-                if (!HardwareControl.GpuControl!.IsNvidia) { Logger.WriteLine("Clocks: NotNvidia"); return; }
+                if (Program.acpi.DeviceGet(DeviceID: AsusACPI.GPUEco) == 1) { Logger.WriteLine(logMessage: "Clocks: Eco"); return; }
+                if (HardwareControl.GpuControl is null) { Logger.WriteLine(logMessage: "Clocks: NoGPUControl"); return; }
+                if (!HardwareControl.GpuControl!.IsNvidia) { Logger.WriteLine(logMessage: "Clocks: NotNvidia"); return; }
 
                 using NvidiaGpuControl nvControl = (NvidiaGpuControl)HardwareControl.GpuControl;
                 try
                 {
-                    int statusLimit = nvControl.SetMaxGPUClock(clock_limit);
-                    int statusClocks = nvControl.SetClocks(core, memory);
-                    if ((statusLimit != 0 || statusClocks != 0) && launchAsAdmin) ProcessHelper.RunAsAdmin("gpu");
+                    int statusLimit = nvControl.SetMaxGPUClock(clock: clock_limit);
+                    int statusClocks = nvControl.SetClocks(core: core, memory: memory);
+                    if ((statusLimit != 0 || statusClocks != 0) && launchAsAdmin) ProcessHelper.RunAsAdmin(param: "gpu");
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLine("Clocks Error:" + ex.ToString());
+                    Logger.WriteLine(logMessage: "Clocks Error:" + ex.ToString());
                 }
 
                 settings.GPUInit();
@@ -345,18 +345,18 @@ namespace GHelper.Mode
         public void SetGPUPower()
         {
 
-            int gpu_boost = AppConfig.GetMode("gpu_boost");
-            int gpu_temp = AppConfig.GetMode("gpu_temp");
+            int gpu_boost = AppConfig.GetMode(name: "gpu_boost");
+            int gpu_temp = AppConfig.GetMode(name: "gpu_temp");
 
 
             if (gpu_boost < AsusACPI.MinGPUBoost || gpu_boost > AsusACPI.MaxGPUBoost) return;
             if (gpu_temp < AsusACPI.MinGPUTemp || gpu_temp > AsusACPI.MaxGPUTemp) return;
 
-            if (Program.acpi.DeviceGet(AsusACPI.PPT_GPUC0) >= 0)
-                Program.acpi.DeviceSet(AsusACPI.PPT_GPUC0, gpu_boost, "PowerLimit C0");
+            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_GPUC0) >= 0)
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_GPUC0, Status: gpu_boost, logName: "PowerLimit C0");
 
-            if (Program.acpi.DeviceGet(AsusACPI.PPT_GPUC2) >= 0)
-                Program.acpi.DeviceSet(AsusACPI.PPT_GPUC2, gpu_temp, "PowerLimit C2");
+            if (Program.acpi.DeviceGet(DeviceID: AsusACPI.PPT_GPUC2) >= 0)
+                Program.acpi.DeviceSet(DeviceID: AsusACPI.PPT_GPUC2, Status: gpu_temp, logName: "PowerLimit C2");
 
         }
 
@@ -364,13 +364,13 @@ namespace GHelper.Mode
         {
             if (cpuTemp >= RyzenControl.MinTemp && cpuTemp < RyzenControl.MaxTemp)
             {
-                var resultCPU = SendCommand.set_tctl_temp((uint)cpuTemp);
-                if (log) Logger.WriteLine($"CPU Temp: {cpuTemp} {resultCPU}");
+                var resultCPU = SendCommand.set_tctl_temp(value: (uint)cpuTemp);
+                if (log) Logger.WriteLine(logMessage: $"CPU Temp: {cpuTemp} {resultCPU}");
 
-                var restultAPU = SendCommand.set_apu_skin_temp_limit((uint)cpuTemp);
-                if (log) Logger.WriteLine($"APU Temp: {cpuTemp} {restultAPU}");
+                var restultAPU = SendCommand.set_apu_skin_temp_limit(value: (uint)cpuTemp);
+                if (log) Logger.WriteLine(logMessage: $"APU Temp: {cpuTemp} {restultAPU}");
 
-                reapplyTimer.Enabled = AppConfig.IsMode("auto_uv");
+                reapplyTimer.Enabled = AppConfig.IsMode(name: "auto_uv");
 
             }
             else
@@ -385,8 +385,8 @@ namespace GHelper.Mode
 
             if (cpuUV >= RyzenControl.MinCPUUV && cpuUV <= RyzenControl.MaxCPUUV)
             {
-                var uvResult = SendCommand.set_coall(cpuUV);
-                Logger.WriteLine($"UV: {cpuUV} {uvResult}");
+                var uvResult = SendCommand.set_coall(value: cpuUV);
+                Logger.WriteLine(logMessage: $"UV: {cpuUV} {uvResult}");
                 if (uvResult == Smu.Status.OK) _cpuUV = cpuUV;
             }
         }
@@ -397,8 +397,8 @@ namespace GHelper.Mode
 
             if (igpuUV >= RyzenControl.MinIGPUUV && igpuUV <= RyzenControl.MaxIGPUUV)
             {
-                var iGPUResult = SendCommand.set_cogfx(igpuUV);
-                Logger.WriteLine($"iGPU UV: {igpuUV} {iGPUResult}");
+                var iGPUResult = SendCommand.set_cogfx(value: igpuUV);
+                Logger.WriteLine(logMessage: $"iGPU UV: {igpuUV} {iGPUResult}");
                 if (iGPUResult == Smu.Status.OK) _igpuUV = igpuUV;
             }
         }
@@ -408,33 +408,33 @@ namespace GHelper.Mode
         {
             if (!ProcessHelper.IsUserAdministrator())
             {
-                if (launchAsAdmin) ProcessHelper.RunAsAdmin("uv");
+                if (launchAsAdmin) ProcessHelper.RunAsAdmin(param: "uv");
                 return;
             }
 
             try
             {
-                SetUV(AppConfig.GetMode("cpu_uv", 0));
-                SetUViGPU(AppConfig.GetMode("igpu_uv", 0));
-                SetCPUTemp(AppConfig.GetMode("cpu_temp"));
+                SetUV(cpuUV: AppConfig.GetMode(name: "cpu_uv", empty: 0));
+                SetUViGPU(igpuUV: AppConfig.GetMode(name: "igpu_uv", empty: 0));
+                SetCPUTemp(cpuTemp: AppConfig.GetMode(name: "cpu_temp"));
             }
             catch (Exception ex)
             {
-                Logger.WriteLine("UV Error: " + ex.ToString());
+                Logger.WriteLine(logMessage: "UV Error: " + ex.ToString());
             }
         }
 
         public void ResetRyzen()
         {
-            if (_cpuUV != 0) SetUV(0);
-            if (_igpuUV != 0) SetUViGPU(0);
+            if (_cpuUV != 0) SetUV(cpuUV: 0);
+            if (_igpuUV != 0) SetUViGPU(igpuUV: 0);
         }
 
         public void AutoRyzen()
         {
             if (!RyzenControl.IsAMD()) return;
 
-            if (AppConfig.IsMode("auto_uv")) SetRyzen();
+            if (AppConfig.IsMode(name: "auto_uv")) SetRyzen();
             else ResetRyzen();
         }
 

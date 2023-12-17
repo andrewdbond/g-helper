@@ -8,22 +8,22 @@ namespace GHelper.Helpers
         public static Color GetWeightedAverage(Color color1, Color color2, float weight)
         {
 
-            int red = (int)Math.Round(color1.R * (1 - weight) + color2.R * weight);
-            int green = (int)Math.Round(color1.G * (1 - weight) + color2.G * weight);
-            int blue = (int)Math.Round(color1.B * (1 - weight) + color2.B * weight);
+            int red = (int)Math.Round(a: color1.R * (1 - weight) + color2.R * weight);
+            int green = (int)Math.Round(a: color1.G * (1 - weight) + color2.G * weight);
+            int blue = (int)Math.Round(a: color1.B * (1 - weight) + color2.B * weight);
 
-            red = Math.Min(255, Math.Max(0, red));
-            green = Math.Min(255, Math.Max(0, green));
-            blue = Math.Min(255, Math.Max(0, blue));
+            red = Math.Min(val1: 255, val2: Math.Max(val1: 0, val2: red));
+            green = Math.Min(val1: 255, val2: Math.Max(val1: 0, val2: green));
+            blue = Math.Min(val1: 255, val2: Math.Max(val1: 0, val2: blue));
 
-            return Color.FromArgb(red, green, blue);
+            return Color.FromArgb(red: red, green: green, blue: blue);
         }
 
         public static Color GetMidColor(Color color1, Color color2)
         {
-            return Color.FromArgb((color1.R + color2.R) / 2,
-                (color1.G + color2.G) / 2,
-                (color1.B + color2.B) / 2);
+            return Color.FromArgb(red: (color1.R + color2.R) / 2,
+                green: (color1.G + color2.G) / 2,
+                blue: (color1.B + color2.B) / 2);
         }
 
         public static Color GetDominantColor(Bitmap bmp)
@@ -40,7 +40,7 @@ namespace GHelper.Helpers
             {
                 for (int y = 0; y < bmp.Height; y++)
                 {
-                    Color clr = bmp.GetPixel(x, y);
+                    Color clr = bmp.GetPixel(x: x, y: y);
 
                     r += clr.R;
                     g += clr.G;
@@ -55,7 +55,7 @@ namespace GHelper.Helpers
             g /= total;
             b /= total;
 
-            return Color.FromArgb(r, g, b);
+            return Color.FromArgb(red: r, green: g, blue: b);
         }
 
         public class HSV
@@ -80,7 +80,7 @@ namespace GHelper.Helpers
                 }
                 else
                 {
-                    var i = Convert.ToInt32(Math.Floor(hue));
+                    var i = Convert.ToInt32(value: Math.Floor(d: hue));
                     var f = hue - i;
                     var p = value * (1 - saturation);
                     var q = value * (1 - saturation * f);
@@ -92,7 +92,7 @@ namespace GHelper.Helpers
                     blue = new[] { p, p, t, value, value, q }[mod];
                 }
 
-                return Color.FromArgb(Convert.ToInt32(red * 255), Convert.ToInt32(green * 255), Convert.ToInt32(blue * 255));
+                return Color.FromArgb(red: Convert.ToInt32(value: red * 255), green: Convert.ToInt32(value: green * 255), blue: Convert.ToInt32(value: blue * 255));
             }
 
             public static HSV ToHSV(Color rgb)
@@ -100,8 +100,8 @@ namespace GHelper.Helpers
                 double red = rgb.R / 255.0;
                 double green = rgb.G / 255.0;
                 double blue = rgb.B / 255.0;
-                var min = Math.Min(red, Math.Min(green, blue));
-                var max = Math.Max(red, Math.Max(green, blue));
+                var min = Math.Min(val1: red, val2: Math.Min(val1: green, val2: blue));
+                var max = Math.Max(val1: red, val2: Math.Max(val1: green, val2: blue));
                 var delta = max - min;
                 double hue;
                 double saturation = 0;
@@ -131,8 +131,8 @@ namespace GHelper.Helpers
             {
                 if (rgb.R == rgb.G && rgb.G == rgb.B)
                     return rgb;
-                var hsv_color = ToHSV(rgb);
-                hsv_color.Saturation = Math.Min(hsv_color.Saturation + increse, 1.00f);
+                var hsv_color = ToHSV(rgb: rgb);
+                hsv_color.Saturation = Math.Min(val1: hsv_color.Saturation + increse, val2: 1.00f);
                 return hsv_color.ToRGB();
             }
 
@@ -148,7 +148,7 @@ namespace GHelper.Helpers
 
             Color Interpolate()
             {
-                clr_ = ColorInterpolator.InterpolateBetween(clr, clr_, smooth);
+                clr_ = ColorInterpolator.InterpolateBetween(endPoint1: clr, endPoint2: clr_, lambda: smooth);
                 return clr_;
             }
 
@@ -166,24 +166,24 @@ namespace GHelper.Helpers
                 public static Color InterpolateBetween(Color endPoint1, Color endPoint2, double lambda)
                 {
                     if (lambda < 0 || lambda > 1)
-                        throw new ArgumentOutOfRangeException("lambda");
+                        throw new ArgumentOutOfRangeException(paramName: "lambda");
 
                     if (endPoint1 != endPoint2)
                     {
                         return Color.FromArgb(
-                        InterpolateComponent(endPoint1, endPoint2, lambda, _redSelector),
-                        InterpolateComponent(endPoint1, endPoint2, lambda, _greenSelector),
-                        InterpolateComponent(endPoint1, endPoint2, lambda, _blueSelector)
+                        red: InterpolateComponent(end1: endPoint1, end2: endPoint2, lambda: lambda, selector: _redSelector),
+                        green: InterpolateComponent(end1: endPoint1, end2: endPoint2, lambda: lambda, selector: _greenSelector),
+                        blue: InterpolateComponent(end1: endPoint1, end2: endPoint2, lambda: lambda, selector: _blueSelector)
                         );
                     }
 
                     return endPoint1;
                 }
 
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                [MethodImpl(methodImplOptions: MethodImplOptions.AggressiveInlining)]
                 static byte InterpolateComponent(Color end1, Color end2, double lambda, ComponentSelector selector)
                 {
-                    return (byte)(selector(end1) + (selector(end2) - selector(end1)) * lambda);
+                    return (byte)(selector(color: end1) + (selector(color: end2) - selector(color: end1)) * lambda);
                 }
             }
 

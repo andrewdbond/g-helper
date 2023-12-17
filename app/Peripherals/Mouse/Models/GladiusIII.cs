@@ -3,11 +3,11 @@
     //P706_Wireless
     public class GladiusIII : AsusMouse
     {
-        public GladiusIII() : base(0x0B05, 0x197F, "mi_00", true)
+        public GladiusIII() : base(vendorId: 0x0B05, productId: 0x197F, path: "mi_00", wireless: true)
         {
         }
 
-        protected GladiusIII(ushort vendorId, bool wireless) : base(0x0B05, vendorId, "mi_00", wireless)
+        protected GladiusIII(ushort vendorId, bool wireless) : base(vendorId: 0x0B05, productId: vendorId, path: "mi_00", wireless: wireless)
         {
         }
 
@@ -79,7 +79,7 @@
 
     public class GladiusIIIWired : GladiusIII
     {
-        public GladiusIIIWired() : base(0x197d, false)
+        public GladiusIIIWired() : base(vendorId: 0x197d, wireless: false)
         {
         }
 

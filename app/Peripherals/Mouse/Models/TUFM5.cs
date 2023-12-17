@@ -3,7 +3,7 @@
     //P304
     public class TUFM5 : AsusMouse
     {
-        public TUFM5() : base(0x0B05, 0x1898, "mi_02", false)
+        public TUFM5() : base(vendorId: 0x0B05, productId: 0x1898, path: "mi_02", wireless: false)
         {
         }
 
@@ -45,7 +45,7 @@
             {
                 return LightingMode.React;
             }
-            return base.LightingModeForIndex(lightingMode);
+            return base.LightingModeForIndex(lightingMode: lightingMode);
 
         }
 

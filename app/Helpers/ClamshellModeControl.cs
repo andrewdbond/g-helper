@@ -17,7 +17,7 @@ namespace GHelper.Helpers
         {
             var devices = ScreenInterrogatory.GetAllDevices().ToArray();
 
-            string internalName = AppConfig.GetString("internal_display");
+            string internalName = AppConfig.GetString(name: "internal_display");
 
             foreach (var device in devices)
             {
@@ -25,7 +25,7 @@ namespace GHelper.Helpers
                     device.outputTechnology != ScreenInterrogatory.DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY.DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED
                     && device.monitorFriendlyDeviceName != internalName)
                 {
-                    Logger.WriteLine("Found external screen: " + device.monitorFriendlyDeviceName + ":" + device.outputTechnology.ToString());
+                    Logger.WriteLine(logMessage: "Found external screen: " + device.monitorFriendlyDeviceName + ":" + device.outputTechnology.ToString());
 
                     //Already found one, we do not have to check whether there are more
                     return true;
@@ -38,7 +38,7 @@ namespace GHelper.Helpers
 
         public bool IsClamshellEnabled()
         {
-            return AppConfig.Is("toggle_clamshell_mode");
+            return AppConfig.Is(name: "toggle_clamshell_mode");
         }
 
         public bool IsChargerConnected()
@@ -69,14 +69,14 @@ namespace GHelper.Helpers
         }
         public static void DisableClamshellMode()
         {
-            PowerNative.SetLidAction(GetDefaultLidAction(), true);
-            Logger.WriteLine("Disengaging Clamshell Mode");
+            PowerNative.SetLidAction(action: GetDefaultLidAction(), acOnly: true);
+            Logger.WriteLine(logMessage: "Disengaging Clamshell Mode");
         }
 
         public static void EnableClamshellMode()
         {
-            PowerNative.SetLidAction(0, true);
-            Logger.WriteLine("Engaging Clamshell Mode");
+            PowerNative.SetLidAction(action: 0, acOnly: true);
+            Logger.WriteLine(logMessage: "Engaging Clamshell Mode");
         }
 
         public void UnregisterDisplayEvents()
@@ -91,7 +91,7 @@ namespace GHelper.Helpers
 
         private void SystemEvents_DisplaySettingsChanged(object? sender, EventArgs e)
         {
-            Logger.WriteLine("Display configuration changed.");
+            Logger.WriteLine(logMessage: "Display configuration changed.");
 
             if (IsClamshellEnabled())
                 ToggleLidAction();
@@ -103,19 +103,19 @@ namespace GHelper.Helpers
 
         private static int CheckAndSaveLidAction()
         {
-            if (AppConfig.Get("clamshell_default_lid_action", -1) != -1)
+            if (AppConfig.Get(name: "clamshell_default_lid_action", empty: -1) != -1)
             {
                 //Seting was alredy set. Do not touch it
-                return AppConfig.Get("clamshell_default_lid_action", -1);
+                return AppConfig.Get(name: "clamshell_default_lid_action", empty: -1);
             }
 
-            int val = PowerNative.GetLidAction(true);
+            int val = PowerNative.GetLidAction(ac: true);
             //If it is 0 then it is likely already set by clamshell mdoe
             //If 0 was set by the user, then why do they even use clamshell mode?
             //We only care about hibernate or shutdown setting here
             if (val == 2 || val == 3)
             {
-                AppConfig.Set("clamshell_default_lid_action", val);
+                AppConfig.Set(name: "clamshell_default_lid_action", value: val);
                 return val;
             }
 
@@ -129,7 +129,7 @@ namespace GHelper.Helpers
         //3 = Shutdown
         private static int GetDefaultLidAction()
         {
-            int val = AppConfig.Get("clamshell_default_lid_action", 1);
+            int val = AppConfig.Get(name: "clamshell_default_lid_action", empty: 1);
 
             if (val < 0 || val > 3)
             {

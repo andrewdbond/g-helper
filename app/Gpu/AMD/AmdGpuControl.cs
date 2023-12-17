@@ -17,25 +17,25 @@ public class AmdGpuControl : IGpuControl
 
     private ADLAdapterInfo? FindByType(ADLAsicFamilyType type = ADLAsicFamilyType.Discrete)
     {
-        ADL2_Adapter_NumberOfAdapters_Get(_adlContextHandle, out int numberOfAdapters);
+        ADL2_Adapter_NumberOfAdapters_Get(adlContextHandle: _adlContextHandle, numAdapters: out int numberOfAdapters);
         if (numberOfAdapters <= 0)
             return null;
 
         ADLAdapterInfoArray osAdapterInfoData = new();
-        int osAdapterInfoDataSize = Marshal.SizeOf(osAdapterInfoData);
-        nint AdapterBuffer = Marshal.AllocCoTaskMem(osAdapterInfoDataSize);
-        Marshal.StructureToPtr(osAdapterInfoData, AdapterBuffer, false);
-        if (ADL2_Adapter_AdapterInfo_Get(_adlContextHandle, AdapterBuffer, osAdapterInfoDataSize) != Adl2.ADL_SUCCESS)
+        int osAdapterInfoDataSize = Marshal.SizeOf(structure: osAdapterInfoData);
+        nint AdapterBuffer = Marshal.AllocCoTaskMem(cb: osAdapterInfoDataSize);
+        Marshal.StructureToPtr(structure: osAdapterInfoData, ptr: AdapterBuffer, fDeleteOld: false);
+        if (ADL2_Adapter_AdapterInfo_Get(adlContextHandle: _adlContextHandle, info: AdapterBuffer, inputSize: osAdapterInfoDataSize) != Adl2.ADL_SUCCESS)
             return null;
 
-        osAdapterInfoData = (ADLAdapterInfoArray)Marshal.PtrToStructure(AdapterBuffer, osAdapterInfoData.GetType())!;
+        osAdapterInfoData = (ADLAdapterInfoArray)Marshal.PtrToStructure(ptr: AdapterBuffer, structureType: osAdapterInfoData.GetType())!;
 
         const int amdVendorId = 1002;
 
         // Determine which GPU is internal discrete AMD GPU
         ADLAdapterInfo internalDiscreteAdapter =
             osAdapterInfoData.ADLAdapterInfo
-                .FirstOrDefault(adapter =>
+                .FirstOrDefault(predicate: adapter =>
                 {
                     if (adapter.Exist == 0 || adapter.Present == 0)
                         return false;
@@ -43,7 +43,7 @@ public class AmdGpuControl : IGpuControl
                     if (adapter.VendorID != amdVendorId)
                         return false;
 
-                    if (ADL2_Adapter_ASICFamilyType_Get(_adlContextHandle, adapter.AdapterIndex, out ADLAsicFamilyType asicFamilyType, out int asicFamilyTypeValids) != Adl2.ADL_SUCCESS)
+                    if (ADL2_Adapter_ASICFamilyType_Get(adlContextHandle: _adlContextHandle, adapterIndex: adapter.AdapterIndex, asicFamilyType: out ADLAsicFamilyType asicFamilyType, asicFamilyTypeValids: out int asicFamilyTypeValids) != Adl2.ADL_SUCCESS)
                         return false;
 
                     asicFamilyType = (ADLAsicFamilyType)((int)asicFamilyType & asicFamilyTypeValids);
@@ -63,10 +63,10 @@ public class AmdGpuControl : IGpuControl
         if (!Adl2.Load())
             return;
 
-        if (Adl2.ADL2_Main_Control_Create(1, out _adlContextHandle) != Adl2.ADL_SUCCESS)
+        if (Adl2.ADL2_Main_Control_Create(enumConnectedAdapters: 1, adlContextHandle: out _adlContextHandle) != Adl2.ADL_SUCCESS)
             return;
 
-        ADLAdapterInfo? internalDiscreteAdapter = FindByType(ADLAsicFamilyType.Discrete);
+        ADLAdapterInfo? internalDiscreteAdapter = FindByType(type: ADLAsicFamilyType.Discrete);
 
         if (internalDiscreteAdapter is not null)
         {
@@ -83,7 +83,7 @@ public class AmdGpuControl : IGpuControl
         if (!IsValid)
             return null;
 
-        if (ADL2_New_QueryPMLogData_Get(_adlContextHandle, _internalDiscreteAdapter.AdapterIndex, out ADLPMLogDataOutput adlpmLogDataOutput) != Adl2.ADL_SUCCESS)
+        if (ADL2_New_QueryPMLogData_Get(adlContextHandle: _adlContextHandle, adapterIndex: _internalDiscreteAdapter.AdapterIndex, adlpmLogDataOutput: out ADLPMLogDataOutput adlpmLogDataOutput) != Adl2.ADL_SUCCESS)
             return null;
 
         ADLSingleSensorData temperatureSensor = adlpmLogDataOutput.Sensors[(int)ADLSensorType.PMLOG_TEMPERATURE_EDGE];
@@ -98,7 +98,7 @@ public class AmdGpuControl : IGpuControl
     {
         if (!IsValid) return null;
 
-        if (ADL2_New_QueryPMLogData_Get(_adlContextHandle, _internalDiscreteAdapter.AdapterIndex, out ADLPMLogDataOutput adlpmLogDataOutput) != Adl2.ADL_SUCCESS)
+        if (ADL2_New_QueryPMLogData_Get(adlContextHandle: _adlContextHandle, adapterIndex: _internalDiscreteAdapter.AdapterIndex, adlpmLogDataOutput: out ADLPMLogDataOutput adlpmLogDataOutput) != Adl2.ADL_SUCCESS)
             return null;
 
         ADLSingleSensorData gpuUsage = adlpmLogDataOutput.Sensors[(int)ADLSensorType.PMLOG_INFO_ACTIVITY_GFX];
@@ -114,10 +114,10 @@ public class AmdGpuControl : IGpuControl
     {
         if (_adlContextHandle == nint.Zero) return false;
 
-        ADLAdapterInfo? iGPU = FindByType(ADLAsicFamilyType.Integrated);
+        ADLAdapterInfo? iGPU = FindByType(type: ADLAsicFamilyType.Integrated);
         if (iGPU is null) return false;
 
-        return ADL2_Adapter_VariBrightEnable_Set(_adlContextHandle, ((ADLAdapterInfo)iGPU).AdapterIndex, enabled) == Adl2.ADL_SUCCESS;
+        return ADL2_Adapter_VariBrightEnable_Set(context: _adlContextHandle, iAdapterIndex: ((ADLAdapterInfo)iGPU).AdapterIndex, iEnabled: enabled) == Adl2.ADL_SUCCESS;
 
     }
 
@@ -127,10 +127,10 @@ public class AmdGpuControl : IGpuControl
 
         if (_adlContextHandle == nint.Zero) return false;
 
-        ADLAdapterInfo? iGPU = FindByType(ADLAsicFamilyType.Integrated);
+        ADLAdapterInfo? iGPU = FindByType(type: ADLAsicFamilyType.Integrated);
         if (iGPU is null) return false;
 
-        if (ADL2_Adapter_VariBright_Caps(_adlContextHandle, ((ADLAdapterInfo)iGPU).AdapterIndex, out int supportedOut, out int enabledOut, out int version) != Adl2.ADL_SUCCESS)
+        if (ADL2_Adapter_VariBright_Caps(context: _adlContextHandle, iAdapterIndex: ((ADLAdapterInfo)iGPU).AdapterIndex, iSupported: out int supportedOut, iEnabled: out int enabledOut, iVersion: out int version) != Adl2.ADL_SUCCESS)
             return false;
 
         supported = supportedOut;
@@ -144,7 +144,7 @@ public class AmdGpuControl : IGpuControl
         if (!IsValid) return null;
 
         ADLODNPerformanceLevels performanceLevels = new();
-        ADL2_OverdriveN_SystemClocks_Get(_adlContextHandle, _internalDiscreteAdapter.AdapterIndex, ref performanceLevels);
+        ADL2_OverdriveN_SystemClocks_Get(context: _adlContextHandle, adapterIndex: _internalDiscreteAdapter.AdapterIndex, performanceLevels: ref performanceLevels);
 
         return performanceLevels;
     }
@@ -160,10 +160,10 @@ public class AmdGpuControl : IGpuControl
         try
         {
             // Get switchable graphics applications information
-            var result = ADL2_SwitchableGraphics_Applications_Get(_adlContextHandle, 2, out appCount, out appInfoPtr);
+            var result = ADL2_SwitchableGraphics_Applications_Get(context: _adlContextHandle, iListType: 2, lpNumApps: out appCount, lppAppList: out appInfoPtr);
             if (result != 0)
             {
-                throw new Exception("Failed to get switchable graphics applications. Error code: " + result);
+                throw new Exception(message: "Failed to get switchable graphics applications. Error code: " + result);
             }
 
             // Convert the application data pointers to an array of structs
@@ -172,8 +172,8 @@ public class AmdGpuControl : IGpuControl
 
             for (int i = 0; i < appCount; i++)
             {
-                appInfoArray[i] = Marshal.PtrToStructure<ADLSGApplicationInfo>(currentPtr);
-                currentPtr = nint.Add(currentPtr, Marshal.SizeOf<ADLSGApplicationInfo>());
+                appInfoArray[i] = Marshal.PtrToStructure<ADLSGApplicationInfo>(ptr: currentPtr);
+                currentPtr = nint.Add(pointer: currentPtr, offset: Marshal.SizeOf<ADLSGApplicationInfo>());
             }
 
             var appNames = new List<string>();
@@ -182,29 +182,29 @@ public class AmdGpuControl : IGpuControl
             {
                 if (appInfoArray[i].iGPUAffinity == 1)
                 {
-                    Logger.WriteLine(appInfoArray[i].strFileName + ":" + appInfoArray[i].iGPUAffinity + "(" + appInfoArray[i].timeStamp + ")");
-                    appNames.Add(Path.GetFileNameWithoutExtension(appInfoArray[i].strFileName));
+                    Logger.WriteLine(logMessage: appInfoArray[i].strFileName + ":" + appInfoArray[i].iGPUAffinity + "(" + appInfoArray[i].timeStamp + ")");
+                    appNames.Add(item: Path.GetFileNameWithoutExtension(path: appInfoArray[i].strFileName));
                 }
             }
 
             List<string> immune = new() { "svchost", "system", "ntoskrnl", "csrss", "winlogon", "wininit", "smss" };
 
             foreach (string kill in appNames)
-                if (!immune.Contains(kill.ToLower()))
-                    ProcessHelper.KillByName(kill);
+                if (!immune.Contains(item: kill.ToLower()))
+                    ProcessHelper.KillByName(name: kill);
 
 
         }
         catch (Exception ex)
         {
-            Logger.WriteLine(ex.Message);
+            Logger.WriteLine(logMessage: ex.Message);
         }
         finally
         {
             // Clean up resources
             if (appInfoPtr != nint.Zero)
             {
-                Marshal.FreeCoTaskMem(appInfoPtr);
+                Marshal.FreeCoTaskMem(ptr: appInfoPtr);
             }
 
         }
@@ -215,7 +215,7 @@ public class AmdGpuControl : IGpuControl
     {
         if (_adlContextHandle != nint.Zero)
         {
-            ADL2_Main_Control_Destroy(_adlContextHandle);
+            ADL2_Main_Control_Destroy(adlContextHandle: _adlContextHandle);
             _adlContextHandle = nint.Zero;
             _isReady = false;
         }
@@ -224,7 +224,7 @@ public class AmdGpuControl : IGpuControl
     public void Dispose()
     {
         ReleaseUnmanagedResources();
-        GC.SuppressFinalize(this);
+        GC.SuppressFinalize(obj: this);
     }
 
     ~AmdGpuControl()

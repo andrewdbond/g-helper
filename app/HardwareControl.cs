@@ -39,12 +39,12 @@ public static class HardwareControl
         try
         {
             int? gpuUse = GpuControl?.GetGpuUse();
-            Logger.WriteLine("GPU usage: " + GpuControl?.FullName + " " + gpuUse + "%");
+            Logger.WriteLine(logMessage: "GPU usage: " + GpuControl?.FullName + " " + gpuUse + "%");
             if (gpuUse is not null) return (int)gpuUse;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.ToString());
+            Debug.WriteLine(message: ex.ToString());
         }
 
         return 0;
@@ -59,17 +59,17 @@ public static class HardwareControl
 
         try
         {
-            ManagementScope scope = new ManagementScope("root\\WMI");
-            ObjectQuery query = new ObjectQuery("SELECT * FROM BatteryStatus");
+            ManagementScope scope = new ManagementScope(path: "root\\WMI");
+            ObjectQuery query = new ObjectQuery(query: "SELECT * FROM BatteryStatus");
 
-            using ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope, query);
+            using ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope: scope, query: query);
             foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
             {
 
-                chargeCapacity = Convert.ToDecimal(obj["RemainingCapacity"]);
+                chargeCapacity = Convert.ToDecimal(value: obj[propertyName: "RemainingCapacity"]);
 
-                decimal chargeRate = Convert.ToDecimal(obj["ChargeRate"]);
-                decimal dischargeRate = Convert.ToDecimal(obj["DischargeRate"]);
+                decimal chargeRate = Convert.ToDecimal(value: obj[propertyName: "ChargeRate"]);
+                decimal dischargeRate = Convert.ToDecimal(value: obj[propertyName: "DischargeRate"]);
                 
                 if (chargeRate > 0)
                     batteryRate = chargeRate / 1000;
@@ -81,7 +81,7 @@ public static class HardwareControl
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("Discharge Reading: " + ex.Message);
+            Debug.WriteLine(message: "Discharge Reading: " + ex.Message);
         }
 
     }
@@ -91,19 +91,19 @@ public static class HardwareControl
 
         try
         {
-            ManagementScope scope = new ManagementScope("root\\WMI");
-            ObjectQuery query = new ObjectQuery("SELECT * FROM BatteryFullChargedCapacity");
+            ManagementScope scope = new ManagementScope(path: "root\\WMI");
+            ObjectQuery query = new ObjectQuery(query: "SELECT * FROM BatteryFullChargedCapacity");
 
-            using ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope, query);
+            using ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope: scope, query: query);
             foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
             {
-                fullCapacity = Convert.ToDecimal(obj["FullChargedCapacity"]);
+                fullCapacity = Convert.ToDecimal(value: obj[propertyName: "FullChargedCapacity"]);
             }
 
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("Full Charge Reading: " + ex.Message);
+            Debug.WriteLine(message: "Full Charge Reading: " + ex.Message);
         }
 
     }
@@ -114,19 +114,19 @@ public static class HardwareControl
 
         try
         {
-            ManagementScope scope = new ManagementScope("root\\WMI");
-            ObjectQuery query = new ObjectQuery("SELECT * FROM BatteryStaticData");
+            ManagementScope scope = new ManagementScope(path: "root\\WMI");
+            ObjectQuery query = new ObjectQuery(query: "SELECT * FROM BatteryStaticData");
 
-            using ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope, query);
+            using ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope: scope, query: query);
             foreach (ManagementObject obj in searcher.Get().Cast<ManagementObject>())
             {
-                designCapacity = Convert.ToDecimal(obj["DesignedCapacity"]);
+                designCapacity = Convert.ToDecimal(value: obj[propertyName: "DesignedCapacity"]);
             }
 
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("Design Capacity Reading: " + ex.Message);
+            Debug.WriteLine(message: "Design Capacity Reading: " + ex.Message);
         }
     }
 
@@ -150,7 +150,7 @@ public static class HardwareControl
         }
 
         decimal health = (decimal)fullCapacity / (decimal)designCapacity;
-        Logger.WriteLine("Design Capacity: " + designCapacity + "mWh, Full Charge Capacity: " + fullCapacity + "mWh, Health: " + health + "%");
+        Logger.WriteLine(logMessage: "Design Capacity: " + designCapacity + "mWh, Full Charge Capacity: " + fullCapacity + "mWh, Health: " + health + "%");
 
         return health;
     }
@@ -158,21 +158,21 @@ public static class HardwareControl
     public static float? GetCPUTemp() {
 
         var last = DateTimeOffset.Now.ToUnixTimeSeconds();
-        if (Math.Abs(last - lastUpdate) < 2) return cpuTemp;
+        if (Math.Abs(value: last - lastUpdate) < 2) return cpuTemp;
         lastUpdate = last;
 
-        cpuTemp = Program.acpi.DeviceGet(AsusACPI.Temp_CPU);
+        cpuTemp = Program.acpi.DeviceGet(DeviceID: AsusACPI.Temp_CPU);
 
         if (cpuTemp < 0) try
             {
-                using (var ct = new PerformanceCounter("Thermal Zone Information", "Temperature", @"\_TZ.THRM", true))
+                using (var ct = new PerformanceCounter(categoryName: "Thermal Zone Information", counterName: "Temperature", instanceName: @"\_TZ.THRM", readOnly: true))
                 {
                     cpuTemp = ct.NextValue() - 273;
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed reading CPU temp :" + ex.Message);
+                Debug.WriteLine(message: "Failed reading CPU temp :" + ex.Message);
             }
 
 
@@ -186,9 +186,9 @@ public static class HardwareControl
         gpuTemp = -1;
         gpuUse = -1;
 
-        cpuFan = FanSensorControl.FormatFan(AsusFan.CPU, Program.acpi.GetFan(AsusFan.CPU));
-        gpuFan = FanSensorControl.FormatFan(AsusFan.GPU, Program.acpi.GetFan(AsusFan.GPU));
-        midFan = FanSensorControl.FormatFan(AsusFan.Mid, Program.acpi.GetFan(AsusFan.Mid));
+        cpuFan = FanSensorControl.FormatFan(device: AsusFan.CPU, value: Program.acpi.GetFan(device: AsusFan.CPU));
+        gpuFan = FanSensorControl.FormatFan(device: AsusFan.GPU, value: Program.acpi.GetFan(device: AsusFan.GPU));
+        midFan = FanSensorControl.FormatFan(device: AsusFan.Mid, value: Program.acpi.GetFan(device: AsusFan.Mid));
 
         cpuTemp = GetCPUTemp();
 
@@ -200,18 +200,18 @@ public static class HardwareControl
         catch (Exception ex)
         {
             gpuTemp = -1;
-            Debug.WriteLine("Failed reading GPU temp :" + ex.Message);
+            Debug.WriteLine(message: "Failed reading GPU temp :" + ex.Message);
         }
 
         if (gpuTemp is null || gpuTemp < 0)
-            gpuTemp = Program.acpi.DeviceGet(AsusACPI.Temp_GPU);
+            gpuTemp = Program.acpi.DeviceGet(DeviceID: AsusACPI.Temp_GPU);
 
         ReadFullChargeCapacity();
         GetBatteryStatus();
 
         if (fullCapacity > 0 && chargeCapacity > 0)
         {
-            batteryCapacity = Math.Min(100, ((decimal)chargeCapacity / (decimal)fullCapacity) * 100);
+            batteryCapacity = Math.Min(val1: 100, val2: ((decimal)chargeCapacity / (decimal)fullCapacity) * 100);
             if (batteryCapacity > 99) BatteryControl.UnSetBatteryLimitFull();
         }
 
@@ -222,7 +222,7 @@ public static class HardwareControl
     {
         if (GetGpuUse() > threshold)
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(millisecondsTimeout: 1000);
             return (GetGpuUse() > threshold);
         }
         return false;
@@ -241,9 +241,9 @@ public static class HardwareControl
     {
         // Re-enabling the discrete GPU takes a bit of time,
         // so a simple workaround is to refresh again after that happens
-        Task.Run(async () =>
+        Task.Run(function: async () =>
         {
-            await Task.Delay(TimeSpan.FromSeconds(delay));
+            await Task.Delay(delay: TimeSpan.FromSeconds(value: delay));
             RecreateGpuControl();
         });
     }
@@ -259,7 +259,7 @@ public static class HardwareControl
             if (_gpuControl.IsValid)
             {
                 GpuControl = _gpuControl;
-                Logger.WriteLine(GpuControl.FullName);
+                Logger.WriteLine(logMessage: GpuControl.FullName);
                 return;
             }
 
@@ -269,20 +269,20 @@ public static class HardwareControl
             if (_gpuControl.IsValid)
             {
                 GpuControl = _gpuControl;
-                if (GpuControl.FullName.Contains("6850M")) AppConfig.Set("xgm_special", 1);
-                Logger.WriteLine(GpuControl.FullName);
+                if (GpuControl.FullName.Contains(value: "6850M")) AppConfig.Set(name: "xgm_special", value: 1);
+                Logger.WriteLine(logMessage: GpuControl.FullName);
                 return;
             }
             _gpuControl.Dispose();
 
-            Logger.WriteLine("dGPU not found");
+            Logger.WriteLine(logMessage: "dGPU not found");
             GpuControl = null;
 
 
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("Can't connect to GPU " + ex.ToString());
+            Debug.WriteLine(message: "Can't connect to GPU " + ex.ToString());
         }
     }
 
@@ -291,9 +291,9 @@ public static class HardwareControl
     {
 
         List<string> tokill = new() { "EADesktop", "RadeonSoftware", "epicgameslauncher", "ASUSSmartDisplayControl" };
-        foreach (string kill in tokill) ProcessHelper.KillByName(kill);
+        foreach (string kill in tokill) ProcessHelper.KillByName(name: kill);
 
-        if (AppConfig.Is("kill_gpu_apps") && GpuControl is not null)
+        if (AppConfig.Is(name: "kill_gpu_apps") && GpuControl is not null)
         {
             GpuControl.KillGPUApps();
         }

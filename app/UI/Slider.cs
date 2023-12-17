@@ -7,15 +7,15 @@ namespace GHelper.UI
         public static void DrawCircle(this Graphics g, Pen pen,
                                       float centerX, float centerY, float radius)
         {
-            g.DrawEllipse(pen, centerX - radius, centerY - radius,
-                          radius + radius, radius + radius);
+            g.DrawEllipse(pen: pen, x: centerX - radius, y: centerY - radius,
+                          width: radius + radius, height: radius + radius);
         }
 
         public static void FillCircle(this Graphics g, Brush brush,
                                       float centerX, float centerY, float radius)
         {
-            g.FillEllipse(brush, centerX - radius, centerY - radius,
-                          radius + radius, radius + radius);
+            g.FillEllipse(brush: brush, x: centerX - radius, y: centerY - radius,
+                          width: radius + radius, height: radius + radius);
         }
     }
 
@@ -27,7 +27,7 @@ namespace GHelper.UI
         private PointF _barPos;
 
 
-        public Color accentColor = Color.FromArgb(255, 58, 174, 239);
+        public Color accentColor = Color.FromArgb(alpha: 255, red: 58, green: 174, blue: 239);
         public Color borderColor = Color.White;
 
         public event EventHandler ValueChanged;
@@ -78,12 +78,12 @@ namespace GHelper.UI
             set
             {
 
-                value = (int)Math.Round(value / (float)_step) * _step;
+                value = (int)Math.Round(a: value / (float)_step) * _step;
 
                 if (_value != value)
                 {
                     _value = value;
-                    ValueChanged?.Invoke(this, EventArgs.Empty);
+                    ValueChanged?.Invoke(sender: this, e: EventArgs.Empty);
                     RecalculateParameters();
                 }
             }
@@ -91,36 +91,36 @@ namespace GHelper.UI
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
+            base.OnPaint(e: e);
 
-            Brush brushAccent = new SolidBrush(accentColor);
-            Brush brushEmpty = new SolidBrush(Color.Gray);
-            Brush brushBorder = new SolidBrush(borderColor);
+            Brush brushAccent = new SolidBrush(color: accentColor);
+            Brush brushEmpty = new SolidBrush(color: Color.Gray);
+            Brush brushBorder = new SolidBrush(color: borderColor);
 
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            e.Graphics.FillRectangle(brushEmpty,
-                _barPos.X, _barPos.Y, _barSize.Width, _barSize.Height);
-            e.Graphics.FillRectangle(brushAccent,
-                _barPos.X, _barPos.Y, _thumbPos.X - _barPos.X, _barSize.Height);
+            e.Graphics.FillRectangle(brush: brushEmpty,
+                x: _barPos.X, y: _barPos.Y, width: _barSize.Width, height: _barSize.Height);
+            e.Graphics.FillRectangle(brush: brushAccent,
+                x: _barPos.X, y: _barPos.Y, width: _thumbPos.X - _barPos.X, height: _barSize.Height);
 
-            e.Graphics.FillCircle(brushBorder, _thumbPos.X, _thumbPos.Y, _radius);
-            e.Graphics.FillCircle(brushAccent, _thumbPos.X, _thumbPos.Y, 0.7f * _radius);
+            e.Graphics.FillCircle(brush: brushBorder, centerX: _thumbPos.X, centerY: _thumbPos.Y, radius: _radius);
+            e.Graphics.FillCircle(brush: brushAccent, centerX: _thumbPos.X, centerY: _thumbPos.Y, radius: 0.7f * _radius);
         }
 
         protected override void OnResize(EventArgs e)
         {
-            base.OnResize(e);
+            base.OnResize(e: e);
             RecalculateParameters();
         }
 
         private void RecalculateParameters()
         {
             _radius = 0.4F * ClientSize.Height;
-            _barSize = new SizeF(ClientSize.Width - 2 * _radius, ClientSize.Height * 0.15F);
-            _barPos = new PointF(_radius, (ClientSize.Height - _barSize.Height) / 2);
+            _barSize = new SizeF(width: ClientSize.Width - 2 * _radius, height: ClientSize.Height * 0.15F);
+            _barPos = new PointF(x: _radius, y: (ClientSize.Height - _barSize.Height) / 2);
             _thumbPos = new PointF(
-                _barSize.Width / (Max - Min) * (Value - Min) + _barPos.X,
-                _barPos.Y + 0.5f * _barSize.Height);
+                x: _barSize.Width / (Max - Min) * (Value - Min) + _barPos.X,
+                y: _barPos.Y + 0.5f * _barSize.Height);
             Invalidate();
         }
 
@@ -129,17 +129,17 @@ namespace GHelper.UI
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            base.OnMouseDown(e);
+            base.OnMouseDown(e: e);
 
             // Difference between tumb and mouse position.
-            _delta = new SizeF(e.Location.X - _thumbPos.X, e.Location.Y - _thumbPos.Y);
+            _delta = new SizeF(width: e.Location.X - _thumbPos.X, height: e.Location.Y - _thumbPos.Y);
             if (_delta.Width * _delta.Width + _delta.Height * _delta.Height <= _radius * _radius)
             {
                 // Clicking inside thumb.
                 _moving = true;
             }
 
-            _calculateValue(e);
+            _calculateValue(e: e);
 
         }
 
@@ -154,22 +154,22 @@ namespace GHelper.UI
             {
                 thumbX = _barPos.X + _barSize.Width;
             }
-            Value = (int)Math.Round(Min + (thumbX - _barPos.X) * (Max - Min) / _barSize.Width);
+            Value = (int)Math.Round(a: Min + (thumbX - _barPos.X) * (Max - Min) / _barSize.Width);
 
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            base.OnMouseMove(e);
+            base.OnMouseMove(e: e);
             if (_moving)
             {
-                _calculateValue(e);
+                _calculateValue(e: e);
             }
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
-            base.OnMouseUp(e);
+            base.OnMouseUp(e: e);
             _moving = false;
         }
 
